@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <div id="header-container"></div>
 
   <main>
@@ -38,4 +39,47 @@
       <label for="new-datetime">Set New Drawing Time:</label>
       <input type="datetime-local" id="new-datetime" />
 
-      <button id="update-time
+      <button id="update-timer-btn">Update Timer</button>
+      <button id="end-timer-btn">End Timer Now</button>
+
+      <p id="admin-message"></p>
+    </section>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <footer>
+    <section id="admin-login-section">
+      <form id="admin-login-form" autocomplete="off">
+        <label for="admin-passcode">Admin Passcode:</label>
+        <input type="password" id="admin-passcode" />
+        <button type="submit">Login</button>
+        <span id="login-message" role="alert" aria-live="assertive"></span>
+      </form>
+      <p>&copy; 2025 Quad Cities Sweepstakes</p>
+    </section>
+  </footer>
+
+  <script src="script.js"></script>
+
+  <script>
+    // Load header and footer content dynamically
+    async function loadHTML(selector, url) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          document.querySelector(selector).innerHTML = html;
+        } else {
+          console.error("Failed to load", url);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
+
+</body>
+</html>
