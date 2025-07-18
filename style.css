@@ -5,7 +5,7 @@ body {
   align-items: center;
   justify-content: flex-start;
   min-height: 100vh;
-  margin: 0; /* Remove default body margins */
+  margin: 5; /* Remove default body margins */
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   color: #333;
