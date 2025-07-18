@@ -1,5 +1,5 @@
 // ----------- CONFIGURATION -----------------
-const ADMIN_PASSCODE = "hello"; // Change this!
+const ADMIN_PASSCODE = ""; // Change this!
 const ENTRY_FORM_LINK = "https://yourformlink.com"; // Your actual entry link here
 // -------------------------------------------
 
@@ -20,6 +20,11 @@ const adminMessage = document.getElementById("admin-message");
 // Variables
 let countdownTarget = null;
 
+// Load countdown target from localStorage
+if (localStorage.getItem('countdownTarget')) {
+    countdownTarget = new Date(localStorage.getItem('countdownTarget')).getTime();
+}
+
 // Format date for input[type=datetime-local]
 function formatDateInput(date) {
   const pad = (n) => (n < 10 ? "0" + n : n);
@@ -37,39 +42,52 @@ function formatDateInput(date) {
 }
 
 // Update countdown display & button state
-function updateCountdown(targetDate) {
-  if (!countdownEl || !enterButton) return; // If no elements, skip
+function updateCountdown() {
+    if (!countdownEl || !enterButton) return; // If no elements, skip
 
-  const now = new Date().getTime();
-  const distance = targetDate - now;
+    if (!countdownTarget) {
+        countdownEl.textContent = "Timer not set.";
+        enterButton.textContent = "Not Available";
+        enterButton.classList.add("disabled");
+        enterButton.setAttribute("aria-disabled", "true");
+        enterButton.style.pointerEvents = "none";
+        enterButton.style.backgroundColor = "";
+        enterButton.href = "#";
+        enterButton.tabIndex = -1;
+        return;
+    }
 
-  if (distance <= 0) {
-    countdownEl.textContent = "The drawing is happening now!";
-    enterButton.textContent = "Enter Now";
-    enterButton.classList.remove("disabled");
-    enterButton.removeAttribute("aria-disabled");
-    enterButton.style.pointerEvents = "auto";
-    enterButton.style.backgroundColor = "#28a745"; // Green
-    enterButton.href = ENTRY_FORM_LINK;
-    enterButton.tabIndex = 0;
-    return;
-  }
+    const now = new Date().getTime();
+    const distance = countdownTarget - now;
 
-  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  const hrs = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  const secs = Math.floor((distance % (1000 * 60)) / 1000);
+    if (distance <= 0) {
+        countdownEl.textContent = "The drawing is happening now!";
+        enterButton.textContent = "Enter Now";
+        enterButton.classList.remove("disabled");
+        enterButton.removeAttribute("aria-disabled");
+        enterButton.style.pointerEvents = "auto";
+        enterButton.style.backgroundColor = "#28a745"; // Green
+        enterButton.href = ENTRY_FORM_LINK;
+        enterButton.tabIndex = 0;
+        clearInterval(countdownInterval); // Stop the interval
+        return;
+    }
 
-  countdownEl.textContent = `${days}d ${hrs}h ${mins}m ${secs}s`;
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hrs = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((distance % (1000 * 60)) / 1000);
 
-  // Disable enter button while countdown active
-  enterButton.textContent = "Not Available";
-  enterButton.classList.add("disabled");
-  enterButton.setAttribute("aria-disabled", "true");
-  enterButton.style.pointerEvents = "none";
-  enterButton.style.backgroundColor = ""; // Reset
-  enterButton.href = "#";
-  enterButton.tabIndex = -1;
+    countdownEl.textContent = `${days}d ${hrs}h ${mins}m ${secs}s`;
+
+    // Disable enter button while countdown active
+    enterButton.textContent = "Not Available";
+    enterButton.classList.add("disabled");
+    enterButton.setAttribute("aria-disabled", "true");
+    enterButton.style.pointerEvents = "none";
+    enterButton.style.backgroundColor = ""; // Reset
+    enterButton.href = "#";
+    enterButton.tabIndex = -1;
 }
 
 // Admin Login Form Handling
@@ -92,3 +110,31 @@ if (adminLoginForm) {
         adminPasscodeInput.value = ""; // Clear the input
     });
 }
+
+// Admin Section - Update Timer
+if (adminSection) {
+    updateTimerBtn.addEventListener('click', function() {
+        const newDatetime = newDatetimeInput.value;
+        if (newDatetime) {
+            countdownTarget = new Date(newDatetime).getTime();
+            localStorage.setItem('countdownTarget', new Date(countdownTarget)); // Store in localStorage
+            adminMessage.textContent = "Timer updated!";
+            updateCountdown(); // Update immediately
+        } else {
+            adminMessage.textContent = "Please select a valid date and time.";
+        }
+    });
+
+    endTimerBtn.addEventListener('click', function() {
+        countdownTarget = null; // Clear the timer
+        localStorage.removeItem('countdownTarget'); // Remove from localStorage
+        adminMessage.textContent = "Timer ended.";
+        updateCountdown(); // Update immediately
+    });
+}
+
+// Initial call to updateCountdown
+updateCountdown();
+
+// Update the countdown every second
+const countdownInterval = setInterval(updateCountdown, 1000);

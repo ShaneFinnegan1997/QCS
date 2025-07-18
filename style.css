@@ -2,20 +2,20 @@
 body {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Horizontally center the content */
-  justify-content: flex-start; /* Align content to the top */
-  min-height: 100vh; /* Ensure it takes at least the full viewport height */
-  margin: 0; /* Reset default body margin */
-  font-family: Arial, sans-serif; /* Set a default font */
-  background-color: #f4f4f4; /* Light background color */
-  color: #333; /* Dark text color */
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
 main {
-  width: 100%; /* Ensure main takes full width */
-  max-width: 800px; /* Limit the main content width for better readability */
-  padding: 20px; /* Add some padding around the content */
-  box-sizing: border-box; /* Include padding in width calculation */
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 /* Header styles */
@@ -25,7 +25,7 @@ header {
   padding: 1rem 0;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  width: 100%; /* Header takes full width */
+  width: 100%;
 }
 
 header h1 {
@@ -74,7 +74,7 @@ header nav a[aria-current="page"] {
 .btn.disabled {
   background-color: #6c757d;
   cursor: not-allowed;
-  opacity: 0.7; /*Added to dim the button*/
+  opacity: 0.7;
 }
 
 /* Admin login section styles */
