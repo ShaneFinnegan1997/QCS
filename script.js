@@ -1,21 +1,6 @@
-// ----------- CONFIGURE YOUR FIREBASE HERE -----------------
-const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-// -------------------------------------------------------------
-
-// Hidden admin password (keep this secret!)
-const ADMIN_PASSCODE = "YourSecretPass123";
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// ----------- CONFIGURATION -----------------
+const ADMIN_PASSCODE = "YourSecretPass123"; // Hidden admin password (change this!)
+// -------------------------------------------
 
 // DOM Elements
 const countdownEl = document.getElementById("countdown");
@@ -52,8 +37,86 @@ function updateCountdown(targetDate) {
   const now = new Date().getTime();
   const distance = targetDate - now;
 
-  console.log("Updating countdown for:", new Date(targetDate));
-
   if (distance <= 0) {
     countdownEl.textContent = "The drawing is happening now!";
-    enterButton.textCo
+    enterButton.textContent = "Enter Now";
+    enterButton.classList.remove("disabled");
+    enterButton.removeAttribute("aria-disabled");
+    enterButton.style.pointerEvents = "auto";
+    enterButton.style.backgroundColor = "#28a745"; // Green
+    enterButton.href = "https://yourformlink.com"; // Replace with actual form link
+    enterButton.tabIndex = 0;
+    return;
+  }
+
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hrs = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+  countdownEl.textContent = `${days}d ${hrs}h ${mins}m ${secs}s`;
+
+  // Disable enter button while countdown is active
+  enterButton.textContent = "Not Available";
+  enterButton.classList.add("disabled");
+  enterButton.setAttribute("aria-disabled", "true");
+  enterButton.style.pointerEvents = "none";
+  enterButton.style.backgroundColor = "#000000";
+  enterButton.href = "javascript:void(0)";
+  enterButton.tabIndex = -1;
+}
+
+// Load countdown from localStorage
+function loadCountdownFromLocalStorage() {
+  const savedTimestamp = localStorage.getItem("countdownTarget");
+  if (savedTimestamp) {
+    countdownTarget = new Date(parseInt(savedTimestamp));
+    newDatetimeInput.value = formatDateInput(countdownTarget);
+  } else {
+    // Default: 7 days from now
+    countdownTarget = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    newDatetimeInput.value = formatDateInput(countdownTarget);
+    localStorage.setItem("countdownTarget", countdownTarget.getTime());
+  }
+}
+
+// Call load on page load
+loadCountdownFromLocalStorage();
+
+// Update countdown every second
+setInterval(() => {
+  if (countdownTarget) {
+    updateCountdown(countdownTarget.getTime());
+  }
+}, 1000);
+
+// Admin login form handler
+adminLoginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const enteredPass = adminPasscodeInput.value.trim();
+  if (enteredPass === ADMIN_PASSCODE) {
+    loginMessage.textContent = "Access granted!";
+    loginMessage.style.color = "green";
+    adminSection.classList.remove("hidden");
+    adminLoginForm.classList.add("hidden");
+  } else {
+    loginMessage.textContent = "Incorrect passcode.";
+    loginMessage.style.color = "red";
+  }
+});
+
+// Update timer button handler
+updateTimerBtn.addEventListener("click", () => {
+  const newDatetime = newDatetimeInput.value;
+  if (!newDatetime) {
+    adminMessage.textContent = "Please select a valid date and time.";
+    adminMessage.style.color = "red";
+    return;
+  }
+  const newTimestamp = new Date(newDatetime).getTime();
+  localStorage.setItem("countdownTarget", newTimestamp);
+  countdownTarget = new Date(newTimestamp);
+  adminMessage.textContent = "Countdown updated successfully!";
+  adminMessage.style.color = "green";
+  updateCountdown(countdownTarget.getTime());
+});
