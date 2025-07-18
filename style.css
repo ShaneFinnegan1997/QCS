@@ -49,6 +49,11 @@ main {
   cursor: pointer;
 }
 
+.disabled {
+  background: #999 !important;
+  cursor: not-allowed !important;
+}
+
 .hidden {
   display: none !important;
 }

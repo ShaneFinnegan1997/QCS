@@ -19,6 +19,7 @@ const db = firebase.database();
 
 // DOM Elements
 const countdownEl = document.getElementById("countdown");
+const enterButton = document.getElementById("enter-button");
 const adminLoginForm = document.getElementById("admin-login-form");
 const adminPasscodeInput = document.getElementById("admin-passcode");
 const loginMessage = document.getElementById("login-message");
@@ -46,13 +47,19 @@ function formatDateInput(date) {
   );
 }
 
-// Update countdown display
+// Update countdown display & button state
 function updateCountdown(targetDate) {
   const now = new Date().getTime();
   const distance = targetDate - now;
 
   if (distance <= 0) {
     countdownEl.textContent = "The drawing is happening now!";
+    enterButton.textContent = "Enter Now";
+    enterButton.classList.remove("disabled");
+    enterButton.removeAttribute("aria-disabled");
+    enterButton.style.pointerEvents = "auto";
+    enterButton.href = "https://yourformlink.com";  // Keep your actual entry link here
+    enterButton.tabIndex = 0;
     return;
   }
 
@@ -62,6 +69,14 @@ function updateCountdown(targetDate) {
   const secs = Math.floor((distance % (1000 * 60)) / 1000);
 
   countdownEl.textContent = `${days}d ${hrs}h ${mins}m ${secs}s`;
+
+  // Disable enter button if countdown is active
+  enterButton.textContent = "Not Available";
+  enterButton.classList.add("disabled");
+  enterButton.setAttribute("aria-disabled", "true");
+  enterButton.style.pointerEvents = "none";
+  enterButton.href = "javascript:void(0)";
+  enterButton.tabIndex = -1;
 }
 
 // Listen for changes in Firebase realtime database
