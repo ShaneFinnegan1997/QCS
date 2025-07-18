@@ -19,7 +19,7 @@ const adminMessage = document.getElementById("admin-message");
 
 // Variables
 let countdownTarget = null;
-let countdownInterval; // Declare countdownInterval outside the functions
+let countdownInterval;
 
 // Load countdown target from localStorage
 if (localStorage.getItem('countdownTarget')) {
@@ -62,15 +62,15 @@ function updateCountdown() {
     const distance = countdownTarget - now;
 
     if (distance <= 0) {
-        countdownEl.textContent = "The drawing is happening now!";
-        enterButton.textContent = "Enter Now";
-        enterButton.classList.remove("disabled");
+        countdownEl.textContent = "Countdown ended!";
+        enterButton.textContent = "Countdown ended";
+        enterButton.classList.add("disabled");
         enterButton.removeAttribute("aria-disabled");
-        enterButton.style.pointerEvents = "auto";
-        enterButton.style.backgroundColor = "#28a745";
-        enterButton.href = ENTRY_FORM_LINK;
-        enterButton.tabIndex = 0;
-        clearInterval(countdownInterval); // Stop the interval if it's running
+        enterButton.style.pointerEvents = "none";
+        enterButton.style.backgroundColor = "";
+        enterButton.href = "#";
+        enterButton.tabIndex = -1;
+        clearInterval(countdownInterval); // Stop the interval
         return;
     }
 
@@ -81,31 +81,34 @@ function updateCountdown() {
 
     countdownEl.textContent = `${days}d ${hrs}h ${mins}m ${secs}s`;
 
+    // Disable enter button while countdown active
     enterButton.textContent = "Not Available";
     enterButton.classList.add("disabled");
     enterButton.setAttribute("aria-disabled", "true");
     enterButton.style.pointerEvents = "none";
-    enterButton.style.backgroundColor = "";
+    enterButton.style.backgroundColor = ""; // Reset
     enterButton.href = "#";
     enterButton.tabIndex = -1;
 }
 
 // Admin Login Form Handling
 if (adminLoginForm) {
-    adminSection.classList.add("hidden");
+    adminSection.classList.add("hidden"); // Hide admin section by default
     adminLoginForm.addEventListener("submit", function(event) {
         event.preventDefault();
         const enteredPasscode = adminPasscodeInput.value;
 
         if (enteredPasscode === ADMIN_PASSCODE) {
+            // Successful login
             loginMessage.textContent = "Login successful!";
-            adminSection.classList.remove("hidden");
+            adminSection.classList.remove("hidden"); // Show the admin section
         } else {
+            // Failed login
             loginMessage.textContent = "Incorrect passcode. Please try again.";
-            adminSection.classList.add("hidden");
+            adminSection.classList.add("hidden"); // Ensure admin section is hidden
         }
 
-        adminPasscodeInput.value = "";
+        adminPasscodeInput.value = ""; // Clear the input
     });
 }
 
@@ -115,29 +118,27 @@ if (adminSection) {
         const newDatetime = newDatetimeInput.value;
         if (newDatetime) {
             countdownTarget = new Date(newDatetime).getTime();
-            localStorage.setItem('countdownTarget', new Date(countdownTarget));
+            localStorage.setItem('countdownTarget', new Date(countdownTarget)); // Store in localStorage
             adminMessage.textContent = "Timer updated!";
-            clearInterval(countdownInterval); // Clear existing interval
+			clearInterval(countdownInterval);
             updateCountdown(); // Update immediately
-            startCountdown(); // Start a new interval
+			countdownInterval = setInterval(updateCountdown, 1000);
         } else {
             adminMessage.textContent = "Please select a valid date and time.";
         }
     });
 
     endTimerBtn.addEventListener('click', function() {
-        countdownTarget = null;
-        localStorage.removeItem('countdownTarget');
+        countdownTarget = null; // Clear the timer
+        localStorage.removeItem('countdownTarget'); // Remove from localStorage
         adminMessage.textContent = "Timer ended.";
-        clearInterval(countdownInterval);
-        updateCountdown();
+        updateCountdown(); // Update immediately
+		clearInterval(countdownInterval);
     });
 }
 
-function startCountdown() {
-    updateCountdown();
-    countdownInterval = setInterval(updateCountdown, 1000); // Assign the interval ID
-}
-
 // Initial call to updateCountdown
-startCountdown();
+updateCountdown();
+
+// Update the countdown every second
+const countdownInterval = setInterval(updateCountdown, 1000);
