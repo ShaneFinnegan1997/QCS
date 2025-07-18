@@ -1,12 +1,29 @@
-const passcode = "secret123"; // Change this!
+const ADMIN_PASSCODE = "secret123"; // Change this!
 
 let countdownInterval = null;
 
+function setButtonEnabled(enabled) {
+  const enterButton = document.getElementById("enter-button");
+  if (!enterButton) return;
+
+  if (enabled) {
+    enterButton.classList.remove("disabled");
+    enterButton.textContent = "Enter Now";
+    enterButton.setAttribute("aria-disabled", "false");
+    enterButton.style.pointerEvents = "auto";
+  } else {
+    enterButton.classList.add("disabled");
+    enterButton.textContent = "Not Available";
+    enterButton.setAttribute("aria-disabled", "true");
+    enterButton.style.pointerEvents = "none";
+  }
+}
+
 function updateCountdownDisplay(targetDate) {
   const countdownEl = document.getElementById("countdown");
-  const enterButton = document.getElementById("enter-button");
+  if (!countdownEl) return;
 
-  if (countdownInterval) clearInterval(countdownInterval); // Clear previous interval
+  if (countdownInterval) clearInterval(countdownInterval);
 
   function update() {
     const now = new Date();
@@ -14,11 +31,8 @@ function updateCountdownDisplay(targetDate) {
 
     if (distance <= 0) {
       countdownEl.textContent = "Drawing has ended!";
-      enterButton.classList.add("disabled");
-      enterButton.textContent = "Not Available";
-      enterButton.setAttribute("aria-disabled", "true");
-      enterButton.style.pointerEvents = "none";
-      if (countdownInterval) clearInterval(countdownInterval); // Stop updating
+      setButtonEnabled(false);
+      clearInterval(countdownInterval);
       return;
     }
 
@@ -29,31 +43,44 @@ function updateCountdownDisplay(targetDate) {
 
     countdownEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-    enterButton.classList.remove("disabled");
-    enterButton.textContent = "Enter Now";
-    enterButton.setAttribute("aria-disabled", "false");
-    enterButton.style.pointerEvents = "auto";
+    setButtonEnabled(true);
   }
 
-  update(); // Call once immediately
-  countdownInterval = setInterval(update, 1000); // Then update every second
+  update();
+  countdownInterval = setInterval(update, 1000);
 }
 
 // Load timer from localStorage on page load
-const savedTime = localStorage.getItem("drawingTime");
-if (savedTime) {
-  const targetDate = new Date(savedTime);
-  if (!isNaN(targetDate)) {
-    updateCountdownDisplay(targetDate);
+function loadTimer() {
+  const savedTime = localStorage.getItem("drawingTime");
+  if (!savedTime) {
+    // No timer set — disable button & clear countdown
+    const countdownEl = document.getElementById("countdown");
+    if (countdownEl) countdownEl.textContent = "No drawing scheduled.";
+    setButtonEnabled(false);
+    return;
   }
+
+  const targetDate = new Date(savedTime);
+  if (isNaN(targetDate)) {
+    // Invalid date saved — clear it
+    localStorage.removeItem("drawingTime");
+    setButtonEnabled(false);
+    return;
+  }
+
+  updateCountdownDisplay(targetDate);
 }
 
-// Admin login handler
+// Initial load
+loadTimer();
+
+// Admin login
 document.getElementById("admin-login-form").addEventListener("submit", (e) => {
   e.preventDefault();
-  const input = document.getElementById("admin-passcode").value;
+  const input = document.getElementById("admin-passcode").value.trim();
   const loginMsg = document.getElementById("login-message");
-  if (input === passcode) {
+  if (input === ADMIN_PASSCODE) {
     document.getElementById("admin-section").classList.remove("hidden");
     loginMsg.textContent = "Logged in.";
     loginMsg.style.color = "green";
@@ -84,6 +111,7 @@ document.getElementById("update-timer-btn").addEventListener("click", () => {
   localStorage.setItem("drawingTime", newDate.toISOString());
   msg.textContent = "Timer updated successfully!";
   msg.style.color = "green";
+
   updateCountdownDisplay(newDate);
 });
 
@@ -92,15 +120,11 @@ document.getElementById("end-timer-btn").addEventListener("click", () => {
   localStorage.removeItem("drawingTime");
 
   const countdownEl = document.getElementById("countdown");
-  const enterButton = document.getElementById("enter-button");
+  if (countdownEl) countdownEl.textContent = "Drawing has ended.";
 
-  countdownEl.textContent = "Drawing has ended!";
-  enterButton.classList.add("disabled");
-  enterButton.textContent = "Not Available";
-  enterButton.setAttribute("aria-disabled", "true");
-  enterButton.style.pointerEvents = "none";
+  setButtonEnabled(false);
 
-  if (countdownInterval) clearInterval(countdownInterval); // Stop countdown updates
+  if (countdownInterval) clearInterval(countdownInterval);
 
   const msg = document.getElementById("admin-message");
   msg.textContent = "Timer manually ended.";
