@@ -7,21 +7,69 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Header -->
   <div id="header-container"></div>
 
+  <!-- Main Content -->
   <main>
-    <section id="enter-section">
-      <h2>Enter for a Chance to Win!</h2>
-      <p>Choose free or paid entry and get ready for the next drawing!</p>
+    <section class="intro">
+      <h1>Quad Cities Sweepstakes</h1>
+      <p>Helping people, giving back, and giving everyone a chance to win!</p>
+    </section>
 
-      <h3>Next Drawing In:</h3>
-      <div id="countdown" aria-live="polite" aria-atomic="true"></div>
+    <section id="enter-section">
+      <h2>Next Drawing</h2>
+      <div id="countdown">Loading...</div>
 
       <a href="https://yourformlink.com" id="enter-button" class="btn disabled" target="_blank" rel="noopener noreferrer" aria-disabled="true">Not Available</a>
     </section>
 
+    <!-- Optional Extra Info Section -->
+    <section class="info">
+      <h3>About</h3>
+      <p>We’re building a local, fun, and fair sweepstakes where anyone can enter for free or support the mission through donations. Let’s bring the community together through kindness and excitement!</p>
+    </section>
+
+    <!-- Admin Section -->
     <section id="admin-section" class="hidden">
       <h2>Admin Panel</h2>
-      <label for="new-datetime">Set New Drawing Date & Time (UTC):</label><br />
+
+      <label for="new-datetime">Set New Drawing Time:</label><br />
       <input type="datetime-local" id="new-datetime" />
       <button id="update-timer-btn">Update Timer</button>
+
+      <button id="end-timer-btn" style="margin-top:10px;background:#b00;color:white;">End Timer Now</button>
+
+      <p id="admin-message"></p>
+    </section>
+  </main>
+
+  <!-- Footer + Admin Login -->
+  <footer>
+    <section id="admin-login-section">
+      <form id="admin-login-form" autocomplete="off">
+        <label for="admin-passcode">Admin Passcode:</label>
+        <input type="password" id="admin-passcode" />
+        <button type="submit">Login</button>
+        <span id="login-message" role="alert" aria-live="assertive"></span>
+      </form>
+      <p>&copy; 2025 Quad Cities Sweepstakes</p>
+    </section>
+    <div id="footer-container"></div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="script.js"></script>
+  <script>
+    async function loadHTML(selector, url) {
+      const response = await fetch(url);
+      if (response.ok) {
+        const html = await response.text();
+        document.querySelector(selector).innerHTML = html;
+      }
+    }
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
+</body>
+</html>
