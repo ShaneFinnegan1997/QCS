@@ -179,6 +179,5 @@ footer {
   padding: 1rem;
   background: linear-gradient(to left, #28a745, #f0f0f0); /* Green to light gray fade */
   width: 100%;
-  box-sizing: border-box;
   color: white; /* Ensure text is readable */
 }
