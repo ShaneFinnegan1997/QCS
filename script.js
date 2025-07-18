@@ -47,7 +47,7 @@ function updateCountdown() {
 
     if (!countdownTarget) {
         enterButton.textContent = "Not Available";
-        countdownEl.textContent = "Timer not set.";
+        countdownEl.textContent = "Timer not set. View our event schedule <a href="google.com">here</a>.";
         enterButton.classList.add("disabled");
         enterButton.setAttribute("aria-disabled", "true");
         enterButton.style.pointerEvents = "none";
