@@ -176,7 +176,6 @@ header nav a[aria-current="page"] {
 /* Footer styles (example) */
 footer {
   text-align: center;
-  padding: 1rem;
   margin-bottom: 1rem;
   background: linear-gradient(to left, #28a745, #f0f0f0); /* Green to light gray fade */
   width: 100%;
