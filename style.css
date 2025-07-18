@@ -177,7 +177,8 @@ header nav a[aria-current="page"] {
 footer {
   text-align: center;
   padding: 1rem;
-  background-color: #f0f0f0;
+  background: linear-gradient(to right, #28a745, #f0f0f0); /* Green to light gray fade */
   width: 100%;
   box-sizing: border-box;
+  color: white; /* Ensure text is readable */
 }
