@@ -178,6 +178,11 @@ footer {
   text-align: center;
   margin-bottom: 1rem;
   background: linear-gradient(to left, #28a745, #f0f0f0); /* Green to light gray fade */
-  width: 100%;
   color: white; /* Ensure text is readable */
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0 !important; /* Ensure it's above other content */
+  position: fixed;
+  padding: 1rem 0;
 }
