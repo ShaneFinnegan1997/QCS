@@ -118,6 +118,7 @@ if (adminSection) {
             localStorage.setItem('countdownTarget', new Date(countdownTarget));
             adminMessage.textContent = "Timer updated!";
             clearInterval(countdownInterval); // Clear existing interval
+            updateCountdown(); // Update immediately
             startCountdown(); // Start a new interval
         } else {
             adminMessage.textContent = "Please select a valid date and time.";
