@@ -6,15 +6,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Sweepstakes Rules</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="rules.html">Rules</a>
-      <a href="contact.html">Contact</a>
-      <a href="admin.html">Admin</a>
-    </nav>
-  </header>
+  <div id="header-container"></div>
 
   <main>
     <h2>Official Rules</h2>
@@ -27,8 +19,20 @@
     </ul>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Quad Cities Sweepstakes</p>
-  </footer>
+  <div id="footer-container"></div>
+
+  <script>
+    async function loadHTML(selector, url) {
+      const response = await fetch(url);
+      if (response.ok) {
+        const html = await response.text();
+        document.querySelector(selector).innerHTML = html;
+      } else {
+        console.error("Failed to load", url);
+      }
+    }
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
 </body>
 </html>
