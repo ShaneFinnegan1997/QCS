@@ -1,132 +1,67 @@
-const ADMIN_PASSCODE = "secret123"; // Change this!
+// ----------- CONFIGURATION -----------------
+const ADMIN_PASSCODE = "YourSecretPass123"; // Change this!
+const ENTRY_FORM_LINK = "https://yourformlink.com"; // Your actual entry link here
+// -------------------------------------------
 
-let countdownInterval = null;
+// DOM Elements (some may not exist on all pages)
+const countdownEl = document.getElementById("countdown");
+const enterButton = document.getElementById("enter-button");
 
-function setButtonEnabled(enabled) {
-  const enterButton = document.getElementById("enter-button");
-  if (!enterButton) return;
+const adminLoginForm = document.getElementById("admin-login-form");
+const adminPasscodeInput = document.getElementById("admin-passcode");
+const loginMessage = document.getElementById("login-message");
 
-  if (enabled) {
-    enterButton.classList.remove("disabled");
+const adminSection = document.getElementById("admin-section");
+const newDatetimeInput = document.getElementById("new-datetime");
+const updateTimerBtn = document.getElementById("update-timer-btn");
+const endTimerBtn = document.getElementById("end-timer-btn");
+const adminMessage = document.getElementById("admin-message");
+
+// Variables
+let countdownTarget = null;
+
+// Format date for input[type=datetime-local]
+function formatDateInput(date) {
+  const pad = (n) => (n < 10 ? "0" + n : n);
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    "T" +
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes())
+  );
+}
+
+// Update countdown display & button state
+function updateCountdown(targetDate) {
+  if (!countdownEl || !enterButton) return; // If no elements, skip
+
+  const now = new Date().getTime();
+  const distance = targetDate - now;
+
+  if (distance <= 0) {
+    countdownEl.textContent = "The drawing is happening now!";
     enterButton.textContent = "Enter Now";
-    enterButton.setAttribute("aria-disabled", "false");
+    enterButton.classList.remove("disabled");
+    enterButton.removeAttribute("aria-disabled");
     enterButton.style.pointerEvents = "auto";
-  } else {
-    enterButton.classList.add("disabled");
-    enterButton.textContent = "Not Available";
-    enterButton.setAttribute("aria-disabled", "true");
-    enterButton.style.pointerEvents = "none";
-  }
-}
-
-function updateCountdownDisplay(targetDate) {
-  const countdownEl = document.getElementById("countdown");
-  if (!countdownEl) return;
-
-  if (countdownInterval) clearInterval(countdownInterval);
-
-  function update() {
-    const now = new Date();
-    const distance = targetDate - now;
-
-    if (distance <= 0) {
-      countdownEl.textContent = "Drawing has ended!";
-      setButtonEnabled(false);
-      clearInterval(countdownInterval);
-      return;
-    }
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((distance / (1000 * 60)) % 60);
-    const seconds = Math.floor((distance / 1000) % 60);
-
-    countdownEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-    setButtonEnabled(true);
-  }
-
-  update();
-  countdownInterval = setInterval(update, 1000);
-}
-
-// Load timer from localStorage on page load
-function loadTimer() {
-  const savedTime = localStorage.getItem("drawingTime");
-  if (!savedTime) {
-    // No timer set — disable button & clear countdown
-    const countdownEl = document.getElementById("countdown");
-    if (countdownEl) countdownEl.textContent = "No drawing scheduled.";
-    setButtonEnabled(false);
+    enterButton.style.backgroundColor = "#28a745"; // Green
+    enterButton.href = ENTRY_FORM_LINK;
+    enterButton.tabIndex = 0;
     return;
   }
 
-  const targetDate = new Date(savedTime);
-  if (isNaN(targetDate)) {
-    // Invalid date saved — clear it
-    localStorage.removeItem("drawingTime");
-    setButtonEnabled(false);
-    return;
-  }
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hrs = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((distance % (1000 * 60)) / 1000);
 
-  updateCountdownDisplay(targetDate);
-}
+  countdownEl.textContent = `${days}d ${hrs}h ${mins}m ${secs}s`;
 
-// Initial load
-loadTimer();
-
-// Admin login
-document.getElementById("admin-login-form").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const input = document.getElementById("admin-passcode").value.trim();
-  const loginMsg = document.getElementById("login-message");
-  if (input === ADMIN_PASSCODE) {
-    document.getElementById("admin-section").classList.remove("hidden");
-    loginMsg.textContent = "Logged in.";
-    loginMsg.style.color = "green";
-  } else {
-    loginMsg.textContent = "Incorrect passcode.";
-    loginMsg.style.color = "red";
-  }
-});
-
-// Update timer button
-document.getElementById("update-timer-btn").addEventListener("click", () => {
-  const input = document.getElementById("new-datetime").value;
-  const msg = document.getElementById("admin-message");
-
-  if (!input) {
-    msg.textContent = "Please select a date/time.";
-    msg.style.color = "red";
-    return;
-  }
-
-  const newDate = new Date(input);
-  if (isNaN(newDate)) {
-    msg.textContent = "Invalid date/time.";
-    msg.style.color = "red";
-    return;
-  }
-
-  localStorage.setItem("drawingTime", newDate.toISOString());
-  msg.textContent = "Timer updated successfully!";
-  msg.style.color = "green";
-
-  updateCountdownDisplay(newDate);
-});
-
-// End timer button
-document.getElementById("end-timer-btn").addEventListener("click", () => {
-  localStorage.removeItem("drawingTime");
-
-  const countdownEl = document.getElementById("countdown");
-  if (countdownEl) countdownEl.textContent = "Drawing has ended.";
-
-  setButtonEnabled(false);
-
-  if (countdownInterval) clearInterval(countdownInterval);
-
-  const msg = document.getElementById("admin-message");
-  msg.textContent = "Timer manually ended.";
-  msg.style.color = "green";
-});
+  // Disable enter button while countdown active
+  enterButton.textContent = "Not Available";
+  enterButton.clas
