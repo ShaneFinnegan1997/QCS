@@ -1,5 +1,5 @@
 // ----------- CONFIGURATION -----------------
-const ADMIN_PASSCODE = "hello"; // Change this!
+const ADMIN_PASSCODE = ""; // Change this!
 const ENTRY_FORM_LINK = "https://yourformlink.com"; // Your actual entry link here
 // -------------------------------------------
 
@@ -38,7 +38,6 @@ function formatDateInput(date) {
 
 // Update countdown display & button state
 function updateCountdown(targetDate) {
-  if (!countdownEl || !enterButton) return; // If no elements, skip [T0](1)
 
   const now = new Date().getTime();
   const distance = targetDate - now;
