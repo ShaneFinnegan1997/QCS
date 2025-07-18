@@ -30,7 +30,7 @@ header {
   position: fixed; /* Fix the header position */
   top: 0;
   left: 0;
-  z-index: 100 !important; /* Ensure it's above other content */
+  z-index: 0 !important; /* Ensure it's above other content */
 }
 
 header h1 {
