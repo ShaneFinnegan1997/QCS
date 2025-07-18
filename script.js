@@ -1,5 +1,5 @@
 // ----------- CONFIGURATION -----------------
-const ADMIN_PASSCODE = "shane"; // Change this!
+const ADMIN_PASSCODE = "hello"; // Change this!
 const ENTRY_FORM_LINK = "https://yourformlink.com"; // Your actual entry link here
 // -------------------------------------------
 
@@ -38,7 +38,7 @@ function formatDateInput(date) {
 
 // Update countdown display & button state
 function updateCountdown(targetDate) {
-  if (!countdownEl || !enterButton) return; // If no elements, skip
+  if (!countdownEl || !enterButton) return; // If no elements, skip [T0](1)
 
   const now = new Date().getTime();
   const distance = targetDate - now;
@@ -64,4 +64,32 @@ function updateCountdown(targetDate) {
 
   // Disable enter button while countdown active
   enterButton.textContent = "Not Available";
-  enterButton.clas
+  enterButton.classList.add("disabled");
+  enterButton.setAttribute("aria-disabled", "true");
+  enterButton.style.pointerEvents = "none";
+  enterButton.style.backgroundColor = ""; // Reset
+  enterButton.href = "#";
+  enterButton.tabIndex = -1;
+}
+
+// Admin Login Form Handling
+if (adminLoginForm) {
+    adminSection.classList.add("hidden"); // Hide admin section by default
+    adminLoginForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        const enteredPasscode = adminPasscodeInput.value;
+
+        if (enteredPasscode === ADMIN_PASSCODE) {
+            // Successful login
+            loginMessage.textContent = "Login successful!";
+            adminSection.classList.remove("hidden"); // Show the admin section
+        } else {
+            // Failed login
+            loginMessage.textContent = "Incorrect passcode. Please try again.";
+            adminSection.classList.add("hidden"); // Ensure admin section is hidden
+        }
+
+        adminPasscodeInput.value = ""; // Clear the input
+    });
+}
+
