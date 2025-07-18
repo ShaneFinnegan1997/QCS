@@ -52,86 +52,8 @@ function updateCountdown(targetDate) {
   const now = new Date().getTime();
   const distance = targetDate - now;
 
+  console.log("Updating countdown for:", new Date(targetDate));
+
   if (distance <= 0) {
     countdownEl.textContent = "The drawing is happening now!";
-    enterButton.textContent = "Enter Now";
-    enterButton.classList.remove("disabled");
-    enterButton.removeAttribute("aria-disabled");
-    enterButton.style.pointerEvents = "auto";
-    enterButton.href = "https://yourformlink.com";  // Keep your actual entry link here
-    enterButton.tabIndex = 0;
-    return;
-  }
-
-  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  const hrs = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  const secs = Math.floor((distance % (1000 * 60)) / 1000);
-
-  countdownEl.textContent = `${days}d ${hrs}h ${mins}m ${secs}s`;
-
-  // Disable enter button if countdown is active
-  enterButton.textContent = "Not Available";
-  enterButton.classList.add("disabled");
-  enterButton.setAttribute("aria-disabled", "true");
-  enterButton.style.pointerEvents = "none";
-  enterButton.href = "javascript:void(0)";
-  enterButton.tabIndex = -1;
-}
-
-// Listen for changes in Firebase realtime database
-db.ref("countdownTarget").on("value", (snapshot) => {
-  const timestamp = snapshot.val();
-  if (timestamp) {
-    countdownTarget = new Date(timestamp);
-    newDatetimeInput.value = formatDateInput(countdownTarget);
-  } else {
-    // Default to 1 week from now if no value set
-    countdownTarget = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    newDatetimeInput.value = formatDateInput(countdownTarget);
-  }
-});
-
-// Update countdown every second
-setInterval(() => {
-  if (countdownTarget) {
-    updateCountdown(countdownTarget.getTime());
-  }
-}, 1000);
-
-// Admin login form handler
-adminLoginForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const enteredPass = adminPasscodeInput.value.trim();
-  if (enteredPass === ADMIN_PASSCODE) {
-    loginMessage.textContent = "Access granted!";
-    loginMessage.style.color = "green";
-    adminSection.classList.remove("hidden");
-    adminLoginForm.classList.add("hidden");
-  } else {
-    loginMessage.textContent = "Incorrect passcode.";
-    loginMessage.style.color = "red";
-  }
-});
-
-// Update timer button handler
-updateTimerBtn.addEventListener("click", () => {
-  const newDatetime = newDatetimeInput.value;
-  if (!newDatetime) {
-    adminMessage.textContent = "Please select a valid date and time.";
-    adminMessage.style.color = "red";
-    return;
-  }
-  const newTimestamp = new Date(newDatetime).getTime();
-  db.ref("countdownTarget")
-    .set(newTimestamp)
-    .then(() => {
-      adminMessage.textContent = "Countdown updated successfully!";
-      adminMessage.style.color = "green";
-    })
-    .catch((error) => {
-      adminMessage.textContent = "Error updating countdown.";
-      adminMessage.style.color = "red";
-      console.error(error);
-    });
-});
+    enterButton.textCo
