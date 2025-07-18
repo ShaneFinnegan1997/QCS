@@ -1,5 +1,5 @@
 // ----------- CONFIGURATION -----------------
-const ADMIN_PASSCODE = "YourSecretPass123"; // Change this!
+const ADMIN_PASSCODE = ""; // Change this!
 const ENTRY_FORM_LINK = "https://yourformlink.com"; // Your actual entry link here
 // -------------------------------------------
 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <main>
+    <p>Email: support@qcsweepstakes.com</p>
+    <p>Facebook: <a href="https://facebook.com/qcsweepstakes" target="_blank" rel="noopener noreferrer">QC Sweepstakes</a></p>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script>
+    async function loadHTML(selector, url) {
+      const response = await fetch(url);
+      if (response.ok) {
+        const html = await response.text();
+        document.querySelector(selector).innerHTML = html;
+      } else {
+        console.error("Failed to load", url);
+      }
+    }
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
+</body>
+</html>
