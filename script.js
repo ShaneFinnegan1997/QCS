@@ -38,6 +38,7 @@ function formatDateInput(date) {
 
 // Update countdown display & button state
 function updateCountdown(targetDate) {
+  if (!countdownEl || !enterButton) return; // If no elements, skip
 
   const now = new Date().getTime();
   const distance = targetDate - now;
@@ -91,4 +92,3 @@ if (adminLoginForm) {
         adminPasscodeInput.value = ""; // Clear the input
     });
 }
-
