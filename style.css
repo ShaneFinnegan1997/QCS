@@ -182,7 +182,8 @@ footer {
   width: 100%;
   top: 0;
   left: 0;
-  z-index: 0 !important; /* Ensure it's above other content */
-  position: fixed;
+  bottom: 100;
+  z-index: 100 !important; /* Ensure it's above other content */
+  position: bottom;
   padding: 1rem 0;
 }
