@@ -32,38 +32,13 @@
         Enter for free or show support with paid entries. A portion of proceeds helps local non-profits.
       </p>
     </section>
-
-    <section id="admin-section" class="hidden">
-      <h2>Admin Panel</h2>
-
-      <label for="new-datetime">Set New Drawing Time:</label>
-      <input type="datetime-local" id="new-datetime" />
-
-      <button id="update-timer-btn">Update Timer</button>
-      <button id="end-timer-btn">End Timer Now</button>
-
-      <p id="admin-message"></p>
-    </section>
   </main>
 
   <div id="footer-container"></div>
 
-  <footer>
-    <section id="admin-login-section">
-      <form id="admin-login-form" autocomplete="off">
-        <label for="admin-passcode">Admin Passcode:</label>
-        <input type="password" id="admin-passcode" />
-        <button type="submit">Login</button>
-        <span id="login-message" role="alert" aria-live="assertive"></span>
-      </form>
-      <p>&copy; 2025 Quad Cities Sweepstakes</p>
-    </section>
-  </footer>
-
   <script src="script.js"></script>
 
   <script>
-    // Load header and footer content dynamically
     async function loadHTML(selector, url) {
       try {
         const response = await fetch(url);

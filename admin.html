@@ -2,31 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Login - Quad Cities Sweepstakes</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Admin Login</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="rules.html">Rules</a>
-      <a href="contact.html">Contact</a>
-      <a href="admin.html">Admin</a>
-    </nav>
-  </header>
+
+  <div id="header-container"></div>
 
   <main>
-    <form>
-      <label for="passcode">Enter Admin Passcode:</label><br />
-      <input type="password" id="passcode" /><br />
-      <button type="submit">Submit</button>
-    </form>
-    <p><em>This is a front-end placeholder. Backend validation is not available on GitHub Pages.</em></p>
+    <section id="admin-login-section">
+      <form id="admin-login-form" autocomplete="off">
+        <label for="admin-passcode">Admin Passcode:</label>
+        <input type="password" id="admin-passcode" />
+        <button type="submit">Login</button>
+        <span id="login-message" role="alert" aria-live="assertive"></span>
+      </form>
+    </section>
+
+    <section id="admin-section" class="hidden">
+      <h2>Admin Panel</h2>
+
+      <label for="new-datetime">Set New Drawing Time:</label>
+      <input type="datetime-local" id="new-datetime" />
+
+      <button id="update-timer-btn">Update Timer</button>
+      <button id="end-timer-btn">End Timer Now</button>
+
+      <p id="admin-message"></p>
+    </section>
   </main>
 
-  <footer>
-    <p>&copy; 2025 Quad Cities Sweepstakes</p>
-  </footer>
+  <div id="footer-container"></div>
+
+  <script src="script.js"></script>
+
+  <script>
+    async function loadHTML(selector, url) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          document.querySelector(selector).innerHTML = html;
+        } else {
+          console.error("Failed to load", url);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+
+    // Admin login form handler and admin panel show/hide logic is inside your script.js
+  </script>
+
 </body>
 </html>
