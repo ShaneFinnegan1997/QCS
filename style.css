@@ -9,6 +9,7 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   color: #333;
+  padding-top: 80px; /* Add this line */
 }
 
 main {
@@ -25,11 +26,7 @@ header {
   padding: 1rem 0;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  width: 100%;
-  position: fixed; /* Add this */
-  top: 0;           /* Add this */
-  left: 0;          /* Add this */
-  z-index: 100;     /* Add this */
+  width: 100%; /* Ensure full width */ [T0](1)
 }
 
 header h1 {
