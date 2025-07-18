@@ -42,7 +42,7 @@ function formatDateInput(date) {
 }
 
 // Update countdown display & button state
-function updateCountdown() {
+function updateCountdown() { // Removed targetDate parameter
     if (!countdownEl || !enterButton) return; // If no elements, skip
 
     if (!countdownTarget) {
