@@ -1,189 +1,29 @@
-/* General body styles */
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
-  margin: 5; /* Remove default body margins */
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
-  padding-top: 200px !important; /* Add this line */
-}
+/* Reset and base styles */
 
-main {
-  width: 100%;
-  max-width: 800px;
-  padding: 20px;
-  box-sizing: border-box;
-}
+{ box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Header styles */
-header {
-  background-color: #28a745;
-  color: white;
-  padding: 1rem 0;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  width: 100%; /* Ensure full width */
-  position: fixed; /* Fix the header position */
-  top: 0;
-  left: 0;
-  z-index: 0 !important; /* Ensure it's above other content */
-}
 
-header h1 {
-  font-weight: 700;
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  letter-spacing: 1px;
-}
+body { font-family: Arial, sans-serif; line-height: 1.6; background-color: #f4f4f4; color: #333; min-height: 100vh; display: flex; flex-direction: column; }
 
-header nav {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
+main { flex: 1; padding: 20px; }
 
-header nav a {
-  color: white;
-  text-decoration: none;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
+/* Header Styles */ header { background: linear-gradient(to right, #00c853, #4caf50); color: white; padding: 20px; text-align: center; position: relative; z-index: 1; }
 
-header nav a:hover,
-header nav a[aria-current="page"] {
-  background-color: #218838;
-}
+header h1 { margin-bottom: 5px; font-size: 2em; }
 
-/* General button styles */
-.btn {
-  cursor: pointer;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.75rem 2rem;
-  font-size: 1.5rem;
-  display: inline-block;
-  transition: background-color 0.3s ease;
-  text-decoration: none;
-}
+header p { font-style: italic; font-size: 1em; color: #f0f0f0; }
 
-/* Disabled button styles */
-.btn.disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
+nav { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 15px; gap: 20px; }
 
-/* Admin login section styles */
-#admin-login-section {
-  margin-bottom: 20px;
-  text-align: center;
-}
+nav a { color: white; text-decoration: none; font-weight: bold; padding: 8px 12px; transition: background 0.3s; }
 
-#admin-login-section label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
+nav a:hover { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
 
-#admin-login-section input[type="password"] {
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  margin-bottom: 1rem;
-  width: 200px;
-}
+/* Footer Styles */ footer { background: linear-gradient(to right, #00c853, #4caf50); color: white; text-align: center; padding: 15px 10px; font-size: 0.9em; margin-top: auto; }
 
-#admin-login-section button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
+/* Responsive Text and Layout */ @media (max-width: 600px) { header h1 { font-size: 1.5em; }
 
-#admin-login-section button:hover {
-  background-color: #0056b3;
-}
+nav { gap: 10px; font-size: 0.9em; }
 
-#login-message {
-  display: block;
-  margin-top: 10px;
-  color: red;
-}
+footer { font-size: 0.8em; padding: 12px 8px; } }
 
-/* Admin section styles */
-#admin-section {
-  text-align: center;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-#admin-section h2 {
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-#admin-section label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-#admin-section input[type="datetime-local"] {
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  margin-bottom: 1rem;
-}
-
-#admin-section button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 0.5rem;
-}
-
-#admin-section button:hover {
-  background-color: #0056b3;
-}
-
-#admin-message {
-  margin-top: 1rem;
-  font-weight: bold;
-}
-
-/* Utility class to hide elements */
-.hidden {
-  display: none;
-}
-
-/* Footer styles (example) */
-footer {
-  text-align: center;
-  margin-bottom: 1rem;
-  background: linear-gradient(to left, #28a745, #f0f0f0); /* Green to light gray fade */
-  color: white; /* Ensure text is readable */
-  width: 100%;
-  top: 0;
-  left: 0;
-  bottom: 100;
-  z-index: 100 !important; /* Ensure it's above other content */
-  position: bottom;
-  padding: 1rem 0;
-}

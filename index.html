@@ -2,45 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quad Cities Sweepstakes</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-
   <div id="header-container"></div>
 
-<center>
   <main>
-    <section class="intro">
-      <p>
-        Enter our local Quad Cities Sweepstakes for your chance to win exciting prizes! Join now and help support our community.
-      </p>
-    </section>
-<br /><br />
-    <section id="enter-section">
-      <div id="countdown" aria-live="polite" aria-atomic="true">Loading...</div>
-
-      <a href="https://yourformlink.com" id="enter-button" class="btn disabled" target="_blank" rel="noopener noreferrer" aria-disabled="true">
-        Not Available
-      </a>
-    </section>
-</center>
-    <section class="info">
-      <h3>About This Sweepstakes</h3>
-      <p>
-        Our sweepstakes is designed to bring the Quad Cities community together through fun and giving.
-        Enter for free or show support with paid entries. A portion of proceeds helps local non-profits.
-      </p>
+    <section class="countdown-section">
+      <h1>Next Drawing In:</h1>
+      <p id="countdown">Loading...</p>
+      <button id="enter-button" class="disabled" disabled>Loading...</button>
     </section>
   </main>
 
   <div id="footer-container"></div>
 
   <script src="script.js"></script>
-
   <script>
+    // Load reusable header and footer
     async function loadHTML(selector, url) {
       try {
         const response = await fetch(url);
@@ -54,9 +35,9 @@
         console.error(e);
       }
     }
+
     loadHTML("#header-container", "header.html");
     loadHTML("#footer-container", "footer.html");
   </script>
-
 </body>
 </html>
