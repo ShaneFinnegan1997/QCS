@@ -1,4 +1,4 @@
-// ✅ Unified Script for index.html and admin.html
+// Unified Script for index.html and admin.html
 
 // Firebase configuration (only ONE place!)
 const firebaseConfig = {
@@ -18,7 +18,7 @@ const db = firebase.database();
 document.addEventListener("DOMContentLoaded", () => {
     if (window.location.pathname.includes("admin.html")) {
         initAdminPanel();
-        showEventsAdmin();  // Initialize events admin as well
+        showEventsAdmin(); // Initialize events admin as well
     }
 
     updateCountdown();
@@ -148,6 +148,15 @@ function initAdminPanel() {
         }
 
         const utcTime = new Date(time).toISOString();
+
+        // Update firebase
+        firebase.database().ref("/settings").set({
+            countdownTarget: utcTime,
+            entryLink: link
+        }).then(() => {
+            msg.innerText = "Timer and link updated!";
+        })
+
         localStorage.setItem("countdownTarget", utcTime);
         localStorage.setItem("entryLink", link);
         msg.innerText = "Timer and link updated!";
