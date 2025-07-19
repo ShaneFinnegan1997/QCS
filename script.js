@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const newDatetimeInput = document.getElementById("new-datetime");
   const entryLinkInput = document.getElementById("entry-link");
   const adminMessage = document.getElementById("admin-message");
+  const adminLogoutBtn = document.getElementById("admin-logout-btn");
 
   const ADMIN_PASSCODE = "1234";
 
@@ -54,19 +55,28 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(updateCountdown, 1000);
   updateCountdown();
 
-  // Admin-only page logic
+  // Admin logic
+  function showAdminPanel() {
+    adminSection.classList.remove("hidden");
+    adminLoginForm.classList.add("hidden");
+
+    // Pre-fill stored values
+    const savedTarget = localStorage.getItem("countdownTarget");
+    const savedLink = localStorage.getItem("entryLink");
+    if (savedTarget) newDatetimeInput.value = savedTarget;
+    if (savedLink) entryLinkInput.value = savedLink;
+  }
+
+  function hideAdminPanel() {
+    adminSection.classList.add("hidden");
+    adminLoginForm.classList.remove("hidden");
+  }
+
   if (adminLoginForm && adminSection) {
     if (localStorage.getItem("isAdmin") === "true") {
-      adminSection.classList.remove("hidden");
-      adminLoginForm.classList.add("hidden");
-
-      // Pre-fill if already set
-      const savedTarget = localStorage.getItem("countdownTarget");
-      const savedLink = localStorage.getItem("entryLink");
-      if (savedTarget) newDatetimeInput.value = savedTarget;
-      if (savedLink) entryLinkInput.value = savedLink;
+      showAdminPanel();
     } else {
-      adminSection.classList.add("hidden");
+      hideAdminPanel();
     }
 
     adminLoginForm.addEventListener("submit", (e) => {
@@ -74,12 +84,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const entered = adminPasscodeInput.value.trim();
       if (entered === ADMIN_PASSCODE) {
         localStorage.setItem("isAdmin", "true");
-        adminSection.classList.remove("hidden");
-        adminLoginForm.classList.add("hidden");
+        showAdminPanel();
         loginMessage.textContent = "";
       } else {
         loginMessage.textContent = "Incorrect passcode.";
       }
+    });
+
+    adminLogoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("isAdmin");
+      hideAdminPanel();
     });
 
     updateTimerBtn.addEventListener("click", () => {
