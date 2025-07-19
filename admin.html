@@ -48,5 +48,20 @@
 
   <div id="footer-container"></div>
   <script type="module" src="script.js"></script>
+
+  <script>
+    async function loadHTML(selector, url) {
+      const response = await fetch(url);
+      if (response.ok) {
+        const html = await response.text();
+        document.querySelector(selector).innerHTML = html;
+      } else {
+        console.error("Failed to load", url);
+      }
+    }
+    loadHTML("#header-container", "header-admin.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
+
 </body>
 </html>
