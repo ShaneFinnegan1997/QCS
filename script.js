@@ -135,17 +135,3 @@ window.deleteEvent = async function (eventId) {
     }
   }
 };
-
-// Load custom header for TOS
-const loadHTML = async (selector, url) => {
-  try {
-    const res = await fetch(url);
-    if (res.ok) {
-      document.querySelector(selector).innerHTML = await res.text();
-    }
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-loadHTML("#header-container", "header-tos.html");
