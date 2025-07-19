@@ -83,10 +83,14 @@ function initAdminPanel() {
     const linkInput = document.getElementById("entry-link");
     const msg = document.getElementById("admin-message");
     const logoutBtn = document.getElementById("admin-logout-btn");
+eventsAdminSection = document.getElementById('events-admin');
+addEventForm = document.getElementById('add-event-form');
+adminEventsList = document.getElementById('admin-events-list');
 
-    const eventsAdminSection = document.getElementById('events-admin');
-    const addEventForm = document.getElementById('add-event-form');
-    const adminEventsList = document.getElementById('admin-events-list');
+let eventsAdminSection = document.getElementById('events-admin');
+let addEventForm = document.getElementById('add-event-form');
+let adminEventsList = document.getElementById('admin-events-list');
+
 
     if (!loginForm || !adminSection) return;
 
