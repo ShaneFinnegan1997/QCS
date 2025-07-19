@@ -1,84 +1,43 @@
-<!-- index.html --><!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QC Sweepstakes</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background: linear-gradient(to right, #f6d365, #fda085);
-    }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-    #countdown {
-      font-size: 2rem;
-      margin: 20px 0;
-    }
-    #enter-button {
-      padding: 15px 30px;
-      font-size: 1rem;
-      background-color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    #enter-button.disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quad Cities Sweepstakes</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>QC Sweepstakes</h1>
-  <div id="countdown">Loading...</div>
-  <button id="enter-button" class="disabled" disabled>Not Available</button>  <script>
-    const countdownElement = document.getElementById("countdown");
-    const enterButton = document.getElementById("enter-button");
+  <div id="header-container"></div>
 
-    function updateCountdown() {
-      const targetTime = localStorage.getItem("countdownTarget");
-      const entryLink = localStorage.getItem("entryLink");
-      const now = new Date().getTime();
+  <main>
+    <section class="countdown-section">
+      <h1>Next Drawing In:</h1>
+      <p id="countdown">Loading...</p>
+      <button id="enter-button" class="disabled" disabled>Loading...</button>
+    </section>
+  </main>
 
-      if (targetTime) {
-        const distance = new Date(targetTime).getTime() - now;
+  <div id="footer-container"></div>
 
-        if (distance > 0) {
-          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-          countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-          enterButton.textContent = "Enter Now";
-          enterButton.disabled = false;
-          enterButton.classList.remove("disabled");
-          if (entryLink) enterButton.onclick = () => window.location.href = entryLink;
+  <script src="script.js"></script>
+  <script>
+    // Load reusable header and footer
+    async function loadHTML(selector, url) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          document.querySelector(selector).innerHTML = html;
         } else {
-          countdownElement.innerHTML = "Drawing Closed";
-          enterButton.textContent = "Not Available";
-          enterButton.disabled = true;
-          enterButton.classList.add("disabled");
-          enterButton.removeAttribute("onclick");
+          console.error("Failed to load", url);
         }
-      } else {
-        countdownElement.innerHTML = "Not Available";
-        enterButton.textContent = "Not Available";
-        enterButton.disabled = true;
-        enterButton.classList.add("disabled");
-        enterButton.removeAttribute("onclick");
+      } catch (e) {
+        console.error(e);
       }
     }
 
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-  </script></body>
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
+</body>
 </html>
