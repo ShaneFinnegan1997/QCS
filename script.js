@@ -1,5 +1,20 @@
 // ✅ Unified Script for index.html and admin.html
 
+// Firebase configuration (only ONE place!)
+const firebaseConfig = {
+  apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+  authDomain: "qcsweeps-4b994.firebaseapp.com",
+  databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+  projectId: "qcsweeps-4b994",
+  storageBucket: "qcsweeps-4b994.firebasestorage.app",
+  messagingSenderId: "810241609281",
+  appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
+  measurementId: "G-XL9VQ985S9"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 document.addEventListener("DOMContentLoaded", () => {
   if (window.location.pathname.includes("admin.html")) {
     initAdminPanel();
@@ -94,7 +109,7 @@ function initAdminPanel() {
   // Login if already authenticated
   if (localStorage.getItem("isAdmin") === "true") {
     showAdminPanel();
-        showEventsAdmin(); // CALL SHOWEVENTSADMIN HERE
+    showEventsAdmin();
   } else {
     hideAdminPanel();
   }
@@ -107,7 +122,7 @@ function initAdminPanel() {
     if (hash === ADMIN_PASSCODE_HASH) {
       localStorage.setItem("isAdmin", "true");
       showAdminPanel();
-      showEventsAdmin(); // AND CALL SHOWEVENTSADMIN HERE!
+      showEventsAdmin();
       loginMsg.innerText = "";
     } else {
       loginMsg.innerText = "Incorrect passcode.";
