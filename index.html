@@ -1,63 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- index.html --><!DOCTYPE html><html lang="en">
 <head>
-
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quad Cities Sweepstakes</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QC Sweepstakes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(to right, #f6d365, #fda085);
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    #countdown {
+      font-size: 2rem;
+      margin: 20px 0;
+    }
+    #enter-button {
+      padding: 15px 30px;
+      font-size: 1rem;
+      background-color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #enter-button.disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
-
 <body>
+  <h1>QC Sweepstakes</h1>
+  <div id="countdown">Loading...</div>
+  <button id="enter-button" class="disabled" disabled>Not Available</button>  <script>
+    const countdownElement = document.getElementById("countdown");
+    const enterButton = document.getElementById("enter-button");
 
-  <div id="header-container"></div>
+    function updateCountdown() {
+      const targetTime = localStorage.getItem("countdownTarget");
+      const entryLink = localStorage.getItem("entryLink");
+      const now = new Date().getTime();
 
-<center>
-  <main>
-    <section class="intro">
-      <p>
-        Enter our local Quad Cities Sweepstakes for your chance to win a cash prize! 00% goes to the winner, 00% to non-profits, and the rest to help run the website!
-      </p>
-    </section>
-<br /><br />
-    <section id="enter-section">
-      <div id="countdown" aria-live="polite" aria-atomic="true">Loading...</div>
+      if (targetTime) {
+        const distance = new Date(targetTime).getTime() - now;
 
-      <a href="https://yourformlink.com" id="enter-button" class="btn disabled" target="_blank" rel="noopener noreferrer" aria-disabled="true">
-        Not Available
-      </a>
-    </section>
-</center>
-    <section class="info">
-      <h3>info here</h3>
-      <p>
-        Under Construction
-      </p>
-    </section>
-  </main>
+        if (distance > 0) {
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-  <div id="footer-container"></div>
-
-  <script src="script.js"></script>
-
-  <script>
-    async function loadHTML(selector, url) {
-      try {
-        const response = await fetch(url);
-        if (response.ok) {
-          const html = await response.text();
-          document.querySelector(selector).innerHTML = html;
+          countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+          enterButton.textContent = "Enter Now";
+          enterButton.disabled = false;
+          enterButton.classList.remove("disabled");
+          if (entryLink) enterButton.onclick = () => window.location.href = entryLink;
         } else {
-          console.error("Failed to load", url);
+          countdownElement.innerHTML = "Drawing Closed";
+          enterButton.textContent = "Not Available";
+          enterButton.disabled = true;
+          enterButton.classList.add("disabled");
+          enterButton.removeAttribute("onclick");
         }
-      } catch (e) {
-        console.error(e);
+      } else {
+        countdownElement.innerHTML = "Not Available";
+        enterButton.textContent = "Not Available";
+        enterButton.disabled = true;
+        enterButton.classList.add("disabled");
+        enterButton.removeAttribute("onclick");
       }
     }
-    loadHTML("#header-container", "header.html");
-    loadHTML("#footer-container", "footer.html");
-  </script>
 
-</body>
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script></body>
 </html>
