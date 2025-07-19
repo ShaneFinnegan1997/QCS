@@ -71,6 +71,10 @@ function updateCountdown() {
 }
 
 // 🛠 Admin Panel Logic for admin.html
+let eventsAdminSection = document.getElementById('events-admin');
+let addEventForm = document.getElementById('add-event-form');
+let adminEventsList = document.getElementById('admin-events-list');
+
 function initAdminPanel() {
     const loginForm = document.getElementById("admin-login-form");
     const passInput = document.getElementById("admin-passcode");
@@ -83,13 +87,6 @@ function initAdminPanel() {
     const linkInput = document.getElementById("entry-link");
     const msg = document.getElementById("admin-message");
     const logoutBtn = document.getElementById("admin-logout-btn");
-eventsAdminSection = document.getElementById('events-admin');
-addEventForm = document.getElementById('add-event-form');
-adminEventsList = document.getElementById('admin-events-list');
-
-let eventsAdminSection = document.getElementById('events-admin');
-let addEventForm = document.getElementById('add-event-form');
-let adminEventsList = document.getElementById('admin-events-list');
 
 
     if (!loginForm || !adminSection) return;
@@ -98,6 +95,7 @@ let adminEventsList = document.getElementById('admin-events-list');
     function showAdminPanel() {
         loginForm.classList.add("hidden");
         adminSection.classList.remove("hidden");
+        eventsAdminSection.classList.remove('hidden'); // <--- force it to render.
 
         const savedTime = localStorage.getItem("countdownTarget");
         const savedLink = localStorage.getItem("entryLink");
@@ -112,6 +110,7 @@ let adminEventsList = document.getElementById('admin-events-list');
     function hideAdminPanel() {
         loginForm.classList.remove("hidden");
         adminSection.classList.add("hidden");
+        eventsAdminSection.classList.add('hidden'); // <--- force it to hide.
     }
 
     // Login if already authenticated
@@ -171,65 +170,6 @@ let adminEventsList = document.getElementById('admin-events-list');
         localStorage.removeItem("entryLink");
         msg.innerText = "Timer ended.";
     });
-
-        // Events Admin Section
-    const eventsRef = db.ref('events'); // Make sure this is defined *after* Firebase init
-
-    function showEventsAdmin() {
-        eventsAdminSection.classList.remove('hidden');
-        console.log("Setting up Firebase listener for events...");
-        // Load admin events
-        eventsRef.on('value', snapshot => {
-            adminEventsList.innerHTML = '';
-            const events = snapshot.val();
-            if (!events) {
-                adminEventsList.innerHTML = '<li>No events yet.</li>';
-                return;
-            }
-            // Sort by date descending
-            const arr = Object.entries(events)
-                .map(([id, data]) => ({
-                    id,
-                    ...data
-                }))
-                .sort((a, b) => b.timestamp - a.timestamp);
-            arr.forEach(event => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <strong>\${event.title}</strong> <br>
-                    <span>\${event.message}</span> <br>
-                    <small>\${new Date(event.timestamp).toLocaleString()}</small>
-                    <button data-id="\${event.id}">Delete</button>
-                `;
-                adminEventsList.appendChild(li);
-                // Add delete handler
-                li.querySelector('button').onclick = () => {
-                    if (confirm("Delete this event?")) {
-                        eventsRef.child(event.id).remove();
-                    }
-                };
-            });
-        });
-    }
-
-    // Add new event
-    addEventForm.onsubmit = function (e) {
-        e.preventDefault();
-        const title = document.getElementById('event-title').value.trim();
-        const message = document.getElementById('event-message').value.trim();
-        if (!title || !message) return;
-        const newEventRef = eventsRef.push();
-        newEventRef.set({
-            title,
-            message,
-            timestamp: Date.now()
-        }).then(() => {
-            console.log("Event saved to Firebase!", title, message);
-            addEventForm.reset();
-        }).catch(error => {
-            console.error("Error saving event:", error);
-        });
-    };
 }
 
 // 🔐 Hash function for passcode
@@ -241,3 +181,61 @@ async function hashText(text) {
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
 }
+
+function showEventsAdmin() {
+    console.log("Setting up Firebase listener for events...");
+    // Load admin events
+    const eventsRef = db.ref('events'); // Make sure this is defined *after* Firebase init
+
+    eventsRef.on('value', snapshot => {
+        adminEventsList.innerHTML = '';
+        const events = snapshot.val();
+        if (!events) {
+            adminEventsList.innerHTML = '<li>No events yet.</li>';
+            return;
+        }
+        // Sort by date descending
+        const arr = Object.entries(events)
+            .map(([id, data]) => ({
+                id,
+                ...data
+            }))
+            .sort((a, b) => b.timestamp - a.timestamp);
+        arr.forEach(event => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>\${event.title}</strong> <br>
+                <span>\${event.message}</span> <br>
+                <small>\${new Date(event.timestamp).toLocaleString()}</small>
+                <button data-id="\${event.id}">Delete</button>
+            `;
+            adminEventsList.appendChild(li);
+            // Add delete handler
+            li.querySelector('button').onclick = () => {
+                if (confirm("Delete this event?")) {
+                    eventsRef.child(event.id).remove();
+                }
+            };
+        });
+    });
+}
+
+// Add new event
+addEventForm.onsubmit = function (e) {
+    e.preventDefault();
+    const title = document.getElementById('event-title').value.trim();
+    const message = document.getElementById('event-message').value.trim();
+    if (!title || !message) return;
+    const eventsRef = db.ref('events'); // Make sure this is defined *after* Firebase init
+    const newEventRef = eventsRef.push();
+    newEventRef.set({
+        title,
+        message,
+        timestamp: Date.now()
+    }).then(() => {
+        console.log("Event saved to Firebase!", title, message);
+        addEventForm.reset();
+    }).catch(error => {
+        console.error("Error saving event:", error);
+    });
+};
