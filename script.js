@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 🔐 Hashed passcode (do NOT store plain passcode)
 // Original passcode: "1234"
-const ADMIN_PASSCODE_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"; // SHA-256 of "1234"
+const ADMIN_PASSCODE_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"; // SHA-256 of "1234" [T0](1)
 
 // ⏱ Countdown Logic for index.html
 function updateCountdown() {
@@ -95,7 +95,7 @@ function initAdminPanel() {
     function showAdminPanel() {
         loginForm.classList.add("hidden");
         adminSection.classList.remove("hidden");
-        eventsAdminSection.classList.remove('hidden'); // <--- force it to render.
+        eventsAdminSection.classList.remove('hidden'); // <--- force it to render. [T2](2)
 
         const savedTime = localStorage.getItem("countdownTarget");
         const savedLink = localStorage.getItem("entryLink");
@@ -110,7 +110,7 @@ function initAdminPanel() {
     function hideAdminPanel() {
         loginForm.classList.remove("hidden");
         adminSection.classList.add("hidden");
-        eventsAdminSection.classList.add('hidden'); // <--- force it to hide.
+        eventsAdminSection.classList.add('hidden'); // <--- force it to hide. [T2](2)
     }
 
     // Login if already authenticated
@@ -185,7 +185,7 @@ async function hashText(text) {
 function showEventsAdmin() {
     console.log("Setting up Firebase listener for events...");
     // Load admin events
-    const eventsRef = db.ref('events'); // Make sure this is defined *after* Firebase init
+    const eventsRef = db.ref('events'); // Make sure this is defined *after* Firebase init [T4](3)
 
     eventsRef.on('value', snapshot => {
         adminEventsList.innerHTML = '';
@@ -226,7 +226,7 @@ addEventForm.onsubmit = function (e) {
     const title = document.getElementById('event-title').value.trim();
     const message = document.getElementById('event-message').value.trim();
     if (!title || !message) return;
-    const eventsRef = db.ref('events'); // Make sure this is defined *after* Firebase init
+    const eventsRef = db.ref('events'); // Make sure this is defined *after* Firebase init [T5](4)
     const newEventRef = eventsRef.push();
     newEventRef.set({
         title,
