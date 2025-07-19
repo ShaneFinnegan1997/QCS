@@ -8,6 +8,7 @@ const db = firebase.database();
 const eventsRef = db.ref('events');
 
 function showEventsAdmin() {
+    console.log("showEventsAdmin() called!");  // <== ADD THIS LINE
   eventsAdminSection.classList.remove('hidden');
   // Load admin events
   eventsRef.on('value', snapshot => {
