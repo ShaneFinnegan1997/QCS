@@ -15,45 +15,44 @@ const ADMIN_PASSCODE_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e1
 
 // ⏱ Countdown Logic for index.html
 function updateCountdown() {
-  const countdownEl = document.getElementById("countdown");
+  const countdownElement = document.getElementById("countdown");
   const enterButton = document.getElementById("enter-button");
-  const rawTarget = localStorage.getItem("countdownTarget");
-  const entryLink = localStorage.getItem("entryLink");
 
-  if (!countdownEl || !enterButton) return;
+  if (!countdownElement || !enterButton) return;
 
-  if (!rawTarget) {
-    countdownEl.innerText = "No events currently scheduled.";
-    enterButton.disabled = true;
-    enterButton.textContent = "Not Available";
-    enterButton.classList.add("disabled");
-    return;
-  }
-
-  const now = Date.now();
-  const targetTime = new Date(rawTarget).getTime();
-  const distance = targetTime - now;
-
-  if (distance > 0) {
-    const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const s = Math.floor((distance % (1000 * 60)) / 1000);
-    countdownEl.innerText = `${d}d ${h}h ${m}m ${s}s`;
-
-    enterButton.disabled = false;
-    enterButton.textContent = "Enter Now";
-    enterButton.classList.remove("disabled");
-    if (entryLink) {
-      enterButton.onclick = () => (window.location.href = entryLink);
+  firebase.database().ref("/settings").on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (!data) {
+      countdownElement.innerHTML = "No events currently scheduled.";
+      enterButton.textContent = "Not Available";
+      enterButton.disabled = true;
+      return;
     }
-  } else {
-    countdownEl.innerText = "Drawing Closed";
-    enterButton.disabled = true;
-    enterButton.textContent = "Not Available";
-    enterButton.classList.add("disabled");
-    enterButton.removeAttribute("onclick");
-  }
+
+    const targetTime = new Date(data.countdownTarget).getTime();
+    const entryLink = data.entryLink;
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetTime - now;
+
+      if (distance > 0) {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        enterButton.textContent = "Enter Now";
+        enterButton.disabled = false;
+        enterButton.classList.remove("disabled");
+        enterButton.onclick = () => window.location.href = entryLink;
+      } else {
+        countdownElement.innerHTML = "Drawing Closed";
+        enterButton.textContent = "Not Available";
+        enterButton.disabled = true;
+        clearInterval(interval);
+      }
+    }, 1000);
+  });
 }
 
 // 🛠 Admin Panel Logic for admin.html

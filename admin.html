@@ -60,5 +60,123 @@
 
   <!-- ✅ Include script.js here -->
   <script src="script.js"></script>
+
+<!-- Firebase App (core SDK) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<!-- Firebase Realtime Database -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+  // TODO: Replace the below with your Firebase config from the console
+ const firebaseConfig = {
+  apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+  authDomain: "qcsweeps-4b994.firebaseapp.com",
+  databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+  projectId: "qcsweeps-4b994",
+  storageBucket: "qcsweeps-4b994.firebasestorage.app",
+  messagingSenderId: "810241609281",
+  appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
+  measurementId: "G-XL9VQ985S9"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
 </body>
 </html>
+<script type="module">
+  // Firebase setup
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const ADMIN_PASSCODE = "1234";
+
+  const loginForm = document.getElementById("admin-login-form");
+  const passInput = document.getElementById("admin-passcode");
+  const loginMsg = document.getElementById("login-message");
+  const adminSection = document.getElementById("admin-section");
+
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = passInput.value.trim();
+    if (input === ADMIN_PASSCODE) {
+      sessionStorage.setItem("isAdmin", "true");
+      initAdminPanel();
+    } else {
+      loginMsg.innerText = "Incorrect passcode.";
+    }
+  });
+
+  function initAdminPanel() {
+    loginForm.classList.add("hidden");
+    adminSection.classList.remove("hidden");
+
+    const newTimeInput = document.getElementById("new-datetime");
+    const entryLinkInput = document.getElementById("entry-link");
+    const updateBtn = document.getElementById("update-timer-btn");
+    const endBtn = document.getElementById("end-timer-btn");
+    const logoutBtn = document.getElementById("admin-logout-btn");
+    const msg = document.getElementById("admin-message");
+
+    // Load existing data
+    get(child(ref(db), "countdown")).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        if (data.targetTime) newTimeInput.value = data.targetTime;
+        if (data.entryLink) entryLinkInput.value = data.entryLink;
+      }
+    });
+
+    // Update button
+    updateBtn.addEventListener("click", () => {
+      const newTime = newTimeInput.value;
+      const link = entryLinkInput.value;
+
+      if (newTime && link) {
+        set(ref(db, "countdown"), {
+          targetTime: newTime,
+          entryLink: link
+        }).then(() => {
+          msg.innerText = "Countdown and link updated!";
+        });
+      } else {
+        msg.innerText = "Please fill both fields.";
+      }
+    });
+
+    // End timer button
+    endBtn.addEventListener("click", () => {
+      set(ref(db, "countdown"), {
+        targetTime: null,
+        entryLink: null
+      }).then(() => {
+        msg.innerText = "Timer ended.";
+      });
+    });
+
+    // Logout
+    logoutBtn.addEventListener("click", () => {
+      sessionStorage.removeItem("isAdmin");
+      window.location.href = "index.html";
+    });
+  }
+
+  // Auto login if session storage has admin flag
+  if (sessionStorage.getItem("isAdmin") === "true") {
+    initAdminPanel();
+  }
+</script>
