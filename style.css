@@ -208,16 +208,14 @@ header nav a[aria-current="page"] {
   display: none;
 }
 
-/* Footer styles */
 footer {
-  text-align: center;
-  margin-top: auto;
-  background: linear-gradient(to left, #28a745, #f0f0f0);
+  background-color: #28a745;
   color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
   width: 100%;
-  padding: 1rem 0;
-  position: relative;
-  bottom: 0;
+  margin-top: 2rem;
 }
 
 /* RESPONSIVE: Mobile Styles */
