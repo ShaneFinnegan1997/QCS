@@ -26,38 +26,30 @@ header {
   color: white;
   padding: 1rem;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10;
 }
 
 header h1 {
+  margin: 0;
   font-size: 1.8rem;
-  margin: 0.2rem 0;
 }
 
 header nav {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
 header nav a {
   color: white;
   text-decoration: none;
-  padding: 0.4rem 0.75rem;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-  font-weight: 600;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  transition: background 0.3s ease;
+  border-radius: 5px;
 }
 
-header nav a:hover,
-header nav a[aria-current="page"] {
+header nav a:hover {
   background-color: #218838;
 }
 
