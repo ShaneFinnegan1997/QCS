@@ -81,8 +81,9 @@ if (updateBtn) {
 const logBtn = document.getElementById("log-event");
 if (logBtn) {
   logBtn.addEventListener("click", async () => {
-    const title = document.getElementById("event-title").value.trim();
-    const desc = document.getElementById("event-description").value.trim();
+  const title = document.getElementById("event-title").value.trim();
+  const link = document.getElementById("event-link").value.trim();
+  const desc = document.getElementById("event-description").value.trim();
     if (!title || !desc) return alert("Title and description required.");
     await push(ref(db, "events"), {
       title,
