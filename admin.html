@@ -7,27 +7,37 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Admin Panel</h1>
-  <div id="login-section">
-    <label for="admin-passcode">Enter Admin Passcode:</label>
-    <input type="password" id="admin-passcode" />
-    <button onclick="checkPasscode()">Login</button>
-    <p id="login-error" style="color: red;"></p>
-  </div>
+  <div id="header-container"></div>
 
-  <div id="admin-controls" style="display: none;">
-    <label for="new-datetime">New Drawing Date & Time:</label>
-    <input type="datetime-local" id="new-datetime" />
+  <main>
+    <center>
+      <section id="login-form">
+        <h2>Admin Login</h2>
+        <input type="password" id="admin-passcode" placeholder="Enter Admin Passcode">
+        <button id="login-btn">Login</button>
+      </section>
 
-    <label for="entry-link">Entry Link:</label>
-    <input type="url" id="entry-link" />
+      <section id="admin-panel" class="hidden">
+        <h2>Update Countdown</h2>
+        <input type="datetime-local" id="target-time">
+        <input type="url" id="entry-link" placeholder="Entry Link URL">
+        <button id="update-countdown">Update Countdown</button>
 
-    <button onclick="updateCountdown()">Update Countdown</button>
-  </div>
+        <h2>Log Event</h2>
+        <input type="text" id="event-title" placeholder="Event Title">
+        <textarea id="event-description" placeholder="Event Description"></textarea>
+        <button id="log-event">Submit Event</button>
+      </section>
+    </center>
+  </main>
 
-  <!-- Firebase Scripts -->
+  <div id="footer-container"></div>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <script src="script.js"></script>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
+
