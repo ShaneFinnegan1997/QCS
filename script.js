@@ -30,7 +30,7 @@ function updateCountdown() {
         enterButton.removeAttribute("onclick");
       }
     } else {
-      countdownElement.innerHTML = "Not Available";
+      countdownElement.innerHTML = "No events currently scheduled.";
       enterButton.textContent = "Not Available";
       enterButton.disabled = true;
       enterButton.classList.add("disabled");
