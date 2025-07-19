@@ -1,4 +1,6 @@
-<!-- admin.html --><!DOCTYPE html><html lang="en">
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -28,6 +30,10 @@
     h2 {
       color: #333;
     }
+    #login-message, #admin-message {
+      color: #cc0000;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -36,17 +42,27 @@
     <input type="password" id="admin-passcode" placeholder="Enter admin passcode" required />
     <button type="submit">Login</button>
     <p id="login-message"></p>
-  </form>  <div id="admin-section" class="hidden">
+  </form>
+
+  <div id="admin-section" class="hidden">
     <h2>Admin Settings</h2>
-    <label>New Date/Time:</label>
+    <label for="new-datetime">New Date/Time:</label>
     <input type="datetime-local" id="new-datetime" />
-    <label>Entry Link:</label>
+    
+    <label for="entry-link">Entry Link:</label>
     <input type="text" id="entry-link" placeholder="https://..." />
+    
     <button id="update-timer-btn">Update Timer & Link</button>
     <button id="end-timer-btn">End Timer</button>
     <button id="admin-logout-btn">Logout</button>
+    
     <p id="admin-message"></p>
-  </div>  <script>
+  </div>
+
+  <script>
     const ADMIN_PASSCODE = "1234";
 
-    const adminLogin
+    const adminLoginForm = document.getElementById("admin-login-form");
+    const adminPasscodeInput = document.getElementById("admin-passcode");
+    const loginMessage = document.getElementById("login-message");
+    const
