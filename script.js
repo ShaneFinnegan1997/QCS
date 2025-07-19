@@ -55,7 +55,7 @@ function updateCountdown() {
     countdownEl.innerHTML =
       'Timer not set. View our event schedule <a href="https://google.com" target="_blank">here</a>.';
     enterButton.innerHTML =
-      'ERROR: Entry Not Available. See our schedule <a href="https://google.com" target="_blank">here</a>.';
+      'ERROR: Entry Not Available.';
     enterButton.classList.add("disabled");
     enterButton.setAttribute("aria-disabled", "true");
     enterButton.style.pointerEvents = "none";
