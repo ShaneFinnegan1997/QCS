@@ -1,4 +1,12 @@
-// Initialize Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  push
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
   authDomain: "qcsweeps-4b994.firebaseapp.com",
@@ -9,48 +17,69 @@ const firebaseConfig = {
   appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-// Admin Panel Logic
-function checkPasscode() {
-  const passcode = document.getElementById("admin-passcode").value;
-  const correctPass = "letmein"; // CHANGE THIS TO A SECURE PASSWORD
+// Load header/footer if present
+(async () => {
+  const loadHTML = async (selector, url) => {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        document.querySelector(selector).innerHTML = await res.text();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  if (document.querySelector("#header-container")) loadHTML("#header-container", "header.html");
+  if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
+})();
 
-  if (passcode === correctPass) {
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("admin-controls").style.display = "block";
-  } else {
-    document.getElementById("login-error").innerText = "Incorrect passcode.";
-  }
+// Admin login
+const loginBtn = document.getElementById("login-btn");
+if (loginBtn) {
+  loginBtn.addEventListener("click", async () => {
+    const enteredPass = document.getElementById("admin-passcode").value.trim();
+    const snapshot = await get(ref(db, "admin/passcode"));
+    if (!snapshot.exists()) return alert("Admin passcode not set in Firebase.");
+    const storedPass = snapshot.val();
+    if (enteredPass === storedPass) {
+      document.getElementById("admin-panel").classList.remove("hidden");
+      document.getElementById("login-form").classList.add("hidden");
+    } else {
+      alert("Incorrect password.");
+    }
+  });
 }
 
-function updateCountdown() {
-  const datetime = document.getElementById("new-datetime").value;
-  const entryLink = document.getElementById("entry-link").value;
-
-  if (!datetime || !entryLink) {
-    alert("Please fill out all fields.");
-    return;
-  }
-
-  const targetTime = new Date(datetime).toISOString();
-  db.ref("countdown").set({ targetTime, entryLink })
-    .then(() => alert("Countdown updated!"))
-    .catch((error) => console.error("Error updating: ", error));
+// Countdown update
+const updateBtn = document.getElementById("update-countdown");
+if (updateBtn) {
+  updateBtn.addEventListener("click", async () => {
+    const time = document.getElementById("target-time").value;
+    const link = document.getElementById("entry-link").value;
+    if (!time || !link) return alert("Both time and link required.");
+    await set(ref(db, "countdown"), {
+      targetTime: new Date(time).toISOString(),
+      entryLink: link
+    });
+    alert("Countdown updated!");
+  });
 }
 
-
----
-
-✅ Next Steps:
-
-Upload both admin.html and script.js to your GitHub repo.
-
-Visit admin.html and enter the passcode letmein (you can change this securely later).
-
-Input a date/time and link → it will sync to Firebase and reflect on your index page automatically!
-
-
-Want the events.html next to display a log or history? Let me know!
-
+// Log event
+const logBtn = document.getElementById("log-event");
+if (logBtn) {
+  logBtn.addEventListener("click", async () => {
+    const title = document.getElementById("event-title").value.trim();
+    const desc = document.getElementById("event-description").value.trim();
+    if (!title || !desc) return alert("Title and description required.");
+    await push(ref(db, "events"), {
+      title,
+      description: desc,
+      timestamp: new Date().toISOString()
+    });
+    alert("Event logged!");
+  });
+}
