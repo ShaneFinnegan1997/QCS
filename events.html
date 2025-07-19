@@ -1,17 +1,51 @@
-</html><!-- events.html --><!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Events - QC Sweepstakes</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upcoming Events - QC Sweepstakes</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="header-container"></div>
+
   <main>
     <center>
-      <h1>Upcoming Events</h1>
-      <div id="events-container"></div>
+      <section class="event-section">
+        <h1>Upcoming Events</h1>
+        <div id="events-list">
+          <p>Loading events...</p>
+        </div>
+      </section>
     </center>
-  </main>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>  <script>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    // Load header and footer
+    async function loadHTML(selector, url) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          document.querySelector(selector).innerHTML = html;
+        } else {
+          console.error("Failed to load", url);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
       authDomain: "qcsweeps-4b994.firebaseapp.com",
@@ -22,24 +56,31 @@
       appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    db.ref("events").on("value", (snapshot) => {
-      const container = document.getElementById("events-container");
-      container.innerHTML = "";
+    const eventsList = document.getElementById("events-list");
 
-      const events = snapshot.val();
-      if (events) {
-        const sorted = Object.entries(events).sort((a, b) => new Date(b[1].timestamp) - new Date(a[1].timestamp));
-        sorted.forEach(([id, event]) => {
+    db.ref("events").on("value", (snapshot) => {
+      const data = snapshot.val();
+      eventsList.innerHTML = ""; // clear existing
+
+      if (data) {
+        const keys = Object.keys(data).reverse(); // latest first
+        keys.forEach(key => {
+          const event = data[key];
           const div = document.createElement("div");
-          div.innerHTML = `<h3>${event.title}</h3><p>${event.description}</p><hr>`;
-          container.appendChild(div);
+          div.className = "event-card";
+          div.innerHTML = `
+            <h2>${event.title}</h2>
+            <p>${event.description || ""}</p>
+          `;
+          eventsList.appendChild(div);
         });
       } else {
-        container.innerHTML = "<p>No events found.</p>";
+        eventsList.innerHTML = "<p>No events yet.</p>";
       }
     });
-  </script></body>
+  </script>
+</body>
 </html>
