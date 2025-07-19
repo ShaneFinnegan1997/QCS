@@ -9,12 +9,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateTimerBtn = document.getElementById("update-timer-btn");
   const endTimerBtn = document.getElementById("end-timer-btn");
   const newDatetimeInput = document.getElementById("new-datetime");
+  const entryLinkInput = document.getElementById("entry-link");
   const adminMessage = document.getElementById("admin-message");
 
   const ADMIN_PASSCODE = "1234";
 
   function updateCountdown() {
     const targetTime = localStorage.getItem("countdownTarget");
+    const entryLink = localStorage.getItem("entryLink");
     const now = new Date().getTime();
 
     if (targetTime) {
@@ -27,20 +29,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
         enterButton.textContent = "Enter Now";
         enterButton.disabled = false;
         enterButton.classList.remove("disabled");
+        if (entryLink) enterButton.onclick = () => window.location.href = entryLink;
       } else {
         countdownElement.innerHTML = "Drawing Closed";
         enterButton.textContent = "Not Available";
         enterButton.disabled = true;
         enterButton.classList.add("disabled");
+        enterButton.removeAttribute("onclick");
       }
     } else {
       countdownElement.innerHTML = "Not Available";
       enterButton.textContent = "Not Available";
       enterButton.disabled = true;
       enterButton.classList.add("disabled");
+      enterButton.removeAttribute("onclick");
     }
   }
 
@@ -50,10 +56,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Admin-only page logic
   if (adminLoginForm && adminSection) {
-    // Check login state on load
     if (localStorage.getItem("isAdmin") === "true") {
       adminSection.classList.remove("hidden");
       adminLoginForm.classList.add("hidden");
+
+      // Pre-fill if already set
+      const savedTarget = localStorage.getItem("countdownTarget");
+      const savedLink = localStorage.getItem("entryLink");
+      if (savedTarget) newDatetimeInput.value = savedTarget;
+      if (savedLink) entryLinkInput.value = savedLink;
     } else {
       adminSection.classList.add("hidden");
     }
@@ -73,16 +84,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateTimerBtn.addEventListener("click", () => {
       const newTime = newDatetimeInput.value;
-      if (newTime) {
+      const newLink = entryLinkInput.value.trim();
+
+      if (newTime && newLink) {
         localStorage.setItem("countdownTarget", newTime);
-        adminMessage.textContent = "Timer updated!";
+        localStorage.setItem("entryLink", newLink);
+        adminMessage.textContent = "Timer and link updated!";
       } else {
-        adminMessage.textContent = "Please select a date and time.";
+        adminMessage.textContent = "Please enter both date/time and link.";
       }
     });
 
     endTimerBtn.addEventListener("click", () => {
       localStorage.removeItem("countdownTarget");
+      localStorage.removeItem("entryLink");
       adminMessage.textContent = "Timer ended!";
     });
   }
