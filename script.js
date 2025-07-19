@@ -9,6 +9,7 @@ import {
   remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
   authDomain: "qcsweeps-4b994.firebaseapp.com",
@@ -42,21 +43,26 @@ const db = getDatabase(app);
 const loginBtn = document.getElementById("login-btn");
 if (loginBtn) {
   loginBtn.addEventListener("click", async () => {
-    const enteredPass = document.getElementById("admin-passcode").value.trim();
-    const snapshot = await get(ref(db, "admin/passcode"));
-    if (!snapshot.exists()) return alert("Admin passcode not set in Firebase.");
-    const storedPass = snapshot.val();
-    if (enteredPass === storedPass) {
+    const inputUsername = document.getElementById("admin-username").value.trim();
+    const inputPassword = document.getElementById("admin-password").value.trim();
+    const status = document.getElementById("login-status");
+
+    const snapshot = await get(ref(db, "admin"));
+    const adminData = snapshot.val();
+    if (!adminData) return (status.innerText = "Admin credentials not set.");
+
+    if (inputUsername === adminData.username && inputPassword === adminData.password) {
+      document.getElementById("login-form").style.display = "none";
       document.getElementById("admin-panel").classList.remove("hidden");
-      document.getElementById("login-form").classList.add("hidden");
-      loadAdminEvents(); // Load events after login
+      document.getElementById("manage-events").classList.remove("hidden");
+      loadAdminEvents();
     } else {
-      alert("Incorrect password.");
+      status.innerText = "Invalid username or password.";
     }
   });
 }
 
-// Countdown update
+// Update countdown
 const updateBtn = document.getElementById("update-countdown");
 if (updateBtn) {
   updateBtn.addEventListener("click", async () => {
@@ -84,11 +90,11 @@ if (logBtn) {
       timestamp: new Date().toISOString()
     });
     alert("Event logged!");
-    loadAdminEvents(); // Refresh list after logging event
+    loadAdminEvents();
   });
 }
 
-// Load events for admin
+// Load events
 function loadAdminEvents() {
   const list = document.getElementById("admin-events-list");
   if (!list) return;
@@ -118,7 +124,7 @@ function loadAdminEvents() {
   });
 }
 
-// Delete event by key
+// Delete event
 window.deleteEvent = async function (eventId) {
   if (confirm("Are you sure you want to delete this event?")) {
     try {
