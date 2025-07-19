@@ -73,12 +73,14 @@ function initAdminPanel() {
     adminLoginForm.classList.remove("hidden");
   }
 
+  // Check admin state on load
   if (localStorage.getItem("isAdmin") === "true") {
     showAdminPanel();
   } else {
     hideAdminPanel();
   }
 
+  // Handle login
   adminLoginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const entered = adminPasscodeInput.value.trim();
@@ -91,11 +93,14 @@ function initAdminPanel() {
     }
   });
 
+  // ✅ Handle logout + redirect to homepage
   adminLogoutBtn.addEventListener("click", () => {
     localStorage.removeItem("isAdmin");
     hideAdminPanel();
+    window.location.href = "index.html"; // Replace with your homepage file if different
   });
 
+  // Update timer and entry link
   updateTimerBtn.addEventListener("click", () => {
     const newTime = newDatetimeInput.value;
     const newLink = entryLinkInput.value.trim();
@@ -109,6 +114,7 @@ function initAdminPanel() {
     }
   });
 
+  // End the timer
   endTimerBtn.addEventListener("click", () => {
     localStorage.removeItem("countdownTarget");
     localStorage.removeItem("entryLink");
