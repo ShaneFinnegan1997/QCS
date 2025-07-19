@@ -1,26 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+</html><!-- events.html --><!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Drawing History</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events - QC Sweepstakes</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="header-container"></div>
-
   <main>
-    <h2>Past Sweepstakes Entries</h2>
-    <ul id="event-log"></ul>
-  </main>
-
-  <div id="footer-container"></div>
-
-  <!-- Firebase Libraries -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
-  <script>
+    <center>
+      <h1>Upcoming Events</h1>
+      <div id="events-container"></div>
+    </center>
+  </main>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
       authDomain: "qcsweeps-4b994.firebaseapp.com",
@@ -28,44 +19,27 @@
       projectId: "qcsweeps-4b994",
       storageBucket: "qcsweeps-4b994.appspot.com",
       messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
-      measurementId: "G-XL9VQ985S9"
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const eventLog = document.getElementById("event-log");
 
-    db.ref("history").on("value", (snapshot) => {
-      eventLog.innerHTML = "";
-      const data = snapshot.val();
-      if (data) {
-        Object.entries(data).reverse().forEach(([id, entry]) => {
-          const li = document.createElement("li");
-          li.innerHTML = `Drawing: <strong>${entry.targetTime}</strong><br>Link: <a href="${entry.entryLink}" target="_blank">${entry.entryLink}</a>`;
-          eventLog.appendChild(li);
+    db.ref("events").on("value", (snapshot) => {
+      const container = document.getElementById("events-container");
+      container.innerHTML = "";
+
+      const events = snapshot.val();
+      if (events) {
+        const sorted = Object.entries(events).sort((a, b) => new Date(b[1].timestamp) - new Date(a[1].timestamp));
+        sorted.forEach(([id, event]) => {
+          const div = document.createElement("div");
+          div.innerHTML = `<h3>${event.title}</h3><p>${event.description}</p><hr>`;
+          container.appendChild(div);
         });
       } else {
-        eventLog.innerHTML = "<li>No past drawings available.</li>";
+        container.innerHTML = "<p>No events found.</p>";
       }
     });
-  </script>
-
-  <!-- Load header/footer -->
-  <script>
-    async function loadHTML(selector, url) {
-      try {
-        const response = await fetch(url);
-        if (response.ok) {
-          const html = await response.text();
-          document.querySelector(selector).innerHTML = html;
-        }
-      } catch (e) {
-        console.error("Failed to load:", url);
-      }
-    }
-    loadHTML("#header-container", "header.html");
-    loadHTML("#footer-container", "footer.html");
-  </script>
-</body>
+  </script></body>
 </html>
