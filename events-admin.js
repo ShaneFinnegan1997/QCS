@@ -1,14 +1,13 @@
 // events-admin.js
+// Initialize Firebase
+const db = firebase.database();
+const eventsRef = db.ref('events');
 
 const eventsAdminSection = document.getElementById('events-admin');
 const addEventForm = document.getElementById('add-event-form');
 const adminEventsList = document.getElementById('admin-events-list');
 
-const db = firebase.database();
-const eventsRef = db.ref('events');
-
 function showEventsAdmin() {
-    console.log("showEventsAdmin() called!");  // <== ADD THIS LINE
   eventsAdminSection.classList.remove('hidden');
   // Load admin events
   eventsRef.on('value', snapshot => {
@@ -55,5 +54,3 @@ addEventForm.onsubmit = function(e) {
   });
   addEventForm.reset();
 };
-
-// Call showEventsAdmin() after successful admin login!
