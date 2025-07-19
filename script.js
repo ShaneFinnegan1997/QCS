@@ -84,15 +84,18 @@ if (logBtn) {
   const title = document.getElementById("event-title").value.trim();
   const link = document.getElementById("event-link").value.trim();
   const desc = document.getElementById("event-description").value.trim();
-    if (!title || !desc) return alert("Title and description required.");
-    await push(ref(db, "events"), {
-      title,
-      description: desc,
-      timestamp: new Date().toISOString()
-    });
-    alert("Event logged!");
-    loadAdminEvents();
+
+  if (!title || !desc) return alert("Title and description required.");
+
+  await push(ref(db, "events"), {
+    title,
+    link: link || null,
+    description: desc,
+    timestamp: new Date().toISOString()
   });
+
+  alert("Event logged!");
+});
 }
 
 // Load events
