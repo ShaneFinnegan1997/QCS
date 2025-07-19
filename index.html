@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,23 +6,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="header-container"></div>
-
-  <main>
+  <div id="header-container"></div>  <main>
 	<center>
     <section class="countdown-section">
       <h1>Next Drawing In:</h1>
-<h2 id="countdown">Loading...</h2>
-<a id="entry-btn" class="hidden" href="#" target="_blank">Enter Drawing</a>
+      <h2 id="countdown">Loading...</h2>
+      <a id="entry-btn" class="hidden" href="#" target="_blank">Enter Drawing</a>
     </section>
 	</center>
-  </main>
-
-  <div id="footer-container"></div>
-
-  <script src="script.js"></script>
-  <script>
-    // Load reusable header and footer
+  </main>  <div id="footer-container"></div>  <!-- Load reusable header and footer -->  <script>
     async function loadHTML(selector, url) {
       try {
         const response = await fetch(url);
@@ -40,72 +31,60 @@
 
     loadHTML("#header-container", "header.html");
     loadHTML("#footer-container", "footer.html");
-  </script>
+  </script>  <!-- Firebase SDK -->  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+      authDomain: "qcsweeps-4b994.firebaseapp.com",
+      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+      projectId: "qcsweeps-4b994",
+      storageBucket: "qcsweeps-4b994.appspot.com",
+      messagingSenderId: "810241609281",
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
+      measurementId: "G-XL9VQ985S9"
+    };
 
-<!-- Firebase App (core SDK) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<!-- Firebase Realtime Database -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    const timerDisplay = document.getElementById("countdown");
+    const entryBtn = document.getElementById("entry-btn");
+    let countdownInterval = null;
 
- const firebaseConfig = {
-  apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-  authDomain: "qcsweeps-4b994.firebaseapp.com",
-  databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-  projectId: "qcsweeps-4b994",
-  storageBucket: "qcsweeps-4b994.firebasestorage.app",
-  messagingSenderId: "810241609281",
-  appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
-  measurementId: "G-XL9VQ985S9"
-  };
+    // Listen for countdown data changes
+    const countdownRef = database.ref("countdown");
+    countdownRef.on("value", (snapshot) => {
+      const data = snapshot.val();
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+      clearInterval(countdownInterval);
+      if (data && data.targetTime) {
+        const endTime = new Date(data.targetTime).getTime();
 
-  const timerDisplay = document.getElementById("countdown");
-  const entryBtn = document.getElementById("entry-btn");
+        entryBtn.href = data.entryLink || "#";
+        entryBtn.classList.remove("hidden");
 
-  let countdownInterval = null;
+        countdownInterval = setInterval(() => {
+          const now = Date.now();
+          const remaining = endTime - now;
 
-  // Watch Firebase for updates
-  const countdownRef = ref(db, "countdown");
-  onValue(countdownRef, (snapshot) => {
-    const data = snapshot.val();
+          if (remaining <= 0) {
+            timerDisplay.innerText = "Drawing has started!";
+            clearInterval(countdownInterval);
+            return;
+          }
 
-    clearInterval(countdownInterval);
-    if (data && data.targetTime) {
-      const endTime = new Date(data.targetTime).getTime();
+          const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+          const mins = Math.floor((remaining / (1000 * 60)) % 60);
+          const secs = Math.floor((remaining / 1000) % 60);
 
-      entryBtn.href = data.entryLink;
-      entryBtn.classList.remove("hidden");
-
-      countdownInterval = setInterval(() => {
-        const now = Date.now();
-        const remaining = endTime - now;
-
-        if (remaining <= 0) {
-          timerDisplay.innerText = "Drawing has started!";
-          clearInterval(countdownInterval);
-          return;
-        }
-
-        const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
-        const mins = Math.floor((remaining / (1000 * 60)) % 60);
-        const secs = Math.floor((remaining / 1000) % 60);
-
-        timerDisplay.innerText = `${days}d ${hours}h ${mins}m ${secs}s`;
-      }, 1000);
-    } else {
-      timerDisplay.innerText = "No drawing currently.";
-      entryBtn.classList.add("hidden");
-    }
-  });
-</script>
-
-
-</body>
+          timerDisplay.innerText = `${days}d ${hours}h ${mins}m ${secs}s`;
+        }, 1000);
+      } else {
+        timerDisplay.innerText = "No drawing currently.";
+        entryBtn.classList.add("hidden");
+      }
+    });
+  </script></body>
 </html>
