@@ -4,7 +4,9 @@ import {
   ref,
   set,
   get,
-  push
+  push,
+  onValue,
+  remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -20,7 +22,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Load header/footer if present
+// Load header/footer
 (async () => {
   const loadHTML = async (selector, url) => {
     try {
@@ -47,6 +49,7 @@ if (loginBtn) {
     if (enteredPass === storedPass) {
       document.getElementById("admin-panel").classList.remove("hidden");
       document.getElementById("login-form").classList.add("hidden");
+      loadAdminEvents(); // Load events after login
     } else {
       alert("Incorrect password.");
     }
@@ -81,5 +84,48 @@ if (logBtn) {
       timestamp: new Date().toISOString()
     });
     alert("Event logged!");
+    loadAdminEvents(); // Refresh list after logging event
   });
 }
+
+// Load events for admin
+function loadAdminEvents() {
+  const list = document.getElementById("admin-events-list");
+  if (!list) return;
+
+  list.innerHTML = "Loading...";
+  const eventsRef = ref(db, "events");
+  onValue(eventsRef, (snapshot) => {
+    const data = snapshot.val();
+    list.innerHTML = "";
+
+    if (data) {
+      const entries = Object.entries(data).reverse();
+      for (const [key, event] of entries) {
+        const div = document.createElement("div");
+        div.className = "admin-event-item";
+        div.innerHTML = `
+          <strong>${event.title}</strong><br/>
+          <p>${event.description || ""}</p>
+          <button onclick="deleteEvent('${key}')">Delete</button>
+          <hr/>
+        `;
+        list.appendChild(div);
+      }
+    } else {
+      list.innerHTML = "<p>No events found.</p>";
+    }
+  });
+}
+
+// Delete event by key
+window.deleteEvent = async function (eventId) {
+  if (confirm("Are you sure you want to delete this event?")) {
+    try {
+      await remove(ref(db, "events/" + eventId));
+      alert("Event deleted.");
+    } catch (error) {
+      alert("Error deleting event: " + error.message);
+    }
+  }
+};
