@@ -27,27 +27,27 @@ if (localStorage.getItem('countdownTarget')) {
 
 // Format date for input[type=datetime-local]
 function formatDateInput(date) {
-  const pad = (n) => (n < 10 ? "0" + n : n);
-  return (
-    date.getFullYear() +
-    "-" +
-    pad(date.getMonth() + 1) +
-    "-" +
-    pad(date.getDate()) +
-    "T" +
-    pad(date.getHours()) +
-    ":" +
-    pad(date.getMinutes())
-  );
+    const pad = (n) => (n < 10 ? "0" + n : n);
+    return (
+        date.getFullYear() +
+        "-" +
+        pad(date.getMonth() + 1) +
+        "-" +
+        pad(date.getDate()) +
+        "T" +
+        pad(date.getHours()) +
+        ":" +
+        pad(date.getMinutes())
+    );
 }
 
 // Update countdown display & button state
 function updateCountdown() {
-    if (!countdownEl || !enterButton) return; // If no elements, skip [T0](1)
+    if (!countdownEl || !enterButton) return;
 
     if (!countdownTarget) {
-        enterButton.textContent = "ERROR: Entry Not Available. See our schedule <a href="google.com">here</a>.;
-        countdownEl.textContent = "Timer not set. View our event schedule <a href="google.com">here</a>.";
+        countdownEl.innerHTML = 'Timer not set. View our event schedule <a href="https://google.com" target="_blank">here</a>.';
+        enterButton.innerHTML = 'ERROR: Entry Not Available. See our schedule <a href="https://google.com" target="_blank">here</a>.';
         enterButton.classList.add("disabled");
         enterButton.setAttribute("aria-disabled", "true");
         enterButton.style.pointerEvents = "none";
@@ -66,10 +66,10 @@ function updateCountdown() {
         enterButton.classList.add("disabled");
         enterButton.removeAttribute("aria-disabled");
         enterButton.style.pointerEvents = "none";
-        enterButton.style.backgroundColor = ""; // Blackout - set to default or black
+        enterButton.style.backgroundColor = "";
         enterButton.href = "#";
         enterButton.tabIndex = -1;
-        clearInterval(countdownInterval); // Stop the interval
+        clearInterval(countdownInterval);
         return;
     } else {
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -83,7 +83,7 @@ function updateCountdown() {
         enterButton.classList.remove("disabled");
         enterButton.removeAttribute("aria-disabled");
         enterButton.style.pointerEvents = "auto";
-        enterButton.style.backgroundColor = "#28a745"; // Green
+        enterButton.style.backgroundColor = "#28a745";
         enterButton.href = ENTRY_FORM_LINK;
         enterButton.tabIndex = 0;
     }
@@ -91,49 +91,45 @@ function updateCountdown() {
 
 // Admin Login Form Handling
 if (adminLoginForm) {
-    adminSection.classList.add("hidden"); // Hide admin section by default [T2](2)
-    adminLoginForm.addEventListener("submit", function(event) {
+    adminSection.classList.add("hidden");
+    adminLoginForm.addEventListener("submit", function (event) {
         event.preventDefault();
         const enteredPasscode = adminPasscodeInput.value;
 
         if (enteredPasscode === ADMIN_PASSCODE) {
-            // Successful login
             loginMessage.textContent = "Login successful!";
-            adminSection.classList.remove("hidden"); // Show the admin section
+            adminSection.classList.remove("hidden");
         } else {
-            // Failed login
             loginMessage.textContent = "Incorrect passcode. Please try again.";
-            adminSection.classList.add("hidden"); // Ensure admin section is hidden
+            adminSection.classList.add("hidden");
         }
 
-        adminPasscodeInput.value = ""; // Clear the input
+        adminPasscodeInput.value = "";
     });
 }
 
 // Admin Section - Update Timer
 if (adminSection) {
-    updateTimerBtn.addEventListener('click', function() {
+    updateTimerBtn.addEventListener('click', function () {
         const newDatetime = newDatetimeInput.value;
         if (newDatetime) {
             countdownTarget = new Date(newDatetime).getTime();
-            localStorage.setItem('countdownTarget', new Date(countdownTarget)); // Store in localStorage [T2](2)
+            localStorage.setItem('countdownTarget', new Date(countdownTarget));
             adminMessage.textContent = "Timer updated!";
-            updateCountdown(); // Update immediately [T2](2)
+            updateCountdown();
         } else {
             adminMessage.textContent = "Please select a valid date and time.";
         }
     });
 
-    endTimerBtn.addEventListener('click', function() {
-        countdownTarget = null; // Clear the timer [T2](2)
-        localStorage.removeItem('countdownTarget'); // Remove from localStorage [T2](2)
+    endTimerBtn.addEventListener('click', function () {
+        countdownTarget = null;
+        localStorage.removeItem('countdownTarget');
         adminMessage.textContent = "Timer ended.";
-        updateCountdown(); // Update immediately [T2](2)
+        updateCountdown();
     });
 }
 
 // Initial call to updateCountdown
-updateCountdown(); // Update immediately [T3](3)
-
-// Update the countdown every second
+updateCountdown();
 const countdownInterval = setInterval(updateCountdown, 1000);
