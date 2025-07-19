@@ -1,135 +1,155 @@
-<<<<<<< HEAD
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("Script loaded on:", navigator.userAgent);
+// ✅ Unified Script for index.html and admin.html
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.location.pathname.includes("admin.html")) {
+    initAdminPanel();
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 });
-// ----------- CONFIGURATION -----------------
-const ADMIN_PASSCODE = ""; // Change this!
-const ENTRY_FORM_LINK = "https://yourformlink.com"; // Your actual entry link here
-// -------------------------------------------
-=======
-// ✅ script.js (linked to both homepage.html and admin.html)
->>>>>>> a8595a8e8fb16f4184aff000d5f2c2681a0f20de
 
-// Shared Countdown Logic
+// 🔐 Hashed passcode (do NOT store plain passcode)
+// Original passcode: "1234"
+const ADMIN_PASSCODE_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"; // SHA-256 of "1234"
+
+// ⏱ Countdown Logic for index.html
 function updateCountdown() {
-  const countdownElement = document.getElementById("countdown");
+  const countdownEl = document.getElementById("countdown");
   const enterButton = document.getElementById("enter-button");
-  const targetTime = localStorage.getItem("countdownTarget");
+  const rawTarget = localStorage.getItem("countdownTarget");
   const entryLink = localStorage.getItem("entryLink");
-  const now = new Date().getTime();
 
-  if (countdownElement && enterButton) {
-    if (targetTime) {
-      const distance = new Date(targetTime).getTime() - now;
-      if (distance > 0) {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  if (!countdownEl || !enterButton) return;
 
-        countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        enterButton.textContent = "Enter Now";
-        enterButton.disabled = false;
-        enterButton.classList.remove("disabled");
-        if (entryLink) enterButton.onclick = () => window.location.href = entryLink;
-      } else {
-        countdownElement.innerHTML = "Drawing Closed";
-        enterButton.textContent = "Not Available";
-        enterButton.disabled = true;
-        enterButton.classList.add("disabled");
-        enterButton.removeAttribute("onclick");
-      }
-    } else {
-      countdownElement.innerHTML = "No events currently scheduled.";
-      enterButton.textContent = "Not Available";
-      enterButton.disabled = true;
-      enterButton.classList.add("disabled");
-      enterButton.removeAttribute("onclick");
+  if (!rawTarget) {
+    countdownEl.innerText = "No events currently scheduled.";
+    enterButton.disabled = true;
+    enterButton.textContent = "Not Available";
+    enterButton.classList.add("disabled");
+    return;
+  }
+
+  const now = Date.now();
+  const targetTime = new Date(rawTarget).getTime();
+  const distance = targetTime - now;
+
+  if (distance > 0) {
+    const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((distance % (1000 * 60)) / 1000);
+    countdownEl.innerText = `${d}d ${h}h ${m}m ${s}s`;
+
+    enterButton.disabled = false;
+    enterButton.textContent = "Enter Now";
+    enterButton.classList.remove("disabled");
+    if (entryLink) {
+      enterButton.onclick = () => (window.location.href = entryLink);
     }
+  } else {
+    countdownEl.innerText = "Drawing Closed";
+    enterButton.disabled = true;
+    enterButton.textContent = "Not Available";
+    enterButton.classList.add("disabled");
+    enterButton.removeAttribute("onclick");
   }
 }
 
-setInterval(updateCountdown, 1000);
-updateCountdown();
-
-// Admin-only logic
+// 🛠 Admin Panel Logic for admin.html
 function initAdminPanel() {
-  const adminLoginForm = document.getElementById("admin-login-form");
-  const adminPasscodeInput = document.getElementById("admin-passcode");
-  const loginMessage = document.getElementById("login-message");
+  const loginForm = document.getElementById("admin-login-form");
+  const passInput = document.getElementById("admin-passcode");
+  const loginMsg = document.getElementById("login-message");
+
   const adminSection = document.getElementById("admin-section");
-  const updateTimerBtn = document.getElementById("update-timer-btn");
-  const endTimerBtn = document.getElementById("end-timer-btn");
-  const newDatetimeInput = document.getElementById("new-datetime");
-  const entryLinkInput = document.getElementById("entry-link");
-  const adminMessage = document.getElementById("admin-message");
-  const adminLogoutBtn = document.getElementById("admin-logout-btn");
-  const ADMIN_PASSCODE = "1234";
+  const updateBtn = document.getElementById("update-timer-btn");
+  const endBtn = document.getElementById("end-timer-btn");
+  const datetimeInput = document.getElementById("new-datetime");
+  const linkInput = document.getElementById("entry-link");
+  const msg = document.getElementById("admin-message");
+  const logoutBtn = document.getElementById("admin-logout-btn");
 
-  if (!adminLoginForm || !adminSection) return; // Exit if not admin page
+  if (!loginForm || !adminSection) return;
 
+  // Show/hide admin
   function showAdminPanel() {
+    loginForm.classList.add("hidden");
     adminSection.classList.remove("hidden");
-    adminLoginForm.classList.add("hidden");
 
-    const savedTarget = localStorage.getItem("countdownTarget");
+    const savedTime = localStorage.getItem("countdownTarget");
     const savedLink = localStorage.getItem("entryLink");
-    if (savedTarget) newDatetimeInput.value = savedTarget;
-    if (savedLink) entryLinkInput.value = savedLink;
+
+    if (savedTime) {
+      const localTime = new Date(savedTime).toISOString().slice(0, 16);
+      datetimeInput.value = localTime;
+    }
+    if (savedLink) linkInput.value = savedLink;
   }
 
   function hideAdminPanel() {
+    loginForm.classList.remove("hidden");
     adminSection.classList.add("hidden");
-    adminLoginForm.classList.remove("hidden");
   }
 
-  // Check admin state on load
+  // Login if already authenticated
   if (localStorage.getItem("isAdmin") === "true") {
     showAdminPanel();
   } else {
     hideAdminPanel();
   }
 
-  // Handle login
-  adminLoginForm.addEventListener("submit", (e) => {
+  // Login handler
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const entered = adminPasscodeInput.value.trim();
-    if (entered === ADMIN_PASSCODE) {
+    const entered = passInput.value.trim();
+    const hash = await hashText(entered);
+    if (hash === ADMIN_PASSCODE_HASH) {
       localStorage.setItem("isAdmin", "true");
       showAdminPanel();
-      loginMessage.textContent = "";
+      loginMsg.innerText = "";
     } else {
-      loginMessage.textContent = "Incorrect passcode.";
+      loginMsg.innerText = "Incorrect passcode.";
     }
   });
 
-  // ✅ Handle logout + redirect to homepage
-  adminLogoutBtn.addEventListener("click", () => {
+  // Logout handler
+  logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("isAdmin");
     hideAdminPanel();
-    window.location.href = "index.html"; // Replace with your homepage file if different
+    window.location.href = "index.html";
   });
 
-  // Update timer and entry link
-  updateTimerBtn.addEventListener("click", () => {
-    const newTime = newDatetimeInput.value;
-    const newLink = entryLinkInput.value.trim();
+  // Update timer
+  updateBtn.addEventListener("click", () => {
+    const time = datetimeInput.value;
+    const link = linkInput.value.trim();
 
-    if (newTime && newLink) {
-      localStorage.setItem("countdownTarget", newTime);
-      localStorage.setItem("entryLink", newLink);
-      adminMessage.textContent = "Timer and link updated!";
-    } else {
-      adminMessage.textContent = "Please enter both date/time and link.";
+    if (!time || !link) {
+      msg.innerText = "Please enter both date/time and link.";
+      return;
     }
+
+    const utcTime = new Date(time).toISOString();
+    localStorage.setItem("countdownTarget", utcTime);
+    localStorage.setItem("entryLink", link);
+    msg.innerText = "Timer and link updated!";
   });
 
-  // End the timer
-  endTimerBtn.addEventListener("click", () => {
+  // End timer
+  endBtn.addEventListener("click", () => {
     localStorage.removeItem("countdownTarget");
     localStorage.removeItem("entryLink");
-    adminMessage.textContent = "Timer ended!";
+    msg.innerText = "Timer ended.";
   });
 }
 
-document.addEventListener("DOMContentLoaded", initAdminPanel);
+// 🔐 Hash function for passcode
+async function hashText(text) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
