@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!countdownTarget) {
       countdownEl.innerHTML = `Timer not set.`;
-      enterButton.innerHTML = `ERROR: Entry Not Available. <a href="/events" target="_blank">See our schedule</a>`;
+      enterButton.innerHTML = `ERROR: Entry Not Available.`;
       enterButton.classList.add("disabled");
       enterButton.setAttribute("aria-disabled", "true");
       enterButton.style.pointerEvents = "none";
