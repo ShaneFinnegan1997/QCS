@@ -9,6 +9,7 @@ const adminEventsList = document.getElementById('admin-events-list');
 
 function showEventsAdmin() {
   eventsAdminSection.classList.remove('hidden');
+  console.log("Setting up Firebase listener for events...");  // <== Add this line
   // Load admin events
   eventsRef.on('value', snapshot => {
     adminEventsList.innerHTML = '';
@@ -51,6 +52,10 @@ addEventForm.onsubmit = function(e) {
     title,
     message,
     timestamp: Date.now()
+  }).then(() => {            // <== Add this .then() block
+    console.log("Event saved to Firebase!", title, message);
+    addEventForm.reset();
+  }).catch(error => {
+    console.error("Error saving event:", error);
   });
-  addEventForm.reset();
 };
