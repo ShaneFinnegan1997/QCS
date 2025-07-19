@@ -94,6 +94,7 @@ function initAdminPanel() {
   // Login if already authenticated
   if (localStorage.getItem("isAdmin") === "true") {
     showAdminPanel();
+        showEventsAdmin(); // CALL SHOWEVENTSADMIN HERE
   } else {
     hideAdminPanel();
   }
@@ -106,6 +107,7 @@ function initAdminPanel() {
     if (hash === ADMIN_PASSCODE_HASH) {
       localStorage.setItem("isAdmin", "true");
       showAdminPanel();
+      showEventsAdmin(); // AND CALL SHOWEVENTSADMIN HERE!
       loginMsg.innerText = "";
     } else {
       loginMsg.innerText = "Incorrect passcode.";
