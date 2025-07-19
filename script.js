@@ -1,40 +1,26 @@
+<<<<<<< HEAD
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Script loaded on:", navigator.userAgent);
-
-  // Check localStorage availability
-  try {
-    localStorage.setItem("test", "1");
-    localStorage.removeItem("test");
-  } catch (e) {
-    alert("LocalStorage is not available. Please disable private browsing or enable storage access.");
-    return;
-  }
-
-  initAdminPanel();
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
 });
-
 // ----------- CONFIGURATION -----------------
-const ADMIN_PASSCODE = "1234"; // Change this if needed
+const ADMIN_PASSCODE = ""; // Change this!
+const ENTRY_FORM_LINK = "https://yourformlink.com"; // Your actual entry link here
 // -------------------------------------------
+=======
+// ✅ script.js (linked to both homepage.html and admin.html)
+>>>>>>> a8595a8e8fb16f4184aff000d5f2c2681a0f20de
 
 // Shared Countdown Logic
 function updateCountdown() {
   const countdownElement = document.getElementById("countdown");
   const enterButton = document.getElementById("enter-button");
-  const targetTimeRaw = localStorage.getItem("countdownTarget");
+  const targetTime = localStorage.getItem("countdownTarget");
   const entryLink = localStorage.getItem("entryLink");
+  const now = new Date().getTime();
 
-  if (!countdownElement || !enterButton) return;
-
-  if (targetTimeRaw) {
-    const parsedTime = Date.parse(targetTimeRaw);
-    const now = Date.now();
-
-    if (!isNaN(parsedTime)) {
-      const distance = parsedTime - now;
-
+  if (countdownElement && enterButton) {
+    if (targetTime) {
+      const distance = new Date(targetTime).getTime() - now;
       if (distance > 0) {
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -45,9 +31,7 @@ function updateCountdown() {
         enterButton.textContent = "Enter Now";
         enterButton.disabled = false;
         enterButton.classList.remove("disabled");
-        if (entryLink) {
-          enterButton.onclick = () => window.location.href = entryLink;
-        }
+        if (entryLink) enterButton.onclick = () => window.location.href = entryLink;
       } else {
         countdownElement.innerHTML = "Drawing Closed";
         enterButton.textContent = "Not Available";
@@ -56,20 +40,17 @@ function updateCountdown() {
         enterButton.removeAttribute("onclick");
       }
     } else {
-      countdownElement.innerHTML = "Invalid event time.";
+      countdownElement.innerHTML = "No events currently scheduled.";
       enterButton.textContent = "Not Available";
       enterButton.disabled = true;
       enterButton.classList.add("disabled");
       enterButton.removeAttribute("onclick");
     }
-  } else {
-    countdownElement.innerHTML = "No events currently scheduled.";
-    enterButton.textContent = "Not Available";
-    enterButton.disabled = true;
-    enterButton.classList.add("disabled");
-    enterButton.removeAttribute("onclick");
   }
 }
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
 
 // Admin-only logic
 function initAdminPanel() {
@@ -83,8 +64,9 @@ function initAdminPanel() {
   const entryLinkInput = document.getElementById("entry-link");
   const adminMessage = document.getElementById("admin-message");
   const adminLogoutBtn = document.getElementById("admin-logout-btn");
+  const ADMIN_PASSCODE = "1234";
 
-  if (!adminLoginForm || !adminSection) return;
+  if (!adminLoginForm || !adminSection) return; // Exit if not admin page
 
   function showAdminPanel() {
     adminSection.classList.remove("hidden");
@@ -92,13 +74,7 @@ function initAdminPanel() {
 
     const savedTarget = localStorage.getItem("countdownTarget");
     const savedLink = localStorage.getItem("entryLink");
-
-    if (savedTarget) {
-      const dt = new Date(savedTarget);
-      const formatted = dt.toISOString().slice(0, 16);
-      newDatetimeInput.value = formatted;
-    }
-
+    if (savedTarget) newDatetimeInput.value = savedTarget;
     if (savedLink) entryLinkInput.value = savedLink;
   }
 
@@ -127,21 +103,20 @@ function initAdminPanel() {
     }
   });
 
-  // ✅ Logout
+  // ✅ Handle logout + redirect to homepage
   adminLogoutBtn.addEventListener("click", () => {
     localStorage.removeItem("isAdmin");
     hideAdminPanel();
-    window.location.href = "index.html";
+    window.location.href = "index.html"; // Replace with your homepage file if different
   });
 
-  // ✅ Update Timer + Link
+  // Update timer and entry link
   updateTimerBtn.addEventListener("click", () => {
     const newTime = newDatetimeInput.value;
     const newLink = entryLinkInput.value.trim();
 
     if (newTime && newLink) {
-      const isoTime = new Date(newTime).toISOString();
-      localStorage.setItem("countdownTarget", isoTime);
+      localStorage.setItem("countdownTarget", newTime);
       localStorage.setItem("entryLink", newLink);
       adminMessage.textContent = "Timer and link updated!";
     } else {
@@ -149,10 +124,12 @@ function initAdminPanel() {
     }
   });
 
-  // ✅ End the Timer
+  // End the timer
   endTimerBtn.addEventListener("click", () => {
     localStorage.removeItem("countdownTarget");
     localStorage.removeItem("entryLink");
     adminMessage.textContent = "Timer ended!";
   });
 }
+
+document.addEventListener("DOMContentLoaded", initAdminPanel);
