@@ -8,57 +8,39 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <h1>Admin Login</h1>
 
-  <div id="header-container"></div>
+  <!-- Login Form -->
+  <form id="admin-login-form">
+    <input type="password" id="admin-passcode" placeholder="Enter passcode" required />
+    <button type="submit">Login</button>
+    <p id="login-message" style="color: red;"></p>
+  </form>
 
-  <main>
-    <section id="admin-login-section">
-      <form id="admin-login-form" autocomplete="off">
-        <label for="admin-passcode">Admin Passcode:</label>
-        <input type="password" id="admin-passcode" />
-        <button type="submit">Login</button>
-        <span id="login-message" role="alert" aria-live="assertive"></span>
-      </form>
-    </section>
+  <!-- Admin Panel (Hidden until logged in) -->
+  <section id="admin-section" class="hidden">
+    <h2>Admin Panel</h2>
 
-    <section id="admin-section" class="hidden">
-      <h2>Admin Panel</h2>
+    <label for="new-datetime">Set New Drawing Time:</label>
+    <input type="datetime-local" id="new-datetime" />
 
-      <label for="new-datetime">Set New Drawing Time:</label>
-      <input type="datetime-local" id="new-datetime" />
-<label for="entry-link">Set Entry Button Link:</label>
-<input type="url" id="entry-link" placeholder="https://example.com" />
-      <button id="update-timer-btn">Update Timer</button>
-      <button id="end-timer-btn">End Timer Now</button>
+    <label for="entry-link">Set Entry Button Link:</label>
+    <input type="url" id="entry-link" placeholder="https://example.com" />
 
-      <p id="admin-message"></p>
-<button id="logout-btn">Logout</button>
-    </section>
-  </main>
+    <button id="update-timer-btn">Update Timer</button>
+    <button id="end-timer-btn">End Timer Now</button>
+    <button id="admin-logout-btn">Logout</button>
 
-  <div id="footer-container"></div>
+    <p id="admin-message" style="color: green;"></p>
+  </section>
+
+  <!-- Optional styling for hidden class -->
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
 
   <script src="script.js"></script>
-
-  <script>
-    async function loadHTML(selector, url) {
-      try {
-        const response = await fetch(url);
-        if (response.ok) {
-          const html = await response.text();
-          document.querySelector(selector).innerHTML = html;
-        } else {
-          console.error("Failed to load", url);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    loadHTML("#header-container", "header.html");
-    loadHTML("#footer-container", "footer.html");
-
-    // Admin login form handler and admin panel show/hide logic is inside your script.js
-  </script>
-
 </body>
 </html>
