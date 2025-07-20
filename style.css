@@ -1,13 +1,27 @@
 /* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-{ box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Quicksand', Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #f4f4f4;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
+main {
+  flex: 1;
+  padding: 20px;
+}
 
-body { font-family: Arial, sans-serif; line-height: 1.6; background-color: #f4f4f4; color: #333; min-height: 100vh; display: flex; flex-direction: column; }
-
-main { flex: 1; padding: 20px; }
-
-/* Header Styles */ header {
+/* Header Styles */
+header {
   background: linear-gradient(to right, #42e695, #3bb2b8);
   color: white;
   padding: 20px;
@@ -16,17 +30,40 @@ main { flex: 1; padding: 20px; }
   z-index: 1;
 }
 
-header h1 { margin-bottom: 5px; font-size: 2em; }
+header h1 {
+  margin-bottom: 5px;
+  font-size: 2em;
+}
 
-header p { font-style: italic; font-size: 1em; color: #f0f0f0; }
+header p {
+  font-style: italic;
+  font-size: 1em;
+  color: #f0f0f0;
+}
 
-nav { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 15px; gap: 20px; }
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  gap: 20px;
+}
 
-nav a { color: white; text-decoration: none; font-weight: bold; padding: 8px 12px; transition: background 0.3s; }
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 12px;
+  transition: background 0.3s;
+}
 
-nav a:hover { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
 
-/* Footer Styles */ footer { footer {
+/* Footer Styles */
+footer {
   background: linear-gradient(to right, #42e695, #3bb2b8);
   color: white;
   text-align: center;
@@ -35,16 +72,7 @@ nav a:hover { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
   margin-top: auto;
 }
 
-/* Responsive Text and Layout */ @media (max-width: 600px) { header h1 { font-size: 1.5em; }
-
-nav { gap: 10px; font-size: 0.9em; }
-
-footer { font-size: 0.8em; padding: 12px 8px; } }
-
-.hidden {
-  display: none;
-}
-
+/* Countdown Section */
 .countdown-section {
   background: #f0fff4;
   border-radius: 12px;
@@ -86,4 +114,30 @@ footer { font-size: 0.8em; padding: 12px 8px; } }
 
 #entry-btn:hover {
   background-color: #2bbbad;
+}
+
+/* Hidden class */
+.hidden {
+  display: none;
+}
+
+/* Responsive Text and Layout */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.5em;
+  }
+
+  nav {
+    gap: 10px;
+    font-size: 0.9em;
+  }
+
+  footer {
+    font-size: 0.8em;
+    padding: 12px 8px;
+  }
+
+  .countdown-section {
+    padding: 20px 15px;
+  }
 }
