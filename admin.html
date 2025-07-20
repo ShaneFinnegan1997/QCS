@@ -7,7 +7,8 @@
     <title>QCS Admin Panel</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial,
+            sans-serif;
             padding: 20px;
             background-color: #f4f4f4;
         }
@@ -96,13 +97,18 @@
 
         <div id="login-section">
             <h2>Admin Login</h2>
-            <form id="login-form">  <!-- Added a form element -->
-                <input type="text" id="username" placeholder="Username">
-                <input type="password" id="password" placeholder="Password">
-                <button type="button" onclick="login()">Login</button>  <!-- Changed type to "button" -->
+            <form id="login-form">
+                <!-- Use more descriptive IDs and labels -->
+                <label for="admin-username">Username:</label>
+                <input type="text" id="admin-username" placeholder="Username">
+                <label for="admin-password">Password:</label>
+                <input type="password" id="admin-password" placeholder="Password">
+                <button type="button" id="login-btn">Login</button> <!-- Use the ID from script.js -->
+                <p id="login-status"></p> <!-- For displaying login status messages -->
             </form>
         </div>
 
+        <!-- Everything else remains the same -->
         <div id="admin-panel" class="hidden">
             <h2>Welcome, Admin</h2>
 
@@ -213,7 +219,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
     <!-- Link to script.js -->
-    <script src="script.js"></script>
+    <script src="script.js" type="module"></script> <!-- IMPORTANT: Added type="module" -->
 
     <script>
         // Load header/footer
