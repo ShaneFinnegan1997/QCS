@@ -189,6 +189,24 @@
     <!-- Link to script.js -->
     <script src="script.js"></script>
 
+    <script>
+        // Load header/footer
+        async function loadHTML(selector, url) {
+            try {
+                const res = await fetch(url);
+                if (res.ok) {
+                    const html = await res.text();
+                    document.querySelector(selector).innerHTML = html;
+                }
+            } catch (e) {
+                console.error("Failed to load:", url);
+            }
+        }
+        // Load the header and footer
+        loadHTML("#header-container", "header-admin.html");
+        loadHTML("#footer-container", "footer.html");
+    </script>
+
 </body>
 
 </html>
