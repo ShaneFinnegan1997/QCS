@@ -7,15 +7,13 @@
     <title>QCS Admin Panel</title>
     <style>
         body {
-            font-family: Arial,
-            sans-serif;
+            font-family: Arial, sans-serif;
             padding: 20px;
             background-color: #f4f4f4;
         }
 
         .admin-container {
             max-width: 900px;
-            /* Increased max-width */
             margin: auto;
             background: #fff;
             padding: 20px;
@@ -37,7 +35,6 @@
             box-sizing: border-box;
         }
 
-        /* Added select and box-sizing */
         img.banner {
             max-width: 100%;
             border-radius: 10px;
@@ -55,20 +52,17 @@
             border-radius: 5px;
         }
 
-        /* Added section styling */
         label {
             display: block;
             margin-top: 10px;
             font-weight: bold;
         }
 
-        /* Added label styling */
         #event-list {
             list-style: none;
             padding: 0;
         }
 
-        /* Style event list */
         #event-list li {
             margin-bottom: 5px;
             padding: 8px;
@@ -76,15 +70,11 @@
             border-radius: 4px;
         }
 
-        /* Style event list items */
         .event-actions {
             display: inline-block;
             margin-left: 10px;
         }
 
-        /* Added styling for event actions */
-
-        /* Additional styling for better layout */
         .form-group {
             margin-bottom: 15px;
         }
@@ -106,9 +96,11 @@
 
         <div id="login-section">
             <h2>Admin Login</h2>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="login()">Login</button>
+            <form id="login-form">  <!-- Added a form element -->
+                <input type="text" id="username" placeholder="Username">
+                <input type="password" id="password" placeholder="Password">
+                <button type="button" onclick="login()">Login</button>  <!-- Changed type to "button" -->
+            </form>
         </div>
 
         <div id="admin-panel" class="hidden">
@@ -116,67 +108,101 @@
 
             <section>
                 <h3>Update Countdown Timer</h3>
-                <label for="target-time">Target Time:</label>
-                <input type="datetime-local" id="target-time">
-                <label for="entry-link">Entry Link (Optional):</label>
-                <input type="text" id="entry-link" placeholder="Entry link (optional)">
-                <button onclick="updateCountdown()">Update Countdown</button>
+                <div class="form-group">
+                    <label for="target-time">Target Time:</label>
+                    <input type="datetime-local" id="target-time">
+                </div>
+                <div class="form-group">
+                    <label for="entry-link">Entry Link (Optional):</label>
+                    <input type="text" id="entry-link" placeholder="Entry link (optional)">
+                </div>
+                <button type="button" onclick="updateCountdown()">Update Countdown</button>
             </section>
 
             <section>
                 <h3>Manage Events</h3>
-                <label for="event-title">Event Title:</label>
-                <input type="text" id="event-title" placeholder="Event Title">
-                <label for="event-description">Event Description (optional):</label>
-                <textarea id="event-description" placeholder="Event Description (optional)"></textarea>
-                <label for="event-total-winnings">Total Winnings:</label>
-                <input type="number" id="event-total-winnings" placeholder="Total Winnings" value="0">
-                <label for="event-winner-payout">Winner Payout:</label>
-                <input type="number" id="event-winner-payout" placeholder="Winner Payout" value="0">
-                <label for="event-non-profit">Non-Profit:</label>
-                <input type="text" id="event-non-profit" placeholder="Non-Profit" value="N/A">
-                <label for="event-website-funds">Website Funds:</label>
-                <input type="number" id="event-website-funds" placeholder="Website Funds" value="0">
-                <button onclick="addEvent()">Add Event</button>
+                <div class="form-group">
+                    <label for="event-title">Event Title:</label>
+                    <input type="text" id="event-title" placeholder="Event Title">
+                </div>
+                <div class="form-group">
+                    <label for="event-description">Event Description (optional):</label>
+                    <textarea id="event-description" placeholder="Event Description (optional)"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="event-total-winnings">Total Winnings:</label>
+                    <input type="number" id="event-total-winnings" placeholder="Total Winnings" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="event-winner-payout">Winner Payout:</label>
+                    <input type="number" id="event-winner-payout" placeholder="Winner Payout" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="event-non-profit">Non-Profit:</label>
+                    <input type="text" id="event-non-profit" placeholder="Non-Profit" value="N/A">
+                </div>
+                <div class="form-group">
+                    <label for="event-website-funds">Website Funds:</label>
+                    <input type="number" id="event-website-funds" placeholder="Website Funds" value="0">
+                </div>
+                <button type="button" onclick="addEvent()">Add Event</button>
                 <ul id="event-list"></ul>
             </section>
 
             <section>
                 <h3>Manage Users</h3>
-                <label for="new-username">New Username:</label>
-                <input type="text" id="new-username" placeholder="New Username">
-                <label for="new-password">New Password:</label>
-                <input type="password" id="new-password" placeholder="New Password">
-                <button onclick="addUser()">Add User</button>
+                <div class="form-group">
+                    <label for="new-username">New Username:</label>
+                    <input type="text" id="new-username" placeholder="New Username">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password:</label>
+                    <input type="password" id="new-password" placeholder="New Password">
+                </div>
+                <button type="button" onclick="addUser()">Add User</button>
                 <ul id="user-list"></ul>
             </section>
 
             <section>
                 <h3>Manage Sweepstakes</h3>
-                <label for="sweepstakes-title">Sweepstakes Title:</label>
-                <input type="text" id="sweepstakes-title" placeholder="Sweepstakes Title">
-                <label for="sweepstakes-description">Sweepstakes Description:</label>
-                <textarea id="sweepstakes-description" placeholder="Sweepstakes Description"></textarea>
-                <label for="sweepstakes-start">Start Date:</label>
-                <input type="datetime-local" id="sweepstakes-start">
-                <label for="sweepstakes-end">End Date:</label>
-                <input type="datetime-local" id="sweepstakes-end">
-                <label for="sweepstakes-winners">Number of Winners:</label>
-                <input type="number" id="sweepstakes-winners" placeholder="Number of Winners">
-                <button onclick="addSweepstakes()">Add Sweepstakes</button>
+                <div class="form-group">
+                    <label for="sweepstakes-title">Sweepstakes Title:</label>
+                    <input type="text" id="sweepstakes-title" placeholder="Sweepstakes Title">
+                </div>
+                <div class="form-group">
+                    <label for="sweepstakes-description">Sweepstakes Description:</label>
+                    <textarea id="sweepstakes-description" placeholder="Sweepstakes Description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="sweepstakes-start">Start Date:</label>
+                    <input type="datetime-local" id="sweepstakes-start">
+                </div>
+                <div class="form-group">
+                    <label for="sweepstakes-end">End Date:</label>
+                    <input type="datetime-local" id="sweepstakes-end">
+                </div>
+                <div class="form-group">
+                    <label for="sweepstakes-winners">Number of Winners:</label>
+                    <input type="number" id="sweepstakes-winners" placeholder="Number of Winners">
+                </div>
+                <button type="button" onclick="addSweepstakes()">Add Sweepstakes</button>
                 <ul id="sweepstakes-list"></ul>
             </section>
 
             <section>
                 <h3>Send Announcement</h3>
-                <label for="announcement-title">Announcement Title:</label>
-                <input type="text" id="announcement-title" placeholder="Announcement Title">
-                <label for="announcement-message">Announcement Message:</label>
-                <textarea id="announcement-message" placeholder="Announcement Message"></textarea>
-                <button onclick="sendAnnouncement()">Send Announcement</button>
+                <div class="form-group">
+                    <label for="announcement-title">Announcement Title:</label>
+                    <input type="text" id="announcement-title" placeholder="Announcement Title">
+                </div>
+                <div class="form-group">
+                    <label for="announcement-message">Announcement Message:</label>
+                    <textarea id="announcement-message" placeholder="Announcement Message"></textarea>
+                </div>
+                <button type="button" onclick="sendAnnouncement()">Send Announcement</button>
             </section>
 
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <button class="logout-btn" type="button" onclick="logout()">Logout</button> <!-- Changed type to "button" -->
         </div>
     </div>
 
