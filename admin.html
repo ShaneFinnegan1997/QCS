@@ -1,246 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCS Admin Panel</title>
-    <style>
-        body {
-            font-family: Arial,
-            sans-serif;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-
-        .admin-container {
-            max-width: 900px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        input,
-        button,
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            box-sizing: border-box;
-        }
-
-        img.banner {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .logout-btn {
-            margin-top: 20px;
-        }
-
-        section {
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-        }
-
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        #event-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        #event-list li {
-            margin-bottom: 5px;
-            padding: 8px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-        }
-
-        .event-actions {
-            display: inline-block;
-            margin-left: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QCS Admin</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <div id="header-container"></div>
 
-    <div id="header-container"></div>
-
-    <div class="admin-container">
-        <img class="banner" src="https://i.imgur.com/yP7hK0j.png" alt="Admin Panel Banner">
+  <main>
+    <center>
+      <section style="margin-top: 30px;">
+        <img src="https://your-image-url.com/banner.png" alt="QCS Admin Banner" style="max-width: 90%; height: auto; border-radius: 12px;" />
+        <h1>QCS Admin</h1>
+        <a href="index.html">← Back to Homepage</a>
 
         <div id="login-section">
-    <h2>Admin Login</h2>
-    <form id="login-form">
-        <!-- Use more descriptive IDs and labels -->
-        <label for="admin-username">Username:</label>
-        <input type="text" id="admin-username" placeholder="Username">
-        <label for="admin-password">Password:</label>
-        <input type="password" id="admin-password" placeholder="Password">
-        <button type="button" id="login-btn">Login</button> <!-- Use the ID from script.js -->
-        <p id="login-status"></p> <!-- For displaying login status messages -->
-    </form>
-</div>
-
-
-        <!-- Everything else remains the same -->
-        <div id="admin-panel" class="hidden">
-            <h2>Welcome, Admin</h2>
-
-            <section>
-                <h3>Update Countdown Timer</h3>
-                <div class="form-group">
-                    <label for="target-time">Target Time:</label>
-                    <input type="datetime-local" id="target-time">
-                </div>
-                <div class="form-group">
-                    <label for="entry-link">Entry Link (Optional):</label>
-                    <input type="text" id="entry-link" placeholder="Entry link (optional)">
-                </div>
-                <button type="button" onclick="updateCountdown()">Update Countdown</button>
-            </section>
-
-            <section>
-                <h3>Manage Events</h3>
-                <div class="form-group">
-                    <label for="event-title">Event Title:</label>
-                    <input type="text" id="event-title" placeholder="Event Title">
-                </div>
-                <div class="form-group">
-                    <label for="event-description">Event Description (optional):</label>
-                    <textarea id="event-description" placeholder="Event Description (optional)"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="event-total-winnings">Total Winnings:</label>
-                    <input type="number" id="event-total-winnings" placeholder="Total Winnings" value="0">
-                </div>
-                <div class="form-group">
-                    <label for="event-winner-payout">Winner Payout:</label>
-                    <input type="number" id="event-winner-payout" placeholder="Winner Payout" value="0">
-                </div>
-                <div class="form-group">
-                    <label for="event-non-profit">Non-Profit:</label>
-                    <input type="text" id="event-non-profit" placeholder="Non-Profit" value="N/A">
-                </div>
-                <div class="form-group">
-                    <label for="event-website-funds">Website Funds:</label>
-                    <input type="number" id="event-website-funds" placeholder="Website Funds" value="0">
-                </div>
-                <button type="button" onclick="addEvent()">Add Event</button>
-                <ul id="event-list"></ul>
-            </section>
-
-            <section>
-                <h3>Manage Users</h3>
-                <div class="form-group">
-                    <label for="new-username">New Username:</label>
-                    <input type="text" id="new-username" placeholder="New Username">
-                </div>
-                <div class="form-group">
-                    <label for="new-password">New Password:</label>
-                    <input type="password" id="new-password" placeholder="New Password">
-                </div>
-                <button type="button" onclick="addUser()">Add User</button>
-                <ul id="user-list"></ul>
-            </section>
-
-            <section>
-                <h3>Manage Sweepstakes</h3>
-                <div class="form-group">
-                    <label for="sweepstakes-title">Sweepstakes Title:</label>
-                    <input type="text" id="sweepstakes-title" placeholder="Sweepstakes Title">
-                </div>
-                <div class="form-group">
-                    <label for="sweepstakes-description">Sweepstakes Description:</label>
-                    <textarea id="sweepstakes-description" placeholder="Sweepstakes Description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="sweepstakes-start">Start Date:</label>
-                    <input type="datetime-local" id="sweepstakes-start">
-                </div>
-                <div class="form-group">
-                    <label for="sweepstakes-end">End Date:</label>
-                    <input type="datetime-local" id="sweepstakes-end">
-                </div>
-                <div class="form-group">
-                    <label for="sweepstakes-winners">Number of Winners:</label>
-                    <input type="number" id="sweepstakes-winners" placeholder="Number of Winners">
-                </div>
-                <button type="button" onclick="addSweepstakes()">Add Sweepstakes</button>
-                <ul id="sweepstakes-list"></ul>
-            </section>
-
-            <section>
-                <h3>Send Announcement</h3>
-                <div class="form-group">
-                    <label for="announcement-title">Announcement Title:</label>
-                    <input type="text" id="announcement-title" placeholder="Announcement Title">
-                </div>
-                <div class="form-group">
-                    <label for="announcement-message">Announcement Message:</label>
-                    <textarea id="announcement-message" placeholder="Announcement Message"></textarea>
-                </div>
-                <button type="button" onclick="sendAnnouncement()">Send Announcement</button>
-            </section>
-
-            <button class="logout-btn" type="button" onclick="logout()">Logout</button> <!-- Changed type to "button" -->
+          <h2>Admin Login</h2>
+          <input type="text" id="username" placeholder="Username" /><br/><br/>
+          <input type="password" id="password" placeholder="Password" /><br/><br/>
+          <button onclick="adminLogin()">Login</button>
         </div>
-    </div>
 
-    <div id="footer-container"></div>
+        <div id="admin-panel" style="display: none;">
+          <button onclick="logout()" style="float: right; margin-bottom: 10px;">Logout</button>
+          <h2>Welcome to the Admin Panel</h2>
+          <!-- Admin controls go here -->
+        </div>
+      </section>
+    </center>
+  </main>
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+  <div id="footer-container"></div>
 
-    <!-- Link to script.js -->
-    <script src="script.js" type="module"></script> <!-- IMPORTANT: Added type="module" -->
+  <!-- Firebase Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-        <script>
-        // Load header/footer
-        async function loadHTML(selector, url) {
-            try {
-                const res = await fetch(url);
-                if (res.ok) {
-                    const html = await res.text();
-                    document.querySelector(selector).innerHTML = html;
-                }
-            } catch (e) {
-                console.error("Failed to load:", url);
-            }
+  <!-- Firebase Setup -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+      authDomain: "qcsweeps-4b994.firebaseapp.com",
+      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+      projectId: "qcsweeps-4b994",
+      storageBucket: "qcsweeps-4b994.appspot.com",
+      messagingSenderId: "810241609281",
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
+      measurementId: "G-XL9VQ985S9"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Check if already logged in
+    window.onload = () => {
+      const storedUsername = localStorage.getItem("adminUser");
+      if (storedUsername) {
+        showAdminPanel();
+      }
+    };
+
+    function adminLogin() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) return alert("Please fill in both fields.");
+
+      db.ref("admins/" + username).once("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.password === password) {
+          localStorage.setItem("adminUser", username);
+          showAdminPanel();
+        } else {
+          alert("Invalid username or password.");
         }
-        // Load the header and footer
-        loadHTML("#header-container", "header-admin.html");
-        loadHTML("#footer-container", "footer.html");
-    </script>
+      });
+    }
 
+    function showAdminPanel() {
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("admin-panel").style.display = "block";
+    }
 
+    function logout() {
+      localStorage.removeItem("adminUser");
+      location.reload();
+    }
+  </script>
+
+  <!-- Header/Footer Injection -->
+  <script>
+    async function loadHTML(selector, url) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          document.querySelector(selector).innerHTML = html;
+        } else {
+          console.error("404 error loading:", url);
+        }
+      } catch (e) {
+        console.error("Failed to load:", url, e);
+      }
+    }
+
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
 </body>
-
 </html>
