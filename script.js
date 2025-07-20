@@ -8,6 +8,13 @@ import {
   onValue,
   remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; // Import Firebase Auth
+
 
 // Firebase Config
 const firebaseConfig = {
@@ -22,6 +29,110 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app); // Initialize Firebase Auth
+
+// Announcement Code
+const announcementRef = ref(db, 'announcement');
+const announcementTextElement = document.getElementById('announcement-text');
+const adminLoginButton = document.getElementById('admin-login-button');
+const adminLoginPopup = document.getElementById('admin-login-popup');
+const adminLoginSubmitButton = document.getElementById('admin-login-submit');
+const adminLoginCancelButton = document.getElementById('admin-login-cancel');
+const adminEmailInput = document.getElementById('admin-email');
+const adminPasswordInput = document.getElementById('admin-password');
+const adminLoginError = document.getElementById('admin-login-error');
+const adminEditPopup = document.getElementById('admin-edit-popup');
+const adminAnnouncementTextarea = document.getElementById('admin-announcement-text');
+const adminAnnouncementSaveButton = document.getElementById('admin-announcement-save');
+const adminAnnouncementCancelButton = document.getElementById('admin-announcement-cancel');
+
+let isAdminLoggedIn = false;
+
+// Function to show the admin login popup
+function showAdminLoginPopup() {
+  adminLoginPopup.style.display = 'block';
+}
+
+// Function to hide the admin login popup
+function hideAdminLoginPopup() {
+  adminLoginPopup.style.display = 'none';
+  adminEmailInput.value = '';
+  adminPasswordInput.value = '';
+  adminLoginError.textContent = '';
+}
+
+// Function to show the admin edit popup
+function showAdminEditPopup() {
+  adminEditPopup.style.display = 'block';
+  get(announcementRef).then((snapshot) => {
+    const announcement = snapshot.val();
+    adminAnnouncementTextarea.value = announcement || '';
+  });
+
+}
+
+// Function to hide the admin edit popup
+function hideAdminEditPopup() {
+  adminEditPopup.style.display = 'none';
+}
+
+// Event listener for the admin login button
+adminLoginButton.addEventListener('click', () => {
+  if (isAdminLoggedIn) {
+    showAdminEditPopup();
+  } else {
+    showAdminLoginPopup();
+  }
+});
+
+// Event listener for the admin login submit button
+adminLoginSubmitButton.addEventListener('click', () => {
+  const email = adminEmailInput.value;
+  const password = adminPasswordInput.value;
+
+  signInWithEmailAndPassword(auth, email, password) // Use Firebase Auth
+    .then((userCredential) => {
+      hideAdminLoginPopup();
+      isAdminLoggedIn = true;
+      adminLoginButton.textContent = 'Edit Announcement';
+      showAdminEditPopup();
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      adminLoginError.textContent = 'Login failed: ' + errorMessage;
+    });
+});
+
+// Event listener for the admin login cancel button
+adminLoginCancelButton.addEventListener('click', hideAdminLoginPopup);
+
+// Event listener for the admin announcement save button
+adminAnnouncementSaveButton.addEventListener('click', () => {
+  const newAnnouncement = adminAnnouncementTextarea.value;
+
+  set(announcementRef, newAnnouncement)
+    .then(() => {
+      hideAdminEditPopup();
+      alert('Announcement updated successfully!');
+    })
+    .catch((error) => {
+      console.error('Error updating announcement:', error);
+      alert('Error updating announcement.');
+    });
+});
+
+// Event listener for the admin announcement cancel button
+adminAnnouncementCancelButton.addEventListener('click', hideAdminEditPopup);
+
+onValue(announcementRef, (snapshot) => {
+  const announcement = snapshot.val();
+  if (announcement) {
+    announcementTextElement.textContent = announcement;
+  } else {
+    announcementTextElement.textContent = 'No announcement currently.';
+  }
+});
 
 // Load header/footer
 (async () => {
@@ -111,9 +222,9 @@ function loadAdminEvents() {
         const div = document.createElement("div");
         div.className = "admin-event-item";
         div.innerHTML = `
-          <strong>${event.title}</strong><br/>
-          <p>${event.description || ""}</p>
-          <button onclick="deleteEvent('${key}')">Delete</button>
+          <strong>\${event.title}</strong><br/>
+          <p>\${event.description || ""}</p>
+          <button onclick="deleteEvent('\${key}')">Delete</button>
           <hr/>
         `;
         list.appendChild(div);
