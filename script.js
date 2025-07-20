@@ -23,7 +23,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Admin login
+// Declare deleteEvent in the global scope
+window.deleteEvent = async function(eventId) {
+    if (confirm("Are you sure you want to delete this event?")) {
+        try {
+            await remove(ref(db, "events/" + eventId));
+            alert("Event deleted.");
+            // Reload events after deletion
+            const list = document.getElementById("event-list");
+            loadEvents(list);
+        } catch (error) {
+            alert("Error deleting event: " + error.message);
+        }
+    }
+};
+
+// Login
 const loginBtn = document.getElementById("login-btn");
 if (loginBtn) {
     loginBtn.addEventListener("click", async () => {
@@ -39,7 +54,9 @@ if (loginBtn) {
             document.getElementById("login-form").style.display = "none";
             document.getElementById("admin-panel").classList.remove("hidden");
             document.getElementById("manage-events").classList.remove("hidden");
-            loadAdminEvents();
+            // Ensure you pass the element where events will be loaded
+            const list = document.getElementById("event-list");
+            loadEvents(list);
         } else {
             status.innerText = "Invalid username or password.";
         }
@@ -83,10 +100,12 @@ if (logBtn) {
     });
 }
 
-// Load events
-function loadAdminEvents() {
-    const list = document.getElementById("admin-events-list");
-    if (!list) return;
+// Load events - now accepts a parameter for the list
+function loadEvents(list) {
+    if (!list) {
+        console.error("Event list element not found.");
+        return;
+    }
 
     list.innerHTML = "Loading...";
     const eventsRef = ref(db, "events");
@@ -95,93 +114,16 @@ function loadAdminEvents() {
         list.innerHTML = "";
 
         if (data) {
-            const entries = Object.entries(data).reverse();
-            for (const [key, event] of entries) {
-                const div = document.createElement("div");
-                div.className = "admin-event-item";
-                div.innerHTML = `
-          <strong>\${event.title}</strong><br/>
-          ${event.description ? `<p>${event.description}</p>` : ""}
-          ${event.link ? `<a href="${event.link}" target="_blank">Event Link</a><br/>` : ""}
-          <button data-event-id="\${key}" class="delete-event-btn">Delete</button>
-          <hr/>
-        `;
-                list.appendChild(div);
+            for (const key in data) {
+                const event = data[key];
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <strong>\${event.title}</strong><br>
+                    ${event.description ? `<p>${event.description}</p>` : ""}
+                    ${event.link ? `<a href="${event.link}" target="_blank">Event Link</a><br>` : ""}
+                    <button onclick="deleteEvent('\${key}')">Delete</button>
+                `;
+                list.appendChild(li);
             }
         } else {
-            list.innerHTML = "<p>No events found.</p>";
-        }
-
-        // Add event listeners to delete buttons
-        const deleteButtons = document.querySelectorAll('.delete-event-btn');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const eventId = this.dataset.eventId;
-                deleteEvent(eventId);
-            });
-        });
-    });
-}
-
-// Delete event
-async function deleteEvent(eventId) {
-    if (confirm("Are you sure you want to delete this event?")) {
-        try {
-            await remove(ref(db, "events/" + eventId));
-            alert("Event deleted.");
-            loadAdminEvents();  // Reload events after deletion
-        } catch (error) {
-            alert("Error deleting event: " + error.message);
-        }
-    }
-}
-
-// Function to display the announcement
-function displayAnnouncement(title, message) {
-    const announcementArea = document.getElementById("announcement-area");
-    const announcementTitleDisplay = document.getElementById("announcement-title-display");
-    const announcementMessageDisplay = document.getElementById("announcement-message-display");
-
-    if (announcementTitleDisplay && announcementMessageDisplay && announcementArea) {
-        announcementTitleDisplay.textContent = title;
-        announcementMessageDisplay.textContent = message;
-        announcementArea.style.display = "block"; // Make the announcement area visible
-    } else {
-        console.warn("Announcement elements not found in header. Check your header.html.");
-    }
-}
-
-// Function to clear the announcement
-function clearAnnouncement() {
-    const announcementArea = document.getElementById("announcement-area");
-
-    if(announcementArea){
-        announcementArea.style.display = "none"; // Hide the announcement area
-    }
-
-    const announcementTitleDisplay = document.getElementById("announcement-title-display");
-    const announcementMessageDisplay = document.getElementById("announcement-message-display");
-
-    if(announcementTitleDisplay && announcementMessageDisplay) {
-        announcementTitleDisplay.textContent = "";
-        announcementMessageDisplay.textContent = "";
-    }
-}
-
-// Load existing announcement on page load and listen for updates
-const announcementRef = ref(db, "announcement");
-if(announcementRef) {
-    onValue(announcementRef, (snapshot) => {
-        const announcement = snapshot.val();
-
-        if (announcement) {
-            displayAnnouncement(announcement.title, announcement.message);
-        } else {
-            //No announcement so clear it from view
-            clearAnnouncement();
-        }
-    });
-}
-
-// Make deleteEvent globally accessible by attaching it to the window object
-window.deleteEvent = deleteEvent;
+            list.innerHTML
