@@ -34,13 +34,13 @@ const auth = getAuth(app); // Initialize Firebase Auth
 // Announcement Code
 const announcementRef = ref(db, 'announcement');
 const announcementTextElement = document.getElementById('announcement-text');
-const adminLoginLink = document.getElementById('admin-login-link'); // Changed ID
+const adminLoginLink = document.getElementById('admin-login-link');
 const adminDropdown = document.getElementById('admin-dropdown');
 const adminDropdownCloseButton = document.getElementById('admin-dropdown-close');
 const adminLoginSection = document.getElementById('admin-login-section');
 const adminEditSection = document.getElementById('admin-edit-section');
 const adminLoginSubmitButton = document.getElementById('admin-login-submit');
-const adminUsernameInput = document.getElementById('admin-username'); // Changed ID for clarity
+const adminUsernameInput = document.getElementById('admin-username');
 const adminPasswordInput = document.getElementById('admin-password');
 const adminLoginError = document.getElementById('admin-login-error');
 const adminAnnouncementTextarea = document.getElementById('admin-announcement-text');
@@ -64,8 +64,8 @@ function hideAdminDropdown() {
 }
 
 // Event listener for the admin login button
-adminLoginLink.addEventListener('click', (event) => { //Changed Listener Name
-    event.preventDefault();  // Prevent the link from navigating
+adminLoginLink.addEventListener('click', function(event) { // Added function keyword
+    event.preventDefault();
     showAdminDropdown();
 });
 
@@ -76,19 +76,18 @@ adminDropdownCloseButton.addEventListener('click', () => {
 
 // Event listener for the admin login submit button
 adminLoginSubmitButton.addEventListener('click', async () => {
-    const username = adminUsernameInput.value; // Get username
+    const username = adminUsernameInput.value;
     const password = adminPasswordInput.value;
 
-    // Query the 'admin' node in the database for matching credentials
     const snapshot = await get(ref(db, "admin"));
     const adminData = snapshot.val();
 
     if (adminData && adminData.username === username && adminData.password === password) {
         isAdminLoggedIn = true;
-        adminLoginLink.textContent = 'Edit Announcement'; //changed Name
+        adminLoginLink.textContent = 'Edit Announcement';
         adminLoginSection.style.display = 'none';
         adminEditSection.style.display = 'block';
-        loadAnnouncementForEdit(); // Load announcement into the textarea
+        loadAnnouncementForEdit();
     } else {
         adminLoginError.textContent = 'Invalid username or password.';
     }
