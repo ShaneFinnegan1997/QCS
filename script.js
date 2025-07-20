@@ -34,7 +34,7 @@ const db = getDatabase(app);
             console.error(e);
         }
     };
-    if (document.querySelector("#header-container")) loadHTML("#header-container", "header.html");
+    if (document.querySelector("#header-container")) loadHTML("#header-container", "header-admin.html");
     if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
 })();
 
@@ -78,6 +78,7 @@ if (loginBtn) {
                 // Login successful
                 document.getElementById("login-form").style.display = "none";
                 document.getElementById("admin-panel").classList.remove("hidden");
+                status.innerText = ""; // Clear any previous status messages
                 //loadAdminEvents(); // Assuming this function exists
 
             } else {
