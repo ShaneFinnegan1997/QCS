@@ -15,6 +15,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; // Import Firebase Auth
 
+document.addEventListener('DOMContentLoaded', function() {
 
 // Firebase Config
 const firebaseConfig = {
@@ -237,3 +238,4 @@ window.deleteEvent = async function (eventId) {
     }
   }
 };
+});
