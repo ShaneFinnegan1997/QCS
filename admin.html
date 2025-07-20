@@ -68,14 +68,22 @@
     loadHTML("footer-container", "footer.html");
 
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("login-section").style.display = "none";
-        document.getElementById("admin-panel").style.display = "block";
-      } else {
-        document.getElementById("login-section").style.display = "block";
-        document.getElementById("admin-panel").style.display = "none";
-      }
-    });
+  if (user) {
+    // Show UID on screen for you to see
+    let uidDisplay = document.getElementById('uid-display');
+    if (!uidDisplay) {
+      uidDisplay = document.createElement('p');
+      uidDisplay.id = 'uid-display';
+      uidDisplay.style = "position: fixed; bottom: 10px; right: 10px; background: #eee; padding: 5px; font-size: 12px; border: 1px solid #ccc;";
+      document.body.appendChild(uidDisplay);
+    }
+    uidDisplay.textContent = `Your UID: ${user.uid}`;
+    
+    // The rest of your code to show admin panel
+  } else {
+    // user logged out stuff
+  }
+});
 
     function login() {
       const email = document.getElementById("email").value;
