@@ -35,95 +35,86 @@ const auth = getAuth(app); // Initialize Firebase Auth
 const announcementRef = ref(db, 'announcement');
 const announcementTextElement = document.getElementById('announcement-text');
 const adminLoginButton = document.getElementById('admin-login-button');
-const adminLoginPopup = document.getElementById('admin-login-popup');
+const adminDropdown = document.getElementById('admin-dropdown');
+const adminDropdownCloseButton = document.getElementById('admin-dropdown-close');
+const adminLoginSection = document.getElementById('admin-login-section');
+const adminEditSection = document.getElementById('admin-edit-section');
 const adminLoginSubmitButton = document.getElementById('admin-login-submit');
-const adminLoginCancelButton = document.getElementById('admin-login-cancel');
-const adminEmailInput = document.getElementById('admin-email');
+const adminUsernameInput = document.getElementById('admin-email'); // Changed ID for clarity
 const adminPasswordInput = document.getElementById('admin-password');
 const adminLoginError = document.getElementById('admin-login-error');
-const adminEditPopup = document.getElementById('admin-edit-popup');
 const adminAnnouncementTextarea = document.getElementById('admin-announcement-text');
 const adminAnnouncementSaveButton = document.getElementById('admin-announcement-save');
-const adminAnnouncementCancelButton = document.getElementById('admin-announcement-cancel');
 
 let isAdminLoggedIn = false;
 
-// Function to show the admin login popup
-function showAdminLoginPopup() {
-  adminLoginPopup.style.display = 'block';
+// Function to show the admin dropdown
+function showAdminDropdown() {
+    adminDropdown.style.display = 'block';
 }
 
-// Function to hide the admin login popup
-function hideAdminLoginPopup() {
-  adminLoginPopup.style.display = 'none';
-  adminEmailInput.value = '';
-  adminPasswordInput.value = '';
-  adminLoginError.textContent = '';
-}
-
-// Function to show the admin edit popup
-function showAdminEditPopup() {
-  adminEditPopup.style.display = 'block';
-  get(announcementRef).then((snapshot) => {
-    const announcement = snapshot.val();
-    adminAnnouncementTextarea.value = announcement || '';
-  });
-
-}
-
-// Function to hide the admin edit popup
-function hideAdminEditPopup() {
-  adminEditPopup.style.display = 'none';
+// Function to hide the admin dropdown
+function hideAdminDropdown() {
+    adminDropdown.style.display = 'none';
+    adminLoginSection.style.display = 'block'; // Reset to login section
+    adminEditSection.style.display = 'none';
+    adminUsernameInput.value = '';
+    adminPasswordInput.value = '';
+    adminLoginError.textContent = '';
 }
 
 // Event listener for the admin login button
 adminLoginButton.addEventListener('click', () => {
-  if (isAdminLoggedIn) {
-    showAdminEditPopup();
-  } else {
-    showAdminLoginPopup();
-  }
+    showAdminDropdown();
+});
+
+// Event listener for the admin dropdown close button
+adminDropdownCloseButton.addEventListener('click', () => {
+    hideAdminDropdown();
 });
 
 // Event listener for the admin login submit button
-adminLoginSubmitButton.addEventListener('click', () => {
-  const email = adminEmailInput.value;
-  const password = adminPasswordInput.value;
+adminLoginSubmitButton.addEventListener('click', async () => {
+    const username = adminUsernameInput.value; // Get username
+    const password = adminPasswordInput.value;
 
-  signInWithEmailAndPassword(auth, email, password) // Use Firebase Auth
-    .then((userCredential) => {
-      hideAdminLoginPopup();
-      isAdminLoggedIn = true;
-      adminLoginButton.textContent = 'Edit Announcement';
-      showAdminEditPopup();
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      adminLoginError.textContent = 'Login failed: ' + errorMessage;
-    });
+    // Query the 'admin' node in the database for matching credentials
+    const snapshot = await get(ref(db, "admin"));
+    const adminData = snapshot.val();
+
+    if (adminData && adminData.username === username && adminData.password === password) {
+        isAdminLoggedIn = true;
+        adminLoginButton.textContent = 'Edit Announcement';
+        adminLoginSection.style.display = 'none';
+        adminEditSection.style.display = 'block';
+        loadAnnouncementForEdit(); // Load announcement into the textarea
+    } else {
+        adminLoginError.textContent = 'Invalid username or password.';
+    }
 });
 
-// Event listener for the admin login cancel button
-adminLoginCancelButton.addEventListener('click', hideAdminLoginPopup);
+// Function to load the current announcement into the edit textarea
+function loadAnnouncementForEdit() {
+    get(announcementRef).then((snapshot) => {
+        const announcement = snapshot.val();
+        adminAnnouncementTextarea.value = announcement || '';
+    });
+}
 
 // Event listener for the admin announcement save button
 adminAnnouncementSaveButton.addEventListener('click', () => {
-  const newAnnouncement = adminAnnouncementTextarea.value;
+    const newAnnouncement = adminAnnouncementTextarea.value;
 
-  set(announcementRef, newAnnouncement)
-    .then(() => {
-      hideAdminEditPopup();
-      alert('Announcement updated successfully!');
-    })
-    .catch((error) => {
-      console.error('Error updating announcement:', error);
-      alert('Error updating announcement.');
-    });
+    set(announcementRef, newAnnouncement)
+        .then(() => {
+            alert('Announcement updated successfully!');
+            hideAdminDropdown();
+        })
+        .catch((error) => {
+            console.error('Error updating announcement:', error);
+            alert('Error updating announcement.');
+        });
 });
-
-// Event listener for the admin announcement cancel button
-adminAnnouncementCancelButton.addEventListener('click', hideAdminEditPopup);
 
 onValue(announcementRef, (snapshot) => {
   const announcement = snapshot.val();
