@@ -9,6 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
+  <!-- Load external header -->
   <div id="header-container"></div>  <main>
     <section id="login-section">
       <h2>Admin Login</h2>
@@ -16,26 +17,35 @@
       <input type="password" id="password" placeholder="Password">
       <button onclick="login()">Login</button>
     </section><section id="admin-panel" style="display:none;">
-  <div style="text-align: right; margin-top: -20px;">
+  <div style="text-align: right; padding: 1rem;">
     <button onclick="logout()" style="padding: 10px 15px; background-color: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">Logout</button>
   </div>
   <h2>Manage Events</h2>
   <div id="eventsList"></div>
 </section>
 
-  </main>  <div id="footer-container"></div>  <script>
-    const username = "admin";
-    const password = "1234";
+  </main>  <!-- Load external footer -->  <div id="footer-container"></div>  <script>
+    // Load external header and footer HTML
+    function loadHTML(id, file) {
+      fetch(file)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById(id).innerHTML = data;
+        });
+    }
 
+    loadHTML("header-container", "/components/header-admin.html");
+    loadHTML("footer-container", "/components/footer.html");
+
+    // Simple login/logout system with localStorage
     const loginSection = document.getElementById("login-section");
     const adminPanel = document.getElementById("admin-panel");
 
     function login() {
-      const userInput = document.getElementById("username").value;
-      const passInput = document.getElementById("password").value;
-
-      if (userInput === username && passInput === password) {
-        localStorage.setItem("loggedIn", "true");
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      if (username === "admin" && password === "1234") {
+        localStorage.setItem("isAdmin", "true");
         showAdminPanel();
       } else {
         alert("Invalid credentials");
@@ -43,8 +53,8 @@
     }
 
     function logout() {
-      localStorage.removeItem("loggedIn");
-      location.reload();
+      localStorage.removeItem("isAdmin");
+      window.location.reload();
     }
 
     function showAdminPanel() {
@@ -53,22 +63,10 @@
       loadEvents();
     }
 
-    window.onload = () => {
-      if (localStorage.getItem("loggedIn") === "true") {
+    window.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("isAdmin") === "true") {
         showAdminPanel();
       }
-    };
-
-    // Load external header and footer
-    function loadHTML(selector, url) {
-      fetch(url)
-        .then(res => res.text())
-        .then(data => {
-          document.querySelector(selector).innerHTML = data;
-        });
-    }
-
-    loadHTML("#header-container", "/components/header-admin.html");
-    loadHTML("#footer-container", "/components/footer.html");
+    });
   </script>  <script src="/scripts/admin-events.js"></script></body>
 </html>
