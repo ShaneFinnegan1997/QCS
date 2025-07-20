@@ -2,10 +2,9 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QCS Admin</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCS Admin Panel</title>
     <style>
         body {
             font-family: Arial,
@@ -15,7 +14,7 @@
         }
 
         .admin-container {
-            max-width: 800px;
+            max-width: 900px;
             /* Increased max-width */
             margin: auto;
             background: #fff;
@@ -103,7 +102,7 @@
     <div id="header-container"></div>
 
     <div class="admin-container">
-        <img class="banner" src="https://i.imgur.com/yP7hK0j.png" alt="Admin Panel Banner" />
+        <img class="banner" src="https://i.imgur.com/yP7hK0j.png" alt="Admin Panel Banner">
 
         <div id="login-section">
             <h2>Admin Login</h2>
@@ -118,20 +117,26 @@
             <section>
                 <h3>Update Countdown Timer</h3>
                 <label for="target-time">Target Time:</label>
-                <input type="datetime-local" id="target-time" />
+                <input type="datetime-local" id="target-time">
                 <label for="entry-link">Entry Link (Optional):</label>
-                <input type="text" id="entry-link" placeholder="Entry link (optional)" />
+                <input type="text" id="entry-link" placeholder="Entry link (optional)">
                 <button onclick="updateCountdown()">Update Countdown</button>
             </section>
 
             <section>
                 <h3>Manage Events</h3>
                 <label for="event-title">Event Title:</label>
-                <input type="text" id="event-title" placeholder="Event Title" />
-                <label for="event-link">Event Link:</label>
-                <input type="text" id="event-link" placeholder="Event Link" />
+                <input type="text" id="event-title" placeholder="Event Title">
                 <label for="event-description">Event Description (optional):</label>
                 <textarea id="event-description" placeholder="Event Description (optional)"></textarea>
+                <label for="event-total-winnings">Total Winnings:</label>
+                <input type="number" id="event-total-winnings" placeholder="Total Winnings" value="0">
+                <label for="event-winner-payout">Winner Payout:</label>
+                <input type="number" id="event-winner-payout" placeholder="Winner Payout" value="0">
+                <label for="event-non-profit">Non-Profit:</label>
+                <input type="text" id="event-non-profit" placeholder="Non-Profit" value="N/A">
+                <label for="event-website-funds">Website Funds:</label>
+                <input type="number" id="event-website-funds" placeholder="Website Funds" value="0">
                 <button onclick="addEvent()">Add Event</button>
                 <ul id="event-list"></ul>
             </section>
@@ -153,9 +158,9 @@
                 <label for="sweepstakes-description">Sweepstakes Description:</label>
                 <textarea id="sweepstakes-description" placeholder="Sweepstakes Description"></textarea>
                 <label for="sweepstakes-start">Start Date:</label>
-                <input type="datetime-local" id="sweepstakes-start" />
+                <input type="datetime-local" id="sweepstakes-start">
                 <label for="sweepstakes-end">End Date:</label>
-                <input type="datetime-local" id="sweepstakes-end" />
+                <input type="datetime-local" id="sweepstakes-end">
                 <label for="sweepstakes-winners">Number of Winners:</label>
                 <input type="number" id="sweepstakes-winners" placeholder="Number of Winners">
                 <button onclick="addSweepstakes()">Add Sweepstakes</button>
@@ -181,9 +186,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-    <script src="./script.js">
+    <!-- Link to script.js -->
+    <script src="script.js"></script>
 
-    </script>
 </body>
 
 </html>
