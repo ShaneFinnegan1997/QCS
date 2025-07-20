@@ -2,106 +2,99 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Events</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div id="header-container"></div>
+  <div id="header-container"></div>
 
-    <h1>Upcoming Events</h1>
-    <div id="events-list">
-        Loading events...
-    </div>
+  <h1>Upcoming Events</h1>
+  <div id="events-list">
+    Loading events...
+  </div>
 
-    <div id="footer-container"></div>
+  <div id="footer-container"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-    <script>
-        // Load header and footer
-        async function loadHTML(selector, url) {
-            try {
-                const response = await fetch(url);
-                if (response.ok) {
-                    const html = await response.text();
-                    document.querySelector(selector).innerHTML = html;
-                } else {
-                    console.error("Failed to load", url);
-                    document.querySelector(selector).innerHTML = `<p style="color:red;">Failed to load \${url}</p>`; // Display error
-                }
-            } catch (e) {
-                console.error(e);
-                document.querySelector(selector).innerHTML = `<p style="color:red;">Error loading ${url}: ${e.message}</p>`; // Display error
-            }
+  <script>
+    // Load header and footer
+    async function loadHTML(selector, url) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          document.querySelector(selector).innerHTML = html;
+        } else {
+          console.error("Failed to load", url);
+          document.querySelector(selector).innerHTML = `<p style="color:red;">Failed to load \${url}</p>`; // Display error
         }
+      } catch (e) {
+        console.error(e);
+        document.querySelector(selector).innerHTML = `<p style="color:red;">Error loading ${url}: ${e.message}</p>`; // Display error
+      }
+    }
 
-        Promise.all([
-            loadHTML("#header-container", "header.html"),
-            loadHTML("#footer-container", "footer.html")
-        ]).then(() => {
-            // Firebase config (moved inside .then() to ensure header/footer are loaded first)
-            const firebaseConfig = {
-                apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-                authDomain: "qcsweeps-4b994.firebaseapp.com",
-                databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-                projectId: "qcsweeps-4b994",
-                storageBucket: "qcsweeps-4b994.appspot.com",
-                messagingSenderId: "810241609281",
-                appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-            };
+    Promise.all([
+      loadHTML("#header-container", "header.html"),
+      loadHTML("#footer-container", "footer.html")
+    ]).then(() => {
+      // Firebase config (moved inside .then() to ensure header/footer are loaded first)
+      const firebaseConfig = {
+        apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+        authDomain: "qcsweeps-4b994.firebaseapp.com",
+        databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+        projectId: "qcsweeps-4b994",
+        storageBucket: "qcsweeps-4b994.appspot.com",
+        messagingSenderId: "810241609281",
+        appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+      };
 
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.database();
-            const eventsList = document.getElementById("events-list");
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+      const eventsList = document.getElementById("events-list");
 
-            db.ref("events").on("value", (snapshot) => {
-                const data = snapshot.val();
+      db.ref("events").on("value", (snapshot) => {
+        const data = snapshot.val();
 
-                if (data) {
-                    eventsList.innerHTML = ''; // Clear "Loading..."
+        if (data) {
+          eventsList.innerHTML = ''; // Clear "Loading..."
 
-                    Object.keys(data).forEach(key => {
-                        const event = data[key];
+          Object.entries(data).reverse().forEach(([key, event]) => {
+            // Use the same HTML structure as the admin panel for consistency
+            let eventHTML =
+              "<strong>Title:</strong> " + event.title + "<br>" +
+              "<strong>Description:</strong> " + event.description + "<br>" +
+              (event.link ? "<strong>Link:</strong> <a href='" + event.link + "' target='_blank'>" + event.link + "</a><br>" : "") +
+              "<strong>Total Winnings:</strong> \$" + (event.totalWinnings || 0) + "<br>" +
+              "<strong>Winner Payout:</strong> \$" + (event.winnerPayoutAmount || 0) + "<br>" +
+              "<strong>Non-Profit:</strong> " + (event.nonProfitName || "N/A") + " - \$" + (event.nonProfitDonationAmount || 0) +
+              (event.nonProfitWebsiteLink ? " (<a href='" + event.nonProfitWebsiteLink + "' target='_blank'>Website</a>)" : "") +
+              "<br>" +
+              "<strong>Website Funds:</strong> \$" + (event.websiteFundsAmount || 0) + "<br>";
 
-                        // Sanitize event data.  Use default values if missing or invalid.
-                        const title = event.title || "No Title";
-                        const description = event.description || "No Description Available";
-                        const winnerPayoutAmount = (typeof event.winnerPayoutAmount === 'number') ? event.winnerPayoutAmount : 0;  // Ensure it's a number
-                        const nonProfitName = event.nonProfitName || "No Non-Profit Specified";
-                        const nonProfitDonationAmount = (typeof event.nonProfitDonationAmount === 'number') ? event.nonProfitDonationAmount : 0; // Ensure number
-                        const nonProfitWebsiteLink = event.nonProfitWebsiteLink || ""; // Default to empty string
+            const div = document.createElement("div");
+            div.className = "event-card"; // You might want to add this class to your CSS
+            div.innerHTML = eventHTML;
+            eventsList.appendChild(div);
+          });
+        } else {
+          eventsList.innerHTML = "<p>No events found.</p>";
+        }
+      }, (error) => {
+        console.error("Firebase Error:", error);
+        eventsList.innerHTML = `<p style="color:red;">Error fetching events: \${error.message}</p>`;
+      });
 
-                        let nonProfitLink = nonProfitName; // Default
-                        if (nonProfitWebsiteLink) {
-                            nonProfitLink = `<a href="${nonProfitWebsiteLink}" target="_blank">${nonProfitName}</a>`;
-                        }
-
-                        const eventDiv = document.createElement('div');
-                        eventDiv.innerHTML = `
-                            <h3>\${title}</h3>
-                            <p>\${description}</p>
-                            <p>Winner Payout: $${winnerPayoutAmount}</p>
-                            <p>Supporting: ${nonProfitLink} (Raised: $${nonProfitDonationAmount})</p>
-                        `;
-                        eventsList.appendChild(eventDiv);
-                    });
-                } else {
-                    eventsList.innerHTML = '<p>No events found.</p>';
-                }
-            }, (error) => { // ADDED: Error callback
-                console.error("Firebase Error:", error);
-                eventsList.innerHTML = `<p style="color:red;">Error fetching events: \${error.message}</p>`;
-            });
-
-        }).catch(error => {
-            console.error("Error loading header/footer:", error);
-            document.getElementById("events-list").innerHTML = `<p style="color:red;">Error loading header/footer: \${error.message}</p>`;
-        });
-    </script>
+    }).catch(error => {
+      console.error("Error loading header/footer:", error);
+      document.getElementById("events-list").innerHTML = `<p style="color:red;">Error loading header/footer: \${error.message}</p>`;
+    });
+  </script>
 </body>
 
 </html>
