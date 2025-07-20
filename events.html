@@ -75,7 +75,7 @@
               "<strong>Non-Profit:</strong> " + (event.nonProfitName || "N/A") + " - \" + (event.nonProfitDonationAmount || 0) +
               (event.nonProfitWebsiteLink ? " (<a href='" + event.nonProfitWebsiteLink + "' target='_blank'>Website</a>)" : "") +
               "<br>" +
-              "<strong>Website Funds:</strong> \$" + (event.websiteFundsAmount || 0) + "<br>";
+              "<strong>Website Funds:</strong> \" + (event.websiteFundsAmount || 0) + "<br>";
 
             const div = document.createElement("div");
             div.className = "event-card"; // You might want to add this class to your CSS
