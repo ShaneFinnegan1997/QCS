@@ -4,14 +4,6 @@ import {
     ref,
     get
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import {
-    getAuth,
-    signInWithCustomToken
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-    getFunctions,
-    httpsCallable
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
 // Firebase Config
 const firebaseConfig = {
@@ -27,8 +19,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const auth = getAuth(app);
-const functions = getFunctions(app);
 
 // Load header/footer
 (async () => {
@@ -54,72 +44,39 @@ if (loginBtn) {
         const inputPassword = document.getElementById("admin-password").value.trim();
         const status = document.getElementById("login-status");
 
-        // Get the function
-        const generateCustomToken = httpsCallable(functions, 'generateCustomToken');
-
         try {
-            // Call the function with the username and password
-            const result = await generateCustomToken({
-                username: inputUsername,
-                password: inputPassword
-            });
+            // 1. Get admin data from the 'admins' node
+            const adminsRef = ref(db, 'admins');
+            const snapshot = await get(adminsRef);
+            const adminsData = snapshot.val();
 
-            // Get the token from the result
-            const token = result.data.token;
+            if (!adminsData) {
+                status.innerText = "No admins found in the database.";
+                return;
+            }
 
-            // Sign in with the custom token
-            await signInWithCustomToken(auth, token);
+            // 2. Find the admin with the matching username and password
+            let adminFound = false;
+            for (const adminKey in adminsData) {
+                const admin = adminsData[adminKey];
+                if (admin.username === inputUsername && admin.password === inputPassword) {
+                    adminFound = true;
+                    break;
+                }
+            }
 
-            // Hide the login form and show the admin panel
-            document.getElementById("login-form").style.display = "none";
-            document.getElementById("admin-panel").classList.remove("hidden");
-            document.getElementById("manage-events").classList.remove("hidden");
+            if (adminFound) {
+                // Login successful
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("admin-panel").classList.remove("hidden");
+                //loadAdminEvents(); // Assuming this function exists
 
-            // Load admin events (assuming this function exists)
-            //loadAdminEvents();
-
+            } else {
+                status.innerText = "Invalid username or password.";
+            }
         } catch (error) {
             console.error("Login failed:", error);
             status.innerText = "Login failed: " + error.message;
         }
     });
 }
-
-// Implement sign out function
-const logoutBtn = document.querySelector(".logout-btn");
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-        try {
-            await auth.signOut();
-            // Show login form and hide admin panel after sign out
-            document.getElementById("login-form").style.display = "block";
-            document.getElementById("admin-panel").classList.add("hidden");
-            document.getElementById("manage-events").classList.add("hidden");
-            document.getElementById("login-status").innerText = ""; // Clear status message
-        } catch (error) {
-            console.error("Sign out failed:", error);
-            alert("Sign out failed: " + error.message);
-        }
-    });
-}
-
-// Function to listen for auth state changes
-auth.onAuthStateChanged(user => {
-    if (user) {
-        // User is signed in
-        console.log("User is signed in:", user);
-        // Hide login form and show admin panel
-        document.getElementById("login-form").style.display = "none";
-        document.getElementById("admin-panel").classList.remove("hidden");
-        document.getElementById("manage-events").classList.remove("hidden");
-        document.getElementById("login-status").innerText = ""; // Clear status message
-        // loadAdminEvents();
-    } else {
-        // User is signed out
-        console.log("User is signed out");
-        // Show login form and hide admin panel
-        document.getElementById("login-form").style.display = "block";
-        document.getElementById("admin-panel").classList.add("hidden");
-        document.getElementById("manage-events").classList.add("hidden");
-    }
-});
