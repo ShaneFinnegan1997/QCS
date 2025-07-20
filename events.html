@@ -123,12 +123,42 @@
         const keys = Object.keys(data).reverse(); // latest first
         keys.forEach(key => {
           const event = data[key];
+
+          // Check for null or undefined event data
+          if (!event) {
+            console.warn("Event data is null for key:", key);
+            return; // Skip to the next event
+          }
+
           const div = document.createElement("div");
           div.className = "event-card";
-          div.innerHTML = `
-            <h2>\${event.title}</h2>
-            <p>\${event.description}</p>
+
+          // Use template literals with proper syntax for variables
+          let eventContent = `
+            <h2>
+              \${event.link
+                ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title || "No Title"}</a>`
+                : (event.title || "No Title")}
+            </h2>
+            <p>\${event.description || "No description available."}</p>
           `;
+
+          if (event.winnerPayoutAmount) {
+            eventContent += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
+          }
+
+          if (event.nonProfitName) {
+            eventContent += `<p><strong>Supporting:</strong> \${event.nonProfitName}`;
+            if (event.nonProfitDonationAmount) {
+              eventContent += ` - Raised: $${event.nonProfitDonationAmount}`;
+            }
+            if (event.nonProfitWebsiteLink) {
+              eventContent += ` (<a href="\${event.nonProfitWebsiteLink}" target="_blank">Website</a>)`;
+            }
+            eventContent += `</p>`;
+          }
+
+          div.innerHTML = eventContent;
           eventsList.appendChild(div);
         });
       } else {
