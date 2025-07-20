@@ -137,10 +137,10 @@
           let eventContent = `
             <h2>
               \${event.link
-                ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title || "No Title"}</a>`
-                : (event.title || "No Title")}
+                ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title ? event.title : "No Title"}</a>`
+                : (event.title ? event.title : "No Title")}
             </h2>
-            <p>\${event.description || "No description available."}</p>
+            <p>\${event.description ? event.description : "No description available."}</p>
           `;
 
           if (event.winnerPayoutAmount) {
@@ -148,13 +148,13 @@
           }
 
           if (event.nonProfitName) {
-            eventContent += `<p><strong>Supporting:</strong> \${event.nonProfitName}`;
+            const nonProfitLink = event.nonProfitWebsiteLink ? `<a href="${event.nonProfitWebsiteLink}" target="_blank">${event.nonProfitName}</a>` : event.nonProfitName;
+            eventContent += `<p><strong>Supporting:</strong> \${nonProfitLink}`;
+
             if (event.nonProfitDonationAmount) {
               eventContent += ` - Raised: $${event.nonProfitDonationAmount}`;
             }
-            if (event.nonProfitWebsiteLink) {
-              eventContent += ` (<a href="\${event.nonProfitWebsiteLink}" target="_blank">Website</a>)`;
-            }
+
             eventContent += `</p>`;
           }
 
