@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - QC Sweepstakes</title>
-  <link rel="stylesheet" href="style.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Panel - QC Sweepstakes</title>
+<link rel="stylesheet" href="style.css" />
   <style>
     .admin-container { max-width: 600px; margin: 20px auto; padding: 20px; border-radius: 8px; background: #f9f9f9; }
     .admin-container h2 { text-align: center; }
@@ -28,14 +24,28 @@
   </style>
 </head>
 <body>
+  <div id="header-container"></div>
+  <main>
+    <center>
+      <h1>Admin Login</h1>
   <div class="admin-container">
     <h2>Admin Login</h2>
-    <div id="login-form">
+<div id="login-form">
+        <input type="text" id="admin-username" placeholder="Username" /><br><br>
+        <input type="password" id="admin-password" placeholder="Password" /><br><br>
+        <button id="login-btn">Login</button>
+        <p id="login-status" style="color:red;"></p>
       <input type="password" id="admin-pass" placeholder="Enter Admin Passcode" />
       <button onclick="checkLogin()">Login</button>
-    </div>
+</div>
 
-    <div id="admin-panel" class="hidden">
+<div id="admin-panel" class="hidden">
+        <h2>Update Countdown</h2>
+        <label>Countdown End Time:</label><br>
+        <input type="datetime-local" id="target-time" /><br><br>
+        <label>Entry Link:</label><br>
+        <input type="text" id="entry-link" placeholder="https://..." /><br><br>
+        <button id="update-countdown">Update Countdown</button><br><br>
       <h3>Create Event</h3>
       <div class="form-group">
         <input type="text" id="event-title" placeholder="Event Title" />
@@ -48,16 +58,23 @@
       </div>
       <button onclick="createEvent()">Add Event</button>
 
+<h2>Post Event</h2>
+<label>Event Title:</label><br>
+<input type="text" id="event-title" placeholder="Title" /><br><br>
       <hr>
       <h3>Manage Events</h3>
       <div id="events-list">Loading...</div>
     </div>
   </div>
 
+<label>Event Link (optional):</label><br>
+<input type="text" id="event-link" placeholder="https://..." /><br><br>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
+<label>Event Details:</label><br>
+<textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
@@ -71,6 +88,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+<button id="log-event">Post Event</button>
+      </div>
+    </center>
     const loginForm = document.getElementById("login-form");
     const adminPanel = document.getElementById("admin-panel");
     const eventsList = document.getElementById("events-list");
@@ -89,12 +109,19 @@
       });
     }
 
+    <section class="event-admin-section hidden" id="manage-events">
+      <h2>Manage Events</h2>
+      <div id="admin-events-list">Loading...</div>
+    </section>
+  </main>
     function createEvent() {
       const title = document.getElementById("event-title").value;
       const description = document.getElementById("event-description").value;
       const link = document.getElementById("event-link").value;
       if (!title || !description) return alert("Title and description required.");
 
+  <div id="footer-container"></div>
+  <script type="module" src="script.js"></script>
       const newEvent = { title, description, link };
       db.ref("events").push(newEvent);
       document.getElementById("event-title").value = "";
@@ -102,6 +129,12 @@
       document.getElementById("event-link").value = "";
     }
 
+  <script>
+    async function loadHTML(selector, url) {
+      const response = await fetch(url);
+      if (response.ok) {
+        const html = await response.text();
+        document.querySelector(selector).innerHTML = html;
     function loadEvents() {
       db.ref("events").on("value", snapshot => {
         const data = snapshot.val();
@@ -121,11 +154,15 @@
             `;
             eventsList.appendChild(div);
           });
-        } else {
+} else {
+        console.error("Failed to load", url);
           eventsList.innerHTML = "<p>No events found.</p>";
-        }
+}
       });
-    }
+}
+    loadHTML("#header-container", "header-admin.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
 
     function enableEdit(key, btn) {
       const card = btn.closest(".event-card");
