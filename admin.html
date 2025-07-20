@@ -1,49 +1,53 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel - QC Sweepstakes</title>
-<link rel="stylesheet" href="style.css">
-<style>
-    .admin-container {
-        max-width: 600px;
-        margin: 20px auto;
-        padding: 20px;
-        border-radius: 8px;
-        background: #f9f9f9;
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-    .admin-container h2 {
-        text-align: center;
-    }
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - QC Sweepstakes</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
 
-    .form-group {
-        margin-bottom: 15px;
-    }
+        .admin-container h2 {
+            text-align: center;
+        }
 
-    .form-group input,
-    .form-group textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-    .event-card {
-        background: #ffffff;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        margin: 10px 0;
-        padding: 15px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-    .event-actions button {
-        margin-right: 10px;
-        padding: 6px 10px;
-    }
+        .event-card {
+            background: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin: 10px 0;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
 
-    .hidden {
-        display: none;
-    }
-</style>
+        .event-actions button {
+            margin-right: 10px;
+            padding: 6px 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -52,38 +56,48 @@
         <center>
             <h1>Admin Login</h1>
 
-            <!--  PASSCODE LOGIN FORM -->
-            <div class="admin-container">
+            <div class="admin-container" id = "username-password-form">
                 <h2>Admin Login</h2>
                 <div id="login-form">
+                    <input type="text" id="admin-username" placeholder="Username (Email)"><br><br>
+                    <input type="password" id="admin-password" placeholder="Password"><br><br>
+                    <button id="login-btn" onclick="loginWithEmailPassword()">Login</button>
+                    <p id="login-status" style="color:red;"></p>
+                </div>
+            </div>
+
+            <!--  PASSCODE LOGIN FORM -->
+            <div class="admin-container hidden" id = "passcode-form">
+                <h2>Enter Admin Passcode</h2>
+                <div id="passcode-form-inner">
                     <input type="password" id="admin-pass" placeholder="Enter Admin Passcode">
                     <button onclick="checkLogin()">Login</button>
                 </div>
+            </div>
 
-                <!-- CREATE EVENT AND MANAGE EVENTS SECTION (HIDDEN INITIALLY) -->
-                <div id="admin-panel" class="hidden">
-                    <h3>Create Event</h3>
-                    <div class="form-group">
-                        <input type="text" id="event-title" placeholder="Event Title">
-                    </div>
-                    <div class="form-group">
-                        <textarea id="event-description" placeholder="Event Description"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <input type="url" id="event-link" placeholder="Optional Link (e.g., https://...)">
-                    </div>
-                    <button onclick="createEvent()">Add Event</button>
-
-                    <h2>Update Countdown</h2>
-                    <label>Countdown End Time:</label><br>
-                    <input type="datetime-local" id="target-time"><br><br>
-                    <label>Entry Link:</label><br>
-                    <input type="text" id="entry-link" placeholder="https://..."><br><br>
-                    <button id="update-countdown">Update Countdown</button><br><br>
-                    <hr>
-                    <h3>Manage Events</h3>
-                    <div id="events-list">Loading...</div>
+            <!-- CREATE EVENT AND MANAGE EVENTS SECTION (HIDDEN INITIALLY) -->
+            <div id="admin-panel" class="admin-container hidden">
+                <h3>Create Event</h3>
+                <div class="form-group">
+                    <input type="text" id="event-title" placeholder="Event Title">
                 </div>
+                <div class="form-group">
+                    <textarea id="event-description" placeholder="Event Description"></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="url" id="event-link" placeholder="Optional Link (e.g., https://...)">
+                </div>
+                <button onclick="createEvent()">Add Event</button>
+
+                <h2>Update Countdown</h2>
+                <label>Countdown End Time:</label><br>
+                <input type="datetime-local" id="target-time"><br><br>
+                <label>Entry Link:</label><br>
+                <input type="text" id="entry-link" placeholder="https://..."><br><br>
+                <button id="update-countdown">Update Countdown</button><br><br>
+                <hr>
+                <h3>Manage Events</h3>
+                <div id="events-list">Loading...</div>
             </div>
 
 
@@ -96,8 +110,10 @@
     </main>
 
     <div id="footer-container"></div>
-    <script type="module" src="script.js"></script>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
@@ -110,11 +126,40 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
 
         const loginForm = document.getElementById("login-form");
         const adminPanel = document.getElementById("admin-panel");
         const eventsList = document.getElementById("events-list");
+        const usernamePasswordForm = document.getElementById("username-password-form");
+        const passcodeForm = document.getElementById("passcode-form");
 
+        function loginWithEmailPassword() {
+            const email = document.getElementById("admin-username").value;
+            const password = document.getElementById("admin-password").value;
+            const loginStatus = document.getElementById("login-status");
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    console.log("Logged in:", user);
+                    loginStatus.textContent = "Login Successful!";
+                    loginStatus.style.color = "green";
+                    // Hide the username/password form
+                    usernamePasswordForm.classList.add("hidden");
+                    //Show the admin passcode form
+                    passcodeForm.classList.remove("hidden");
+                    // You might want to store the user's information or redirect to a different page
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error("Login Error:", errorCode, errorMessage);
+                    loginStatus.textContent = "Login Failed: " + errorMessage;
+                    loginStatus.style.color = "red";
+                });
+        }
 
 
         function checkLogin() {
@@ -122,7 +167,7 @@
             const passRef = db.ref("adminPasscode");
             passRef.once("value", snapshot => {
                 if (snapshot.val() === entered) {
-                    loginForm.classList.add("hidden");
+                    passcodeForm.classList.add("hidden");
                     adminPanel.classList.remove("hidden");
                     loadEvents();
                 } else {
@@ -213,6 +258,7 @@
         loadHTML("#header-container", "header-admin.html");
         loadHTML("#footer-container", "footer.html");
     </script>
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
