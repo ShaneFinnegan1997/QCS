@@ -1,67 +1,82 @@
-<!DOCTYPE html><html lang="en"><head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QCS Admin</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-  <script defer src="/js/admin.js"></script>
-</head><body>
-  <div id="header"></div>  <main class="container">
+  <link rel="stylesheet" href="/styles.css">
+  <script defer src="/admin.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <script defer src="/firebase-config.js"></script>
+</head>
+<body>  <div id="header"></div>  <main>
     <h1>QCS Admin</h1>
-    <p><a href="/index.html">← Back to Homepage</a></p><div id="loginForm">
+    <a href="/index.html">Back to Homepage</a><div id="login-section">
   <h2>Admin Login</h2>
-  <input type="email" id="email" placeholder="Email" required />
-  <input type="password" id="password" placeholder="Password" required />
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
-<div id="adminPanel" style="display: none;">
-  <div style="text-align: right;">
+<div id="admin-panel" style="display:none;">
+  <div style="text-align:right; margin-bottom:1em;">
     <button onclick="logout()">Logout</button>
   </div>
-  <h2>Welcome, Admin</h2>
+  <h2>Welcome Admin</h2>
   <!-- Admin features go here -->
 </div>
 
   </main>  <div id="footer"></div>  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      fetch("/header-admin.html")
-        .then(res => res.text())
-        .then(data => {
-          document.getElementById("header").innerHTML = data;
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        const userId = user.uid;
+        firebase.database().ref('/admins/' + userId).once('value').then(snapshot => {
+          if (snapshot.exists()) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+          } else {
+            firebase.auth().signOut();
+          }
         });
-
-      fetch("/footer.html")
-        .then(res => res.text())
-        .then(data => {
-          document.getElementById("footer").innerHTML = data;
-        });
-
-      const loggedIn = localStorage.getItem("adminLoggedIn") === "true";
-      if (loggedIn) {
-        document.getElementById("loginForm").style.display = "none";
-        document.getElementById("adminPanel").style.display = "block";
       }
     });
 
     function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      const admins = {
-        "admin@example.com": "yourPasswordHere"
-      };
-
-      if (admins[email] === password) {
-        localStorage.setItem("adminLoggedIn", "true");
-        document.getElementById("loginForm").style.display = "none";
-        document.getElementById("adminPanel").style.display = "block";
-      } else {
-        alert("Incorrect email or password.");
-      }
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const userId = userCredential.user.uid;
+          firebase.database().ref('/admins/' + userId).once('value').then(snapshot => {
+            if (snapshot.exists()) {
+              document.getElementById('login-section').style.display = 'none';
+              document.getElementById('admin-panel').style.display = 'block';
+            } else {
+              firebase.auth().signOut();
+              alert('Not an admin');
+            }
+          });
+        })
+        .catch(error => {
+          alert('Login failed: ' + error.message);
+        });
     }
 
     function logout() {
-      localStorage.removeItem("adminLoggedIn");
-      location.reload();
+      firebase.auth().signOut().then(() => {
+        document.getElementById('login-section').style.display = 'block';
+        document.getElementById('admin-panel').style.display = 'none';
+      });
     }
-  </script></body></html>
+
+    // Load header and footer
+    fetch('/header-admin.html')
+      .then(res => res.text())
+      .then(data => document.getElementById('header').innerHTML = data);
+
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(data => document.getElementById('footer').innerHTML = data);
+  </script></body>
+</html>
