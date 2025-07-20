@@ -1,112 +1,67 @@
-<!DOCTYPE html><html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - QC Sweepstakes</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f2f2f5;
-      color: #333;
-    }
-    header, footer {
-      background-color: #292b2c;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    main {
-      padding: 2rem;
-      max-width: 600px;
-      margin: auto;
-    }
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    input[type="email"], input[type="password"] {
-      padding: 0.5rem;
-      font-size: 1rem;
-      width: 100%;
-    }
-    button {
-      padding: 0.5rem;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    #logoutBtn {
-      float: right;
-      margin-top: -1rem;
-      margin-right: 1rem;
-      background-color: #dc3545;
-    }
-    .admin-panel {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Quad Cities Sweepstakes Admin</h1>
-    <button id="logoutBtn" style="display:none;">Logout</button>
-  </header>  <main>
-    <div id="loginSection">
-      <h2>Admin Login</h2>
-      <form id="adminLogin" class="login-form">
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="password" id="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-      </form>
-    </div><div class="admin-panel" id="adminPanel">
-  <h2>Change timer & events</h2>
-  <p>Admin content goes here.</p>
-  <!-- Insert your admin features here -->
+  <title>QCS Admin</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script defer src="/js/admin.js"></script>
+</head><body>
+  <div id="header"></div>  <main class="container">
+    <h1>QCS Admin</h1>
+    <p><a href="/index.html">← Back to Homepage</a></p><div id="loginForm">
+  <h2>Admin Login</h2>
+  <input type="email" id="email" placeholder="Email" required />
+  <input type="password" id="password" placeholder="Password" required />
+  <button onclick="login()">Login</button>
 </div>
 
-  </main>  <footer>
-    <p>© 2025 Quad Cities Sweepstakes</p>
-    <a href="/terms.html" style="color:#ddd">Terms of Service</a>
-  </footer>  <script>
-    const adminLogin = document.getElementById('adminLogin');
-    const loginSection = document.getElementById('loginSection');
-    const adminPanel = document.getElementById('adminPanel');
-    const logoutBtn = document.getElementById('logoutBtn');
+<div id="adminPanel" style="display: none;">
+  <div style="text-align: right;">
+    <button onclick="logout()">Logout</button>
+  </div>
+  <h2>Welcome, Admin</h2>
+  <!-- Admin features go here -->
+</div>
 
-    const ADMIN_EMAIL = "admin@example.com";
-    const ADMIN_PASSWORD = "yourpassword";
+  </main>  <div id="footer"></div>  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("/header-admin.html")
+        .then(res => res.text())
+        .then(data => {
+          document.getElementById("header").innerHTML = data;
+        });
 
-    function showAdminPanel() {
-      loginSection.style.display = 'none';
-      adminPanel.style.display = 'block';
-      logoutBtn.style.display = 'inline-block';
-    }
+      fetch("/footer.html")
+        .then(res => res.text())
+        .then(data => {
+          document.getElementById("footer").innerHTML = data;
+        });
 
-    function logout() {
-      localStorage.removeItem('isAdmin');
-      location.reload();
-    }
-
-    logoutBtn.addEventListener('click', logout);
-
-    adminLogin.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-        localStorage.setItem('isAdmin', 'true');
-        showAdminPanel();
-      } else {
-        alert('Invalid credentials');
+      const loggedIn = localStorage.getItem("adminLoggedIn") === "true";
+      if (loggedIn) {
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
       }
     });
 
-    if (localStorage.getItem('isAdmin') === 'true') {
-      showAdminPanel();
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const admins = {
+        "admin@example.com": "yourPasswordHere"
+      };
+
+      if (admins[email] === password) {
+        localStorage.setItem("adminLoggedIn", "true");
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+      } else {
+        alert("Incorrect email or password.");
+      }
     }
-  </script></body>
-</html>
+
+    function logout() {
+      localStorage.removeItem("adminLoggedIn");
+      location.reload();
+    }
+  </script></body></html>
