@@ -23,8 +23,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-
-
 // Admin login
 const loginBtn = document.getElementById("login-btn");
 if (loginBtn) {
@@ -67,21 +65,22 @@ if (updateBtn) {
 const logBtn = document.getElementById("log-event");
 if (logBtn) {
   logBtn.addEventListener("click", async () => {
-  const title = document.getElementById("event-title").value.trim();
-  const link = document.getElementById("event-link").value.trim();
-  const desc = document.getElementById("event-description").value.trim();
+    const title = document.getElementById("event-title").value.trim();
+    const link = document.getElementById("event-link").value.trim();
+    const descInput = document.getElementById("event-description");
+    const desc = descInput ? descInput.value.trim() : "";
 
-  if (!title || !desc) return alert("Title and description required.");
+    if (!title || !desc) return alert("Title and description required.");
 
-  await push(ref(db, "events"), {
-    title,
-    link: link || null,
-    description: desc,
-    timestamp: new Date().toISOString()
+    await push(ref(db, "events"), {
+      title,
+      link: link || null,
+      description: desc,
+      timestamp: new Date().toISOString()
+    });
+
+    alert("Event logged!");
   });
-
-  alert("Event logged!");
-});
 }
 
 // Load events
@@ -102,7 +101,8 @@ function loadAdminEvents() {
         div.className = "admin-event-item";
         div.innerHTML = `
           <strong>${event.title}</strong><br/>
-          <p>${event.description || ""}</p>
+          ${event.description ? `<p>${event.description}</p>` : ""}
+          ${event.link ? `<a href="${event.link}" target="_blank">Event Link</a><br/>` : ""}
           <button onclick="deleteEvent('${key}')">Delete</button>
           <hr/>
         `;
