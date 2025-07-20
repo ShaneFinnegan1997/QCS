@@ -82,6 +82,11 @@
     font-size: 0.9em;
   }
 
+#admin-area {
+    display: block;
+}
+
+
   #admin-dropdown button {
     display: block; /* Stack buttons */
     width: 100%;
