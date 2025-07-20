@@ -34,13 +34,13 @@ const auth = getAuth(app); // Initialize Firebase Auth
 // Announcement Code
 const announcementRef = ref(db, 'announcement');
 const announcementTextElement = document.getElementById('announcement-text');
-const adminLoginButton = document.getElementById('admin-login-button');
+const adminLoginLink = document.getElementById('admin-login-link'); // Changed ID
 const adminDropdown = document.getElementById('admin-dropdown');
 const adminDropdownCloseButton = document.getElementById('admin-dropdown-close');
 const adminLoginSection = document.getElementById('admin-login-section');
 const adminEditSection = document.getElementById('admin-edit-section');
 const adminLoginSubmitButton = document.getElementById('admin-login-submit');
-const adminUsernameInput = document.getElementById('admin-email'); // Changed ID for clarity
+const adminUsernameInput = document.getElementById('admin-username'); // Changed ID for clarity
 const adminPasswordInput = document.getElementById('admin-password');
 const adminLoginError = document.getElementById('admin-login-error');
 const adminAnnouncementTextarea = document.getElementById('admin-announcement-text');
@@ -64,7 +64,8 @@ function hideAdminDropdown() {
 }
 
 // Event listener for the admin login button
-adminLoginButton.addEventListener('click', () => {
+adminLoginLink.addEventListener('click', (event) => { //Changed Listener Name
+    event.preventDefault();  // Prevent the link from navigating
     showAdminDropdown();
 });
 
@@ -84,7 +85,7 @@ adminLoginSubmitButton.addEventListener('click', async () => {
 
     if (adminData && adminData.username === username && adminData.password === password) {
         isAdminLoggedIn = true;
-        adminLoginButton.textContent = 'Edit Announcement';
+        adminLoginLink.textContent = 'Edit Announcement'; //changed Name
         adminLoginSection.style.display = 'none';
         adminEditSection.style.display = 'block';
         loadAnnouncementForEdit(); // Load announcement into the textarea
