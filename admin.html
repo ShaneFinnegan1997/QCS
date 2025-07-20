@@ -1,71 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Panel</title>
-  <link rel="stylesheet" href="styles/admin.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - QC Sweepstakes</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
+    .admin-container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 8px;
+      background: #f9f9f9;
     }
-    .logout-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #f44336;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      z-index: 999;
+
+    .admin-container h2 {
+      text-align: center;
     }
-    .event-card {
-      background: white;
-      border-radius: 6px;
-      padding: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .form-group {
+      margin-bottom: 15px;
     }
-    .event-card input,
-    .event-card textarea {
+
+    .form-group input,
+    .form-group textarea {
       width: 100%;
-      margin-bottom: 8px;
-      padding: 6px;
-      font-size: 14px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
+
+    .event-card {
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin: 10px 0;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
     .event-actions button {
-      margin-right: 8px;
+      margin-right: 10px;
       padding: 6px 10px;
-      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
+
 <body>
   <div id="header-container"></div>
 
-  <section id="login-section">
-    <h2>Admin Login</h2>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
-  </section>
+  <main>
+    <center>
+      <section id="login-form">
+        <a href="https://imgbb.com/"><img src="https://i.ibb.co/YBmywKLP/i-have-my-eye-on-you.jpg" alt="i-have-my-eye-on-you" border="0"></a>
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username"><br><br>
+        <input type="password" id="admin-password" placeholder="Password"><br><br>
+        <button onclick="login()">Login</button>
+        <p id="login-status" style="color:red;"></p>
+      </section>
 
-  <section id="admin-panel" style="display:none;">
-    <button class="logout-btn" onclick="logout()">Logout</button>
-    <h2>Welcome to the Admin Panel</h2>
-    <div id="events-list">Loading events...</div>
-  </section>
+      <section id="admin-panel" class="admin-container hidden">
+        <h2>Update Countdown</h2>
+        <label>Countdown End Time:</label><br>
+        <input type="datetime-local" id="target-time"><br><br>
+        <label>Entry Link:</label><br>
+        <input type="text" id="entry-link" placeholder="https://..."><br><br>
+        <button onclick="updateCountdown()">Update Countdown</button><br><br>
+
+        <h2>Post Event</h2>
+        <label>Event Title:</label><br>
+        <input type="text" id="event-title" placeholder="Title"><br><br>
+
+        <label>Event Link (optional):</label><br>
+        <input type="text" id="event-link" placeholder="https://..."><br><br>
+
+        <label>Event Details:</label><br>
+        <textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
+
+        <label>Total Winnings:</label><br>
+        <input type="number" id="total-winnings" placeholder="e.g., 1000"><br><br>
+
+        <label>Winner Payout Amount:</label><br>
+        <input type="number" id="winner-payout-amount" placeholder="e.g., 700"><br><br>
+
+        <label>Non-Profit Name:</label><br>
+        <input type="text" id="non-profit-name" placeholder="e.g., Red Cross"><br><br>
+
+        <label>Non-Profit Donation Amount:</label><br>
+        <input type="number" id="non-profit-donation-amount" placeholder="e.g., 100"><br><br>
+
+        <label>Non-Profit Website Link:</label><br>
+        <input type="text" id="non-profit-website-link" placeholder="https://..."><br><br>
+
+        <label>Website Funds Amount:</label><br>
+        <input type="number" id="website-funds-amount" placeholder="e.g., 50"><br><br>
+
+        <button onclick="postEvent()">Post Event</button><br><br>
+
+        <hr>
+        <h3>Manage Events</h3>
+        <div id="events-list">Loading...</div>
+      </section>
+    </center>
+  </main>
 
   <div id="footer-container"></div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -75,143 +124,211 @@
       projectId: "qcsweeps-4b994",
       storageBucket: "qcsweeps-4b994.appspot.com",
       messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
-      measurementId: "G-XL9VQ985S9"
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
     };
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.database();
 
-    // Load header/footer (adjust paths as needed)
-    async function loadHTML(id, file) {
-      try {
-        const response = await fetch(file);
-        if (response.ok) {
-          const html = await response.text();
-          document.getElementById(id).innerHTML = html;
-        } else {
-          throw new Error('Failed to load ' + file);
-        }
-      } catch (e) {
-        console.error(e);
-        document.getElementById(id).innerHTML = "<p style='color:red;'>Error loading component.</p>";
-      }
-    }
-    loadHTML("header-container", "header-admin.html");
-    loadHTML("footer-container", "footer.html");
-
-    // Check admin access
-    function checkAdminAccess(uid) {
-      return db.ref('admins/' + uid).once('value').then(snapshot => {
-        return snapshot.exists();
-      });
-    }
-
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const isAdmin = await checkAdminAccess(user.uid);
-        if (isAdmin) {
-          document.getElementById("login-section").style.display = "none";
-          document.getElementById("admin-panel").style.display = "block";
-          loadEvents();
-        } else {
-          alert("You do not have admin access.");
-          auth.signOut();
-          document.getElementById("login-section").style.display = "block";
-          document.getElementById("admin-panel").style.display = "none";
-        }
-      } else {
-        document.getElementById("login-section").style.display = "block";
-        document.getElementById("admin-panel").style.display = "none";
-      }
-    });
+    const loginForm = document.getElementById("login-form");
+    const adminPanel = document.getElementById("admin-panel");
+    const eventsList = document.getElementById("events-list");
 
     function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .catch(error => alert(error.message));
-    }
+      const inputUsername = document.getElementById("admin-username").value;
+      const inputPassword = document.getElementById("admin-password").value;
+      const status = document.getElementById("login-status");
 
-    function logout() {
-      auth.signOut();
-    }
-
-    // Load events from database
-    function loadEvents() {
-      const eventsList = document.getElementById("events-list");
-      eventsList.innerHTML = "Loading events...";
-      db.ref("events").once("value").then(snapshot => {
-        const events = snapshot.val();
-        eventsList.innerHTML = "";
-
-        if (!events) {
-          eventsList.innerHTML = "<p>No events found.</p>";
+      firebase.database().ref("admin").once("value", (snapshot) => {
+        const admin = snapshot.val();
+        if (!admin) {
+          status.innerText = "Admin data not found.";
           return;
         }
 
-        // Show each event editable
-        Object.entries(events).forEach(([key, event]) => {
-          const div = document.createElement("div");
-          div.className = "event-card";
-          div.dataset.key = key;
-
-          div.innerHTML = `
-            <input type="text" class="title" value="${event.title || ''}" placeholder="Title" />
-            <textarea class="description" rows="3" placeholder="Description">${event.description || ''}</textarea>
-            <input type="text" class="link" value="${event.link || ''}" placeholder="Link (optional)" />
-            <input type="number" class="totalWinnings" value="${event.totalWinnings || 0}" placeholder="Total Winnings" />
-            <input type="number" class="winnerPayoutAmount" value="${event.winnerPayoutAmount || 0}" placeholder="Winner Payout" />
-            <input type="text" class="nonProfitName" value="${event.nonProfitName || ''}" placeholder="Non-Profit Name" />
-            <input type="number" class="nonProfitDonationAmount" value="${event.nonProfitDonationAmount || 0}" placeholder="Non-Profit Donation" />
-            <input type="text" class="nonProfitWebsiteLink" value="${event.nonProfitWebsiteLink || ''}" placeholder="Non-Profit Website Link" />
-            <input type="number" class="websiteFundsAmount" value="${event.websiteFundsAmount || 0}" placeholder="Website Funds Amount" />
-
-            <div class="event-actions">
-              <button onclick="saveEvent('${key}', this)">Save</button>
-              <button onclick="deleteEvent('${key}')">Delete</button>
-            </div>
-          `;
-
-          eventsList.appendChild(div);
-        });
-      }).catch(error => {
-        document.getElementById("events-list").innerHTML = "<p style='color:red;'>Error loading events: " + error.message + "</p>";
+        if (inputUsername === admin.username && inputPassword === admin.password) {
+          loginForm.classList.add("hidden");
+          adminPanel.classList.remove("hidden");
+          loadEvents();
+        } else {
+          status.innerText = "Invalid username or password.";
+        }
       });
     }
 
-    // Save event changes to Firebase
-    function saveEvent(key, btn) {
-      const card = btn.closest(".event-card");
+    function updateCountdown() {
+      const targetTime = document.getElementById("target-time").value;
+      const entryLink = document.getElementById("entry-link").value;
 
-      const updatedEvent = {
-        title: card.querySelector(".title").value.trim(),
-        description: card.querySelector(".description").value.trim(),
-        link: card.querySelector(".link").value.trim(),
-        totalWinnings: Number(card.querySelector(".totalWinnings").value) || 0,
-        winnerPayoutAmount: Number(card.querySelector(".winnerPayoutAmount").value) || 0,
-        nonProfitName: card.querySelector(".nonProfitName").value.trim(),
-        nonProfitDonationAmount: Number(card.querySelector(".nonProfitDonationAmount").value) || 0,
-        nonProfitWebsiteLink: card.querySelector(".nonProfitWebsiteLink").value.trim(),
-        websiteFundsAmount: Number(card.querySelector(".websiteFundsAmount").value) || 0
+      firebase.database().ref("countdown").set({
+        targetTime,
+        entryLink
+      });
+
+      alert("Countdown updated!");
+    }
+
+    function postEvent() {
+      const title = document.getElementById("event-title").value;
+      const description = document.getElementById("event-description").value;
+      const link = document.getElementById("event-link").value;
+      const totalWinnings = document.getElementById("total-winnings").value;
+      const winnerPayoutAmount = document.getElementById("winner-payout-amount").value;
+      const nonProfitName = document.getElementById("non-profit-name").value;
+      const nonProfitDonationAmount = document.getElementById("non-profit-donation-amount").value;
+      const nonProfitWebsiteLink = document.getElementById("non-profit-website-link").value;
+      const websiteFundsAmount = document.getElementById("website-funds-amount").value;
+
+      if (!title || !description) {
+        alert("Title and description are required.");
+        return;
+      }
+
+      const newEvent = {
+        title,
+        description,
+        link: link || "",
+        totalWinnings: totalWinnings || 0,
+        winnerPayoutAmount: winnerPayoutAmount || 0,
+        nonProfitName: nonProfitName || "",
+        nonProfitDonationAmount: nonProfitDonationAmount || 0,
+        nonProfitWebsiteLink: nonProfitWebsiteLink || "",
+        websiteFundsAmount: websiteFundsAmount || 0
       };
 
-      db.ref("events/" + key).update(updatedEvent)
-        .then(() => alert("Event updated!"))
-        .catch(err => alert("Failed to update event: " + err.message));
+      firebase.database().ref("events").push(newEvent, (error) => {
+        if (error) {
+          alert("Error posting event: " + error);
+        } else {
+          alert("Event posted!");
+          document.querySelectorAll("#admin-panel input, #admin-panel textarea").forEach(input => input.value = "");
+          loadEvents();
+        }
+      });
     }
 
-    // Delete event from Firebase
+    function loadEvents() {
+      eventsList.innerHTML = "Loading...";
+      firebase.database().ref("events").once("value", (snapshot) => {
+        const data = snapshot.val();
+        eventsList.innerHTML = "";
+
+        if (data) {
+          Object.entries(data).reverse().forEach(([key, event]) => {
+            const div = document.createElement("div");
+            div.className = "event-card";
+            div.innerHTML =
+              "<strong>Title:</strong> <span id='title-" + key + "' contenteditable='false'>" + event.title + "</span><br>" +
+              "<strong>Description:</strong> <span id='description-" + key + "' contenteditable='false'>" + event.description + "</span><br>" +
+              "<strong>Link:</strong> <span id='link-" + key + "' contenteditable='false'>" + (event.link || "") + "</span><br>" +
+              "<strong>Total Winnings:</strong> <span id='total-winnings-" + key + "' contenteditable='false'>\$" + (event.totalWinnings || 0) + "</span><br>" +
+              "<strong>Winner Payout:</strong> <span id='winner-payout-amount-" + key + "' contenteditable='false'>\$" + (event.winnerPayoutAmount || 0) + "</span><br>" +
+              "<strong>Non-Profit:</strong> <span id='non-profit-name-" + key + "' contenteditable='false'>" + (event.nonProfitName || "N/A") + "</span> - " +
+              "<span id='non-profit-donation-amount-" + key + "' contenteditable='false'>\$" + (event.nonProfitDonationAmount || 0) + "</span><br>" +
+              "<strong>Non-Profit Website:</strong> <span id='non-profit-website-link-" + key + "' contenteditable='false'>" + (event.nonProfitWebsiteLink || "") + "</span><br>" +
+              "<strong>Website Funds:</strong> <span id='website-funds-amount-" + key + "' contenteditable='false'>\$" + (event.websiteFundsAmount || 0) + "</span><br>" +
+              "<div class='event-actions'>" +
+              "<button onclick=\"enableEdit('" + key + "', this)\">Edit</button>" +
+              "<button onclick=\"deleteEvent('" + key + "', this)\">Delete</button>" +
+              "</div>";
+            eventsList.appendChild(div);
+          });
+        } else {
+          eventsList.innerHTML = "<p>No events found.</p>";
+        }
+      });
+    }
+
+    function enableEdit(key, btn) {
+      const card = btn.closest(".event-card");
+      const editing = btn.innerText === "Save";
+
+      const titleElement = card.querySelector("#title-" + key);
+      const descriptionElement = card.querySelector("#description-" + key);
+      const linkElement = card.querySelector("#link-" + key);
+      const totalWinningsElement = card.querySelector("#total-winnings-" + key);
+      const winnerPayoutAmountElement = card.querySelector("#winner-payout-amount-" + key);
+      const nonProfitNameElement = card.querySelector("#non-profit-name-" + key);
+      const nonProfitDonationAmountElement = card.querySelector("#non-profit-donation-amount-" + key);
+      const nonProfitWebsiteLinkElement = card.querySelector("#non-profit-website-link-" + key);
+      const websiteFundsAmountElement = card.querySelector("#website-funds-amount-" + key);
+
+      if (editing) {
+        const updatedEvent = {
+          title: titleElement.innerText.trim(),
+          description: descriptionElement.innerText.trim(),
+          link: linkElement.innerText.trim(),
+          totalWinnings: totalWinningsElement.innerText.replace(/[^0-9.]/g, "").trim(),
+          winnerPayoutAmount: winnerPayoutAmountElement.innerText.replace(/[^0-9.]/g, "").trim(),
+          nonProfitName: nonProfitNameElement.innerText.trim(),
+          nonProfitDonationAmount: nonProfitDonationAmountElement.innerText.replace(/[^0-9.]/g, "").trim(),
+          nonProfitWebsiteLink: nonProfitWebsiteLinkElement.innerText.trim(),
+          websiteFundsAmount: websiteFundsAmountElement.innerText.replace(/[^0-9.]/g, "").trim()
+        };
+
+        firebase.database().ref("events/" + key).update(updatedEvent, (error) => {
+          if (error) {
+            alert("Error updating event: " + error);
+          } else {
+            alert("Event updated!");
+            btn.innerText = "Edit";
+            [
+              titleElement,
+              descriptionElement,
+              linkElement,
+              totalWinningsElement,
+              winnerPayoutAmountElement,
+              nonProfitNameElement,
+              nonProfitDonationAmountElement,
+              nonProfitWebsiteLinkElement,
+              websiteFundsAmountElement
+            ].forEach(el => el.contentEditable = false);
+          }
+        });
+      } else {
+        btn.innerText = "Save";
+        [
+          titleElement,
+          descriptionElement,
+          linkElement,
+          totalWinningsElement,
+          winnerPayoutAmountElement,
+          nonProfitNameElement,
+          nonProfitDonationAmountElement,
+          nonProfitWebsiteLinkElement,
+          websiteFundsAmountElement
+        ].forEach(el => el.contentEditable = true);
+        titleElement.focus();
+      }
+    }
+
     function deleteEvent(key) {
-      if (!confirm("Are you sure you want to delete this event?")) return;
-      db.ref("events/" + key).remove()
-        .then(() => {
-          alert("Event deleted!");
-          loadEvents();
-        })
-        .catch(err => alert("Failed to delete event: " + err.message));
+      if (confirm("Are you sure you want to delete this event?")) {
+        firebase.database().ref("events/" + key).remove((error) => {
+          if (error) {
+            alert("Error deleting event: " + error);
+          } else {
+            alert("Event deleted!");
+            loadEvents();
+          }
+        });
+      }
     }
   </script>
+
+  <script>
+    async function loadHTML(selector, url) {
+      const response = await fetch(url);
+      if (response.ok) {
+        const html = await response.text();
+        document.querySelector(selector).innerHTML = html;
+      } else {
+        console.error("Failed to load", url);
+      }
+    }
+    loadHTML("#header-container", "header-admin.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
 </body>
+
 </html>
