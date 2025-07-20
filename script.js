@@ -126,4 +126,57 @@ function loadEvents(list) {
                 list.appendChild(li);
             }
         } else {
-            list.innerHTML
+            list.innerHTML = "No events found.";
+        }
+    });
+}
+
+// Function to display the announcement
+function displayAnnouncement(title, message) {
+    const announcementArea = document.getElementById("announcement-area");
+    const announcementTitleDisplay = document.getElementById("announcement-title-display");
+    const announcementMessageDisplay = document.getElementById("announcement-message-display");
+
+    if (announcementArea && announcementTitleDisplay && announcementMessageDisplay) {
+        announcementTitleDisplay.textContent = title;
+        announcementMessageDisplay.textContent = message;
+        announcementArea.style.display = "block";
+    } else {
+        console.warn("Announcement elements not found in header. Check your header. Make sure the function runs after the header has loaded");
+    }
+}
+
+// Function to clear the announcement
+function clearAnnouncement() {
+    const announcementArea = document.getElementById("announcement-area");
+    if (announcementArea) {
+        announcementArea.style.display = "none";
+    }
+    const announcementTitleDisplay = document.getElementById("announcement-title-display");
+    const announcementMessageDisplay = document.getElementById("announcement-message-display");
+    if (announcementTitleDisplay) announcementTitleDisplay.textContent = "";
+    if (announcementMessageDisplay) announcementMessageDisplay.textContent = "";
+}
+
+// Load existing announcement on page load and listen for updates
+// Load existing announcement on page load and listen for updates
+function loadAnnouncement() {
+    const announcementRef = ref(db, "announcement");
+    if (announcementRef) {
+        onValue(announcementRef, (snapshot) => {
+            const announcement = snapshot.val();
+
+            if (announcement) {
+                displayAnnouncement(announcement.title, announcement.message);
+            } else {
+                //No announcement so clear it from view
+                clearAnnouncement();
+            }
+        });
+    }
+}
+
+// Ensure loadAnnouncement runs after the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+    loadAnnouncement();
+});
