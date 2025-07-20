@@ -2,197 +2,93 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Upcoming Events - QC Sweepstakes</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    /* Existing styles from style.css (to avoid redundancy) */
-
-    /* Additional styles for event cards */
-    .event-card {
-      background: #ffffff;
-      border: 5px solid #4CAF50;
-      border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
-      box-shadow: 50 4px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease;
-      display: flex;
-      /* Enable flexbox */
-      align-items: flex-start;
-      /* Align items to the top */
-    }
-
-    .event-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-    }
-
-    .event-details {
-      flex: 1;
-      /* Allow event details to take up remaining space */
-    }
-
-    .event-card h2 {
-      margin-top: 0;
-      color: #2e7d32;
-      font-size: 1.4em;
-      margin-bottom: 10px;
-    }
-
-    .event-card p {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      font-size: 1em;
-      color: #444;
-      line-height: 1.5em;
-    }
-
-    .event-info {
-      width: 200px;
-      /* Adjust as needed */
-      margin-left: 20px;
-      /* Add some spacing */
-      text-align: left;
-      flex-shrink: 0; /* Prevent event info from shrinking */
-    }
-
-    .event-info p {
-      font-size: 0.9em;
-      color: #555;
-      margin-bottom: 5px; /* Add some spacing between info items */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <div id="header-container"></div>
+    <div id="header-container"></div>
 
-  <main>
-    <section class="event-section">
-      <h1>Upcoming Events</h1>
-      <div id="events-list">
-        <p>Loading events...</p>
-      </div>
-    </section>
-  </main>
+    <h1>Upcoming Events</h1>
+    <div id="events-list">
+        Loading events...
+    </div>
 
-  <div id="footer-container"></div>
+    <div id="footer-container"></div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-  <script>
-    // Load header and footer
-    async function loadHTML(selector, url) {
-      try {
-        const response = await fetch(url);
-        if (response.ok) {
-          const html = await response.text();
-          document.querySelector(selector).innerHTML = html;
-        } else {
-          console.error("Failed to load", url);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    // Load header and footer first, then initialize Firebase
-    Promise.all([
-      loadHTML("#header-container", "header.html"),
-      loadHTML("#footer-container", "footer.html")
-    ]).then(() => {
-      // Firebase config
-      const firebaseConfig = {
-        apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-        authDomain: "qcsweeps-4b994.firebaseapp.com",
-        databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-        projectId: "qcsweeps-4b994",
-        storageBucket: "qcsweeps-4b994.appspot.com",
-        messagingSenderId: "810241609281",
-        appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-      };
-
-      const app = firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-
-      const eventsList = document.getElementById("events-list");
-
-      db.ref("events").on("value", (snapshot) => {
-        const data = snapshot.val();
-        eventsList.innerHTML = ""; // clear existing
-
-        if (data) {
-          const keys = Object.keys(data).reverse(); // latest first
-          keys.forEach(key => {
-            const event = data[key];
-
-            // Check for null or undefined event data
-            if (!event) {
-              console.warn("Event data is null for key:", key);
-              return; // Skip to the next event
-            }
-
-            console.log("Event data:", event); // Log the event data
-
-            const div = document.createElement("div");
-            div.className = "event-card";
-
-            let eventDetails = `
-              <div class="event-details">
-                <h2>
-                  \${event.link
-                    ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title ? event.title : "No Title"}</a>`
-                    : (event.title ? event.title : "No Title")}
-                </h2>
-                <p>\${event.description ? event.description : "No description available."}</p>
-              </div>
-            `;
-
-            let eventInfo = `<div class="event-info">`;
-
+    <script>
+        // Load header and footer
+        async function loadHTML(selector, url) {
             try {
-              if (event.winnerPayoutAmount) {
-                eventInfo += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
-              }
-            } catch (error) {
-              console.error("Error displaying winnerPayoutAmount:", error);
-              eventInfo += `<p style="color: red;">Error displaying Winner Payout</p>`;
-            }
-
-            try {
-              if (event.nonProfitName) {
-                const nonProfitLink = event.nonProfitWebsiteLink ? `<a href="${event.nonProfitWebsiteLink}" target="_blank">${event.nonProfitName}</a>` : event.nonProfitName;
-                eventInfo += `<p><strong>Supporting:</strong> \${nonProfitLink}`;
-
-                if (event.nonProfitDonationAmount) {
-                  eventInfo += ` - Raised: $${event.nonProfitDonationAmount}`;
+                const response = await fetch(url);
+                if (response.ok) {
+                    const html = await response.text();
+                    document.querySelector(selector).innerHTML = html;
+                } else {
+                    console.error("Failed to load", url);
+                    document.querySelector(selector).innerHTML = `<p style="color:red;">Failed to load \${url}</p>`; // Display error
                 }
-
-                eventInfo += `</p>`;
-              }
-            } catch (error) {
-              console.error("Error displaying nonProfit information:", error);
-              eventInfo += `<p style="color: red;">Error displaying Non-Profit Information</p>`;
+            } catch (e) {
+                console.error(e);
+                document.querySelector(selector).innerHTML = `<p style="color:red;">Error loading ${url}: ${e.message}</p>`; // Display error
             }
-
-            eventInfo += `</div>`; // Close event-info div
-
-            div.innerHTML = eventDetails + eventInfo;
-            eventsList.appendChild(div);
-          });
-        } else {
-          eventsList.innerHTML = "<p>No events yet.</p>";
         }
-      });
-    }).catch(error => {
-      console.error("Error loading header/footer or initializing Firebase:", error);
-      document.getElementById("events-list").innerHTML = "<p style='color: red;'>Error loading header/footer or initializing Firebase. See console for details.</p>";
-    });
-  </script>
+
+        Promise.all([
+            loadHTML("#header-container", "header.html"),
+            loadHTML("#footer-container", "footer.html")
+        ]).then(() => {
+            // Firebase config (moved inside .then() to ensure header/footer are loaded first)
+            const firebaseConfig = {
+                apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+                authDomain: "qcsweeps-4b994.firebaseapp.com",
+                databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+                projectId: "qcsweeps-4b994",
+                storageBucket: "qcsweeps-4b994.appspot.com",
+                messagingSenderId: "810241609281",
+                appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            const eventsList = document.getElementById("events-list");
+
+            db.ref("events").on("value", (snapshot) => {
+                const data = snapshot.val();
+
+                if (data) {
+                    eventsList.innerHTML = ''; // Clear "Loading..."
+
+                    Object.keys(data).forEach(key => {
+                        const event = data[key];
+
+                        const eventDiv = document.createElement('div');
+                        eventDiv.innerHTML = `
+                            <h3>\${event.title}</h3>
+                            <p>\${event.description}</p>
+                            <p>Payout: \${event.winnerPayoutAmount}</p>
+                            <p>Nonprofit: \${event.nonProfitName}</p>
+                        `;
+                        eventsList.appendChild(eventDiv);
+                    });
+                } else {
+                    eventsList.innerHTML = '<p>No events found.</p>';
+                }
+            }, (error) => {  // ADDED: Error callback
+                console.error("Firebase Error:", error);
+                eventsList.innerHTML = `<p style="color:red;">Error fetching events: \${error.message}</p>`;
+            });
+
+        }).catch(error => {
+            console.error("Error loading header/footer:", error);
+            document.getElementById("events-list").innerHTML = `<p style="color:red;">Error loading header/footer: \${error.message}</p>`;
+        });
+    </script>
 </body>
 
 </html>
