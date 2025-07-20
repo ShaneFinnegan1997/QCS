@@ -1,137 +1,125 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getDatabase,
-  ref,
-  set,
-  get,
-  push,
-  onValue,
-  remove
+    getDatabase,
+    ref,
+    get
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+    getAuth,
+    signInWithCustomToken
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    getFunctions,
+    httpsCallable
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
 // Firebase Config
 const firebaseConfig = {
-  apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-  authDomain: "qcsweeps-4b994.firebaseapp.com",
-  databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-  projectId: "qcsweeps-4b994",
-  storageBucket: "qcsweeps-4b994.appspot.com",
-  messagingSenderId: "810241609281",
-  appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+    apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+    authDomain: "qcsweeps-4b994.firebaseapp.com",
+    databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+    projectId: "qcsweeps-4b994",
+    storageBucket: "qcsweeps-4b994.appspot.com",
+    messagingSenderId: "810241609281",
+    appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
+const functions = getFunctions(app);
 
 // Load header/footer
 (async () => {
-  const loadHTML = async (selector, url) => {
-    try {
-      const res = await fetch(url);
-      if (res.ok) {
-        document.querySelector(selector).innerHTML = await res.text();
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-  if (document.querySelector("#header-container")) loadHTML("#header-container", "header.html");
-  if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
+    const loadHTML = async (selector, url) => {
+        try {
+            const res = await fetch(url);
+            if (res.ok) {
+                document.querySelector(selector).innerHTML = await res.text();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+    if (document.querySelector("#header-container")) loadHTML("#header-container", "header.html");
+    if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
 })();
 
 // Admin login
 const loginBtn = document.getElementById("login-btn");
 if (loginBtn) {
-  loginBtn.addEventListener("click", async () => {
-    const inputUsername = document.getElementById("admin-username").value.trim();
-    const inputPassword = document.getElementById("admin-password").value.trim();
-    const status = document.getElementById("login-status");
+    loginBtn.addEventListener("click", async () => {
+        const inputUsername = document.getElementById("admin-username").value.trim();
+        const inputPassword = document.getElementById("admin-password").value.trim();
+        const status = document.getElementById("login-status");
 
-    const snapshot = await get(ref(db, "admin"));
-    const adminData = snapshot.val();
-    if (!adminData) return (status.innerText = "Admin credentials not set.");
+        // Get the function
+        const generateCustomToken = httpsCallable(functions, 'generateCustomToken');
 
-    if (inputUsername === adminData.username && inputPassword === adminData.password) {
-      document.getElementById("login-form").style.display = "none";
-      document.getElementById("admin-panel").classList.remove("hidden");
-      document.getElementById("manage-events").classList.remove("hidden");
-      loadAdminEvents();
-    } else {
-      status.innerText = "Invalid username or password.";
-    }
-  });
-}
+        try {
+            // Call the function with the username and password
+            const result = await generateCustomToken({
+                username: inputUsername,
+                password: inputPassword
+            });
 
-// Update countdown
-const updateBtn = document.getElementById("update-countdown");
-if (updateBtn) {
-  updateBtn.addEventListener("click", async () => {
-    const time = document.getElementById("target-time").value;
-    const link = document.getElementById("entry-link").value;
-    if (!time || !link) return alert("Both time and link required.");
-    await set(ref(db, "countdown"), {
-      targetTime: new Date(time).toISOString(),
-      entryLink: link
+            // Get the token from the result
+            const token = result.data.token;
+
+            // Sign in with the custom token
+            await signInWithCustomToken(auth, token);
+
+            // Hide the login form and show the admin panel
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("admin-panel").classList.remove("hidden");
+            document.getElementById("manage-events").classList.remove("hidden");
+
+            // Load admin events (assuming this function exists)
+            //loadAdminEvents();
+
+        } catch (error) {
+            console.error("Login failed:", error);
+            status.innerText = "Login failed: " + error.message;
+        }
     });
-    alert("Countdown updated!");
-  });
 }
 
-// Log event
-const logBtn = document.getElementById("log-event");
-if (logBtn) {
-  logBtn.addEventListener("click", async () => {
-    const title = document.getElementById("event-title").value.trim();
-    const desc = document.getElementById("event-description").value.trim();
-    if (!title || !desc) return alert("Title and description required.");
-    await push(ref(db, "events"), {
-      title,
-      description: desc,
-      timestamp: new Date().toISOString()
+// Implement sign out function
+const logoutBtn = document.querySelector(".logout-btn");
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        try {
+            await auth.signOut();
+            // Show login form and hide admin panel after sign out
+            document.getElementById("login-form").style.display = "block";
+            document.getElementById("admin-panel").classList.add("hidden");
+            document.getElementById("manage-events").classList.add("hidden");
+            document.getElementById("login-status").innerText = ""; // Clear status message
+        } catch (error) {
+            console.error("Sign out failed:", error);
+            alert("Sign out failed: " + error.message);
+        }
     });
-    alert("Event logged!");
-    loadAdminEvents();
-  });
 }
 
-// Load events
-function loadAdminEvents() {
-  const list = document.getElementById("admin-events-list");
-  if (!list) return;
-
-  list.innerHTML = "Loading...";
-  const eventsRef = ref(db, "events");
-  onValue(eventsRef, (snapshot) => {
-    const data = snapshot.val();
-    list.innerHTML = "";
-
-    if (data) {
-      const entries = Object.entries(data).reverse();
-      for (const [key, event] of entries) {
-        const div = document.createElement("div");
-        div.className = "admin-event-item";
-        div.innerHTML = `
-          <strong>${event.title}</strong><br/>
-          <p>${event.description || ""}</p>
-          <button onclick="deleteEvent('${key}')">Delete</button>
-          <hr/>
-        `;
-        list.appendChild(div);
-      }
+// Function to listen for auth state changes
+auth.onAuthStateChanged(user => {
+    if (user) {
+        // User is signed in
+        console.log("User is signed in:", user);
+        // Hide login form and show admin panel
+        document.getElementById("login-form").style.display = "none";
+        document.getElementById("admin-panel").classList.remove("hidden");
+        document.getElementById("manage-events").classList.remove("hidden");
+        document.getElementById("login-status").innerText = ""; // Clear status message
+        // loadAdminEvents();
     } else {
-      list.innerHTML = "<p>No events found.</p>";
+        // User is signed out
+        console.log("User is signed out");
+        // Show login form and hide admin panel
+        document.getElementById("login-form").style.display = "block";
+        document.getElementById("admin-panel").classList.add("hidden");
+        document.getElementById("manage-events").classList.add("hidden");
     }
-  });
-}
-
-// Delete event
-window.deleteEvent = async function (eventId) {
-  if (confirm("Are you sure you want to delete this event?")) {
-    try {
-      await remove(ref(db, "events/" + eventId));
-      alert("Event deleted.");
-    } catch (error) {
-      alert("Error deleting event: " + error.message);
-    }
-  }
-};
+});
