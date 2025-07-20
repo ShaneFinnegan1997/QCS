@@ -1,12 +1,12 @@
 const firebaseConfig = {
-    apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-    authDomain: "qcsweeps-4b994.firebaseapp.com",
-    databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-    projectId: "qcsweeps-4b994",
-    storageBucket: "qcsweeps-4b994.appspot.com",
-    messagingSenderId: "810241609281",
-    appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
-    measurementId: "G-XL9VQ985S9"
+    apiKey: "YOUR_API_KEY", // Replace with your API key
+    authDomain: "YOUR_AUTH_DOMAIN", // Replace with your auth domain
+    databaseURL: "YOUR_DATABASE_URL", // Replace with your database URL
+    projectId: "YOUR_PROJECT_ID", // Replace with your project ID
+    storageBucket: "YOUR_STORAGE_BUCKET", // Replace with your storage bucket
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace with your messaging sender ID
+    appId: "YOUR_APP_ID", // Replace with your app ID
+    measurementId: "YOUR_MEASUREMENT_ID" // Replace with your measurement ID
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -138,19 +138,32 @@ function updateCountdown() {
 // Event Management Functions
 function addEvent() {
     const title = document.getElementById("event-title").value;
-    const link = document.getElementById("event-link").value;
-    const description = document.getElementById("event-description").value; // Get description
+    const description = document.getElementById("event-description").value;
+    const totalWinnings = document.getElementById("event-total-winnings").value;
+    const winnerPayout = document.getElementById("event-winner-payout").value;
+    const nonProfit = document.getElementById("event-non-profit").value;
+    const websiteFunds = document.getElementById("event-website-funds").value;
 
     const eventRef = db.ref("events").push();
     eventRef.set({
-        title,
-        link,
-        description
-    }); // Save description
-    document.getElementById("event-title").value = "";
-    document.getElementById("event-link").value = "";
-    document.getElementById("event-description").value = ""; // Clear description
-    loadEvents(); // Refresh the event list
+        title: title,
+        description: description,
+        totalWinnings: totalWinnings,
+        winnerPayout: winnerPayout,
+        nonProfit: nonProfit,
+        websiteFunds: websiteFunds
+    }).then(() => {
+        document.getElementById("event-title").value = "";
+        document.getElementById("event-description").value = "";
+        document.getElementById("event-total-winnings").value = "0";
+        document.getElementById("event-winner-payout").value = "0";
+        document.getElementById("event-non-profit").value = "N/A";
+        document.getElementById("event-website-funds").value = "0";
+        loadEvents();
+    }).catch(error => {
+        console.error("Error adding event: ", error);
+        alert("Failed to add event.");
+    });
 }
 
 // Corrected deleteEvent function
@@ -176,8 +189,11 @@ function loadEvents() {
             const li = document.createElement("li");
             li.innerHTML = `
     <strong>\${event.title}</strong><br>
-    <a href="\${event.link}" target="_blank">Link</a><br>
-    ${event.description ? `<p>${event.description}</p>` : ''}
+    <p>\${event.description}</p>
+    <p>Total Winnings: $${event.totalWinnings}</p>
+    <p>Winner Payout: $${event.winnerPayout}</p>
+    <p>Non-Profit: \${event.nonProfit}</p>
+    <p>Website Funds: $${event.websiteFunds}</p>
     <div class="event-actions">
       <button onclick="deleteEvent('\${child.key}')">Delete</button>
     </div>
@@ -282,13 +298,13 @@ function loadSweepstakes() {
             const sweepstakes = child.val();
             const li = document.createElement("li");
             li.innerHTML = `
-        <strong>\${sweepstakes.title}</strong><br>
-        <p>\${sweepstakes.description}</p>
-        <p>Start: \${sweepstakes.start}</p>
-        <p>End: \${sweepstakes.end}</p>
-        <p>Winners: \${sweepstakes.winners}</p>
-        <button onclick="deleteSweepstakes('\${child.key}')">Delete</button>
-    `;
+    <strong>\${sweepstakes.title}</strong><br>
+    <p>\${sweepstakes.description}</p>
+    <p>Start: \${sweepstakes.start}</p>
+    <p>End: \${sweepstakes.end}</p>
+    <p>Winners: \${sweepstakes.winners}</p>
+    <button onclick="deleteSweepstakes('\${child.key}')">Delete</button>
+  `;
             sweepstakesList.appendChild(li);
         });
     });
