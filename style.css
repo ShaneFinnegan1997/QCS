@@ -83,6 +83,17 @@
 #admin-edit-popup{
     display:none;
 }
+/* Override the smaller styles from the css, incase it overrides the smaller announcement box*/
+#admin-dropdown {
+    width: 200px; /* Set your desired width */
+    font-size: 0.8em; /* Set your desired font size */
+}
+
+#admin-dropdown textarea {
+    cols: 20; /* Set your desired width */
+}
+
+
 
 
 /* Reset and base styles */
