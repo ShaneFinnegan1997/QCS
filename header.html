@@ -8,31 +8,9 @@
         <a href="events.html">Events</a>
     </nav>
 
-    <div id="announcement-container" style="margin-top: 10px; padding: 5px; background-color: rgba(255, 255, 255, 0.1); border-radius: 5px; position: relative;">
-        <span id="announcement-text">Loading announcement...</span>
+        <div id="admin-area" style="position: absolute; top: 100%; right: 0; margin-top: 5px;">
+        <a href="editannouncement.html" id="admin-edit-link" style="font-size: 0.8em; color: #008080; text-decoration: none; padding: 2px 5px; border-radius: 3px; display: inline-block;">Admin Edit</a>
     </div>
 
-    <div id="admin-area" style="position: absolute; top: 100%; right: 0; margin-top: 5px;">
-        <a href="#" id="admin-login-link" style="font-size: 0.8em; color: #008080; text-decoration: none; padding: 2px 5px; border-radius: 3px; display: inline-block;">Admin Login</a>
-        <!-- Admin Dropdown -->
-        <div id="admin-dropdown" style="display: none; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 10px; z-index: 1000; width: 200px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 0.8em; margin-top: 5px; top: 100%;">
-            <button id="admin-dropdown-close" style="position: absolute; top: 5px; right: 5px; border: none; background: none; cursor: pointer;">&times;</button>
-
-            <div id="admin-login-section">
-                <h2>Admin Login</h2>
-                <label for="admin-username">Username:</label>
-                <input type="text" id="admin-username"><br><br>
-                <label for="admin-password">Password:</label>
-                <input type="password" id="admin-password"><br><br>
-                <button id="admin-login-submit">Login</button>
-                <p id="admin-login-error" style="color: red;"></p>
-            </div>
-
-            <div id="admin-edit-section" style="display: none;">
-                <h2>Edit Announcement</h2>
-                <textarea id="admin-announcement-text" rows="4" cols="20"></textarea><br><br>
-                <button id="admin-announcement-save">Save</button>
-            </div>
-        </div>
     </div>
 </header>
