@@ -189,15 +189,14 @@
           Object.entries(data).reverse().forEach(([key, event]) => {
             const div = document.createElement("div");
             div.className = "event-card";
-            div.innerHTML = `
-              <strong>Title:</strong> \${event.title}<br>
-              <strong>Description:</strong> \${event.description}<br>
-              ${event.link ? `<strong>Link:</strong> <a href="${event.link}" target="_blank">${event.link}</a><br>` : ""}
-              <div class="event-actions">
-                <button onclick="enableEdit('\${key}', this)">Edit</button>
-                <button onclick="deleteEvent('\${key}')">Delete</button>
-              </div>
-            `;
+            div.innerHTML =
+              "<strong>Title:</strong> " + event.title + "<br>" +
+              "<strong>Description:</strong> " + event.description + "<br>" +
+              (event.link ? "<strong>Link:</strong> <a href='" + event.link + "' target='_blank'>" + event.link + "</a><br>" : "") +
+              "<div class='event-actions'>" +
+              "<button onclick=\"enableEdit('" + key + "', this)\">Edit</button>" +
+              "<button onclick=\"deleteEvent('" + key + "')\">Delete</button>" +
+              "</div>";
             eventsList.appendChild(div);
           });
         } else {
@@ -224,7 +223,7 @@
           } else {
             alert("Event updated!");
             btn.textContent = "Edit";
-            spans.forEach(el => el.setAttribute("contenteditable", true));
+            spans.forEach(el => el.setAttribute("contenteditable", false));
           }
         });
       } else {
