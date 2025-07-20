@@ -139,43 +139,36 @@
     }
 
     function showAdminPanel() {
-        document.getElementById("login-section").classList.add("hidden");
-        document.getElementById("admin-panel").classList.remove("hidden");
-        loadEvents();
-        loadUsers();
-        loadSweepstakes();
-    }
+    document.getElementById("login-section").classList.add("hidden");
+    document.getElementById("admin-panel").classList.remove("hidden");
+    loadEvents(); // Add it here
+    loadUsers();
+    loadSweepstakes();
+}
 
-    function logout() {
-        localStorage.removeItem("adminUser");
-        location.reload();
-    }
+// Event Management Functions
+function addEvent() {
+    const title = document.getElementById("event-title").value;
+    const link = document.getElementById("event-link").value;
+    const description = document.getElementById("event-description").value; // Get description
 
-    // Countdown Timer Function
-    function updateCountdown() {
-        const targetTime = document.getElementById("target-time").value;
-        const entryLink = document.getElementById("entry-link").value;
+    const eventRef = db.ref("events").push();
+    eventRef.set({
+        title,
+        link,
+        description
+    }); // Save description
+    document.getElementById("event-title").value = "";
+    document.getElementById("event-link").value = "";
+    document.getElementById("event-description").value = ""; // Clear description
+    loadEvents(); // Add it here
+}
 
-        db.ref("countdown").set({
-            targetTime,
-            entryLink
-        });
-        alert("Countdown updated!");
-    }
+function deleteEvent(key) {
+    db.ref("events/" + key).remove();
+    loadEvents(); // Add it here
+}
 
-    // Event Management Functions
-    function addEvent() {
-        const title = document.getElementById("event-title").value;
-        const link = document.getElementById("event-link").value;
-        const description = document.getElementById("event-description").value; // Get description
-
-        const eventRef = db.ref("events").push();
-        eventRef.set({ title, link, description }); // Save description
-        document.getElementById("event-title").value = "";
-        document.getElementById("event-link").value = "";
-        document.getElementById("event-description").value = ""; // Clear description
-        loadEvents();
-    }
 
     // DO NOT MODIFY THIS SECTION - YOU NEED TO ENSURE THE PROPER SCOPE IN script.js
     function deleteEvent(key) {
