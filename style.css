@@ -78,6 +78,13 @@
   }
 }
 
+/* Remove popup css */
+#admin-login-popup,
+#admin-edit-popup{
+    display:none;
+}
+
+
 /* Reset and base styles */
 * {
   box-sizing: border-box;
