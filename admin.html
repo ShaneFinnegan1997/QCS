@@ -94,6 +94,9 @@
         <label>Non-Profit Donation Amount:</label><br>
         <input type="number" id="non-profit-donation-amount" placeholder="e.g., 100"><br><br>
 
+        <label>Non-Profit Website Link:</label><br>
+        <input type="text" id="non-profit-website-link" placeholder="https://..."><br><br>
+
         <label>Website Funds Amount:</label><br>
         <input type="number" id="website-funds-amount" placeholder="e.g., 50"><br><br>
 
@@ -173,6 +176,7 @@
       const winnerPayoutAmount = document.getElementById("winner-payout-amount").value;
       const nonProfitName = document.getElementById("non-profit-name").value;
       const nonProfitDonationAmount = document.getElementById("non-profit-donation-amount").value;
+      const nonProfitWebsiteLink = document.getElementById("non-profit-website-link").value; //NEW
       const websiteFundsAmount = document.getElementById("website-funds-amount").value;
 
       if (!title || !description) {
@@ -188,6 +192,7 @@
         winnerPayoutAmount: winnerPayoutAmount || 0,
         nonProfitName: nonProfitName || "",
         nonProfitDonationAmount: nonProfitDonationAmount || 0,
+        nonProfitWebsiteLink: nonProfitWebsiteLink || "", //NEW
         websiteFundsAmount: websiteFundsAmount || 0
       };
 
@@ -203,6 +208,7 @@
           document.getElementById("winner-payout-amount").value = "";
           document.getElementById("non-profit-name").value = "";
           document.getElementById("non-profit-donation-amount").value = "";
+          document.getElementById("non-profit-website-link").value = ""; //NEW
           document.getElementById("website-funds-amount").value = "";
 
           loadEvents(); // Refresh events list after posting
@@ -226,7 +232,9 @@
               (event.link ? "<strong>Link:</strong> <a href='" + event.link + "' target='_blank'>" + event.link + "</a><br>" : "") +
               "<strong>Total Winnings:</strong> \$" + (event.totalWinnings || 0) + "<br>" +
               "<strong>Winner Payout:</strong> \$" + (event.winnerPayoutAmount || 0) + "<br>" +
-              "<strong>Non-Profit:</strong> " + (event.nonProfitName || "N/A") + " - \$" + (event.nonProfitDonationAmount || 0) + "<br>" +
+              "<strong>Non-Profit:</strong> " + (event.nonProfitName || "N/A") + " - \$" + (event.nonProfitDonationAmount || 0) +
+              (event.nonProfitWebsiteLink ? " (<a href='" + event.nonProfitWebsiteLink + "' target='_blank'>Website</a>)" : "") +
+              "<br>" +
               "<strong>Website Funds:</strong> \$" + (event.websiteFundsAmount || 0) + "<br>" +
               "<div class='event-actions'>" +
               "<button onclick=\"enableEdit('" + key + "', this)\">Edit</button>" +
@@ -252,6 +260,7 @@
       const eventWinnerPayoutAmount = card.querySelector("#winner-payout-amount-" + key);
       const eventNonProfitName = card.querySelector("#non-profit-name-" + key);
       const eventNonProfitDonationAmount = card.querySelector("#non-profit-donation-amount-" + key);
+      const eventNonProfitWebsiteLink = card.querySelector("#non-profit-website-link-" + key); //NEW
       const eventWebsiteFundsAmount = card.querySelector("#website-funds-amount-" + key);
 
       const editing = btn.textContent === "Save";
@@ -265,6 +274,7 @@
           winnerPayoutAmount: eventWinnerPayoutAmount.textContent,
           nonProfitName: eventNonProfitName.textContent,
           nonProfitDonationAmount: eventNonProfitDonationAmount.textContent,
+          nonProfitWebsiteLink: eventNonProfitWebsiteLink.textContent, //NEW
           websiteFundsAmount: eventWebsiteFundsAmount.textContent
         };
 
@@ -279,7 +289,7 @@
         });
       } else {
         btn.textContent = "Save";
-        //make the texts editable
+        //Make the text editable
       }
     }
 
