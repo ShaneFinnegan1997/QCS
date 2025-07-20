@@ -120,12 +120,14 @@
       const title = document.getElementById("event-title").value;
       const description = document.getElementById("event-description").value;
       const link = document.getElementById("event-link").value;
+const newEvent = { title, description, link };
+      db.ref("events").push(newEvent);
+
       if (!title || !description) return alert("Title and description required.");
 
   <div id="footer-container"></div>
   <script type="module" src="script.js"></script>
-      const newEvent = { title, description, link };
-      db.ref("events").push(newEvent);
+      
       document.getElementById("event-title").value = "";
       document.getElementById("event-description").value = "";
       document.getElementById("event-link").value = "";
