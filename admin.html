@@ -182,16 +182,15 @@
         spans.forEach(el => el.setAttribute("contenteditable", true));
 }
 }
-    loadHTML("#header-container", "header-admin.html");
-    loadHTML("#footer-container", "footer.html");
-  </script>
 
     function deleteEvent(key) {
       if (confirm("Are you sure you want to delete this event?")) {
         db.ref("events/" + key).remove();
       }
     }
+
+    loadHTML("#header-container", "header-admin.html");
+    loadHTML("#footer-container", "footer.html");
   </script>
 </body>
-</html>
 </html>
