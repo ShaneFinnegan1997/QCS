@@ -8,11 +8,14 @@
         <a href="events.html">Events</a>
     </nav>
 
-    <div id="announcement-container" style="margin-top: 10px; padding: 5px; background-color: rgba(255, 255, 255, 0.1); border-radius: 5px; position: relative; display: flex; flex-direction: column; align-items: flex-end;"> <!-- Added flexbox styling -->
+    <div id="announcement-container" style="margin-top: 10px; padding: 5px; background-color: rgba(255, 255, 255, 0.1); border-radius: 5px; position: relative;"> <!-- Removed flexbox styling -->
         <span id="announcement-text">Loading announcement...</span>
-        <a href="#" id="admin-login-link" style="font-size: 0.8em; color: #008080; text-decoration: none; background-color: white; padding: 2px 5px; border-radius: 3px; margin-top: 5px;">Admin Login</a>  <!-- Removed absolute positioning -->
+    </div>
+
+    <div id="admin-area" style="display: flex; flex-direction: column; align-items: flex-end; position: absolute; top: 100%; right: 0; margin-top: 5px;">
+        <a href="#" id="admin-login-link" style="font-size: 0.8em; color: #008080; text-decoration: none; padding: 2px 5px; border-radius: 3px; display: inline-block;">Admin Login</a>  <!-- Removed background-color -->
         <!-- Admin Dropdown -->
-        <div id="admin-dropdown" style="display: none; position: absolute; bottom: -10px; right: 5px; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 10px; z-index: 1000; width: 200px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 0.8em;">
+        <div id="admin-dropdown" style="display: none; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 10px; z-index: 1000; width: 200px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 0.8em; margin-top: 5px;">
             <button id="admin-dropdown-close" style="position: absolute; top: 5px; right: 5px; border: none; background: none; cursor: pointer;">&times;</button>
 
             <div id="admin-login-section">
