@@ -66,14 +66,6 @@
                 </div>
             </div>
 
-            <div class="admin-container">
-                <h2>Admin Login</h2>
-                <div id="passcode-form-inner">
-                    <input type="password" id="admin-pass" placeholder="Enter Admin Passcode">
-                    <button onclick="checkLogin()">Login</button>
-                </div>
-            </div>
-
             <!-- CREATE EVENT AND MANAGE EVENTS SECTION (HIDDEN INITIALLY) -->
             <div id="admin-panel" class="admin-container hidden">
                 <h2>Post Event</h2>
@@ -141,9 +133,9 @@
                     loginStatus.textContent = "Login Successful!";
                     loginStatus.style.color = "green";
                     // Hide the username/password form
-                    //loginForm.classList.add("hidden");
+                    loginForm.classList.add("hidden");
                     adminPanel.classList.remove("hidden");
-                    //loadEvents();
+                    loadEvents();
                     // You might want to store the user's information or redirect to a different page
                 })
                 .catch((error) => {
@@ -153,10 +145,6 @@
                     loginStatus.textContent = "Login Failed: " + errorMessage;
                     loginStatus.style.color = "red";
                 });
-        }
-
-        function checkLogin() {
-            //You may have to make changes to this code
         }
 
 
@@ -188,6 +176,7 @@
               <strong>Description:</strong> <span contenteditable="true">\${event.description || ""}</span><br>
               ${event.link ? `<strong>Link:</strong> <a href="${event.link}" target="_blank">${event.link}</a><br>` : ""}
               <div class="event-actions">
+                <button onclick="enableEdit('\${key}', this)">Edit</button>
                 <button onclick="deleteEvent('\${key}')">Delete</button>
               </div>
             `;
