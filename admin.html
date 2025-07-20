@@ -107,8 +107,13 @@
 
         </center>
         <section class="event-admin-section hidden" id="manage-events">
-            <h2>Manage Events</h2>
-            <div id="admin-events-list">Loading...</div>
+                    <strong>Title:</strong> <span contenteditable="true">\${event.title}</span><br>
+              <strong>Description:</strong> <span contenteditable="true">\${event.description || ""}</span><br>
+              ${event.link ? `<strong>Link:</strong> <a href="${event.link}" target="_blank">${event.link}</a><br>` : ""}
+              <div class="event-actions">
+                <button onclick="enableEdit('\${key}', this)">Edit</button>
+                <button onclick="deleteEvent('\${key}')">Delete</button>
+              </div>
         </section>
 
     </main>
@@ -205,13 +210,7 @@
                         const div = document.createElement("div");
                         div.className = "event-card";
                         div.innerHTML = `
-              <strong>Title:</strong> <span contenteditable="false">\${event.title}</span><br>
-              <strong>Description:</strong> <span contenteditable="false">\${event.description || ""}</span><br>
-              ${event.link ? `<strong>Link:</strong> <a href="${event.link}" target="_blank">${event.link}</a><br>` : ""}
-              <div class="event-actions">
-                <button onclick="enableEdit('\${key}', this)">Edit</button>
-                <button onclick="deleteEvent('\${key}')">Delete</button>
-              </div>
+      
             `;
                         eventsList.appendChild(div);
                     });
