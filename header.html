@@ -6,13 +6,14 @@
         <a href="about.html">About Us</a>
         <a href="rules.html">Rules</a>
         <a href="events.html">Events</a>
+    </nav>
 
-<div id="announcement-container" style="margin-top: 10px; padding: 5px; background-color: rgba(255, 255, 255, 0.1); border-radius: 5px; position: relative;"> <!-- Removed flexbox styling -->
+    <div id="announcement-container" style="margin-top: 10px; padding: 5px; background-color: rgba(255, 255, 255, 0.1); border-radius: 5px; position: relative;">
         <span id="announcement-text">Loading announcement...</span>
     </div>
 
-    <div id="admin-area" style="display: flex; flex-direction: column; align-items: flex-end; position: absolute; top: 100%; right: 0; margin-top: 5px;">
-        <a href="#" id="admin-login-link" style="font-size: 0.8em; color: #008080; text-decoration: none; padding: 2px 5px; border-radius: 3px; display: inline-block;">Admin Login</a>  <!-- Removed background-color -->
+    <div id="admin-area" style="position: absolute; top: 100%; right: 0; margin-top: 5px;">
+        <a href="#" id="admin-login-link" style="font-size: 0.8em; color: #008080; text-decoration: none; padding: 2px 5px; border-radius: 3px; display: inline-block;">Admin Login</a>
         <!-- Admin Dropdown -->
         <div id="admin-dropdown" style="display: none; background-color: white; border: 1px solid #ccc; border-radius: 5px; padding: 10px; z-index: 1000; width: 200px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 0.8em; margin-top: 5px;">
             <button id="admin-dropdown-close" style="position: absolute; top: 5px; right: 5px; border: none; background: none; cursor: pointer;">&times;</button>
@@ -34,12 +35,6 @@
             </div>
         </div>
     </div>
-
-
-
-    </nav>
-
-    
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
