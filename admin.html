@@ -82,13 +82,20 @@
         <label>Event Details:</label><br>
         <textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
 
-        <label>Winner's Payout Percentage:</label><br>
-        <input type="number" id="winner-payout-percentage" placeholder="e.g., 70"><br><br>
+        <label>Total Winnings:</label><br>
+        <input type="number" id="total-winnings" placeholder="e.g., 1000"><br><br>
 
-        <label>Non-Profit Name:</label>
+        <label>Winner Payout Amount:</label><br>
+        <input type="number" id="winner-payout-amount" placeholder="e.g., 700"><br><br>
+
+        <label>Non-Profit Name:</label><br>
         <input type="text" id="non-profit-name" placeholder="e.g., Red Cross"><br><br>
-        <label>Non-Profit Percentage:</label>
-        <input type="number" id="non-profit-percentage" placeholder="e.g., 10"><br><br>
+
+        <label>Non-Profit Donation Amount:</label><br>
+        <input type="number" id="non-profit-donation-amount" placeholder="e.g., 100"><br><br>
+
+        <label>Website Funds Amount:</label><br>
+        <input type="number" id="website-funds-amount" placeholder="e.g., 50"><br><br>
 
         <button onclick="postEvent()">Post Event</button><br><br>
 
@@ -162,9 +169,11 @@
       const title = document.getElementById("event-title").value;
       const description = document.getElementById("event-description").value;
       const link = document.getElementById("event-link").value;
-      const winnerPayoutPercentage = document.getElementById("winner-payout-percentage").value;
+      const totalWinnings = document.getElementById("total-winnings").value;
+      const winnerPayoutAmount = document.getElementById("winner-payout-amount").value;
       const nonProfitName = document.getElementById("non-profit-name").value;
-      const nonProfitPercentage = document.getElementById("non-profit-percentage").value;
+      const nonProfitDonationAmount = document.getElementById("non-profit-donation-amount").value;
+      const websiteFundsAmount = document.getElementById("website-funds-amount").value;
 
       if (!title || !description) {
         alert("Title and description are required.");
@@ -175,11 +184,11 @@
         title: title,
         description: description,
         link: link || "", // Optional link
-        winnerPayoutPercentage: winnerPayoutPercentage || "", // Optional winner payout percentage
-        nonProfit: {
-          name: nonProfitName || "",
-          percentage: nonProfitPercentage || ""
-        }
+        totalWinnings: totalWinnings || 0, // Default to 0 if empty
+        winnerPayoutAmount: winnerPayoutAmount || 0,
+        nonProfitName: nonProfitName || "",
+        nonProfitDonationAmount: nonProfitDonationAmount || 0,
+        websiteFundsAmount: websiteFundsAmount || 0
       };
 
       firebase.database().ref("events").push(newEvent, (error) => {
@@ -190,9 +199,12 @@
           document.getElementById("event-title").value = "";
           document.getElementById("event-description").value = "";
           document.getElementById("event-link").value = "";
-          document.getElementById("winner-payout-percentage").value = "";
+          document.getElementById("total-winnings").value = "";
+          document.getElementById("winner-payout-amount").value = "";
           document.getElementById("non-profit-name").value = "";
-          document.getElementById("non-profit-percentage").value = "";
+          document.getElementById("non-profit-donation-amount").value = "";
+          document.getElementById("website-funds-amount").value = "";
+
           loadEvents(); // Refresh events list after posting
         }
       });
@@ -212,8 +224,10 @@
               "<strong>Title:</strong> " + event.title + "<br>" +
               "<strong>Description:</strong> " + event.description + "<br>" +
               (event.link ? "<strong>Link:</strong> <a href='" + event.link + "' target='_blank'>" + event.link + "</a><br>" : "") +
-              (event.winnerPayoutPercentage ? "<strong>Winner Payout:</strong> " + event.winnerPayoutPercentage + "%<br>" : "") +
-              (event.nonProfit ? "<strong>Non-Profit:</strong> " + event.nonProfit.name + " (" + event.nonProfit.percentage + "%)<br>" : "") +
+              "<strong>Total Winnings:</strong> \$" + (event.totalWinnings || 0) + "<br>" +
+              "<strong>Winner Payout:</strong> \$" + (event.winnerPayoutAmount || 0) + "<br>" +
+              "<strong>Non-Profit:</strong> " + (event.nonProfitName || "N/A") + " - \$" + (event.nonProfitDonationAmount || 0) + "<br>" +
+              "<strong>Website Funds:</strong> \$" + (event.websiteFundsAmount || 0) + "<br>" +
               "<div class='event-actions'>" +
               "<button onclick=\"enableEdit('" + key + "', this)\">Edit</button>" +
               "<button onclick=\"deleteEvent('" + key + "')\">Delete</button>" +
@@ -228,13 +242,17 @@
 
     function enableEdit(key, btn) {
       const card = btn.closest(".event-card");
+      // Get references to all the data elements you want to make editable
 
       // Extract event data from the card
       const eventTitle = card.querySelector("#title-" + key);
       const eventDescription = card.querySelector("#description-" + key);
-      const eventWinnerPayoutPercentage = card.querySelector("#winner-payout-percentage-" + key);
+
+      const eventTotalWinnings = card.querySelector("#total-winnings-" + key);
+      const eventWinnerPayoutAmount = card.querySelector("#winner-payout-amount-" + key);
       const eventNonProfitName = card.querySelector("#non-profit-name-" + key);
-      const eventNonProfitPercentage = card.querySelector("#non-profit-percentage-" + key);
+      const eventNonProfitDonationAmount = card.querySelector("#non-profit-donation-amount-" + key);
+      const eventWebsiteFundsAmount = card.querySelector("#website-funds-amount-" + key);
 
       const editing = btn.textContent === "Save";
 
@@ -243,11 +261,11 @@
         const updatedEvent = {
           title: eventTitle.textContent,
           description: eventDescription.textContent,
-          winnerPayoutPercentage: eventWinnerPayoutPercentage.textContent,
-          nonProfit: {
-            name: eventNonProfitName.textContent,
-            percentage: eventNonProfitPercentage.textContent
-          }
+          totalWinnings: eventTotalWinnings.textContent,
+          winnerPayoutAmount: eventWinnerPayoutAmount.textContent,
+          nonProfitName: eventNonProfitName.textContent,
+          nonProfitDonationAmount: eventNonProfitDonationAmount.textContent,
+          websiteFundsAmount: eventWebsiteFundsAmount.textContent
         };
 
         firebase.database().ref("events/" + key).update(updatedEvent, (error) => {
@@ -261,7 +279,7 @@
         });
       } else {
         btn.textContent = "Save";
-        //make it editable
+        //make the texts editable
       }
     }
 
