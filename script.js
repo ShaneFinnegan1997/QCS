@@ -83,6 +83,22 @@ if (logBtn) {
   });
 }
 
+// Delete event
+async function deleteEvent(eventId) {
+  if (confirm("Are you sure you want to delete this event?")) {
+    try {
+      await remove(ref(db, "events/" + eventId));
+      alert("Event deleted.");
+      loadAdminEvents();  // Reload events after deletion
+    } catch (error) {
+      alert("Error deleting event: " + error.message);
+    }
+  }
+}
+
+// Make deleteEvent globally accessible
+window.deleteEvent = deleteEvent;
+
 // Load events
 function loadAdminEvents() {
   const list = document.getElementById("admin-events-list");
@@ -100,10 +116,10 @@ function loadAdminEvents() {
         const div = document.createElement("div");
         div.className = "admin-event-item";
         div.innerHTML = `
-          <strong>${event.title}</strong><br/>
+          <strong>\${event.title}</strong><br/>
           ${event.description ? `<p>${event.description}</p>` : ""}
           ${event.link ? `<a href="${event.link}" target="_blank">Event Link</a><br/>` : ""}
-          <button onclick="deleteEvent('${key}')">Delete</button>
+          <button onclick="deleteEvent('\${key}')">Delete</button>
           <hr/>
         `;
         list.appendChild(div);
@@ -113,18 +129,6 @@ function loadAdminEvents() {
     }
   });
 }
-
-// Delete event
-window.deleteEvent = async function (eventId) {
-  if (confirm("Are you sure you want to delete this event?")) {
-    try {
-      await remove(ref(db, "events/" + eventId));
-      alert("Event deleted.");
-    } catch (error) {
-      alert("Error deleting event: " + error.message);
-    }
-  }
-};
 
 // Function to display the announcement
 function displayAnnouncement(title, message) {
