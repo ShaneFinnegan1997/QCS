@@ -190,8 +190,8 @@
             const div = document.createElement("div");
             div.className = "event-card";
             div.innerHTML =
-              "<strong>Title:</strong> " + event.title + "<br>" +
-              "<strong>Description:</strong> " + event.description + "<br>" +
+              "<strong>Title:</strong> <span id='title-" + key + "'>" + event.title + "</span><br>" +
+              "<strong>Description:</strong> <span id='description-" + key + "'>" + event.description + "</span><br>" +
               (event.link ? "<strong>Link:</strong> <a href='" + event.link + "' target='_blank'>" + event.link + "</a><br>" : "") +
               "<div class='event-actions'>" +
               "<button onclick=\"enableEdit('" + key + "', this)\">Edit</button>" +
@@ -207,14 +207,16 @@
 
     function enableEdit(key, btn) {
       const card = btn.closest(".event-card");
-      const spans = card.querySelectorAll("span[contenteditable]");
+      const titleElement = card.querySelector("#title-" + key);
+      const descriptionElement = card.querySelector("#description-" + key);
       const editing = btn.textContent === "Save";
 
       if (editing) {
-        const [titleEl, descEl] = spans;
+        const newTitle = titleElement.textContent.trim();
+        const newDescription = descriptionElement.textContent.trim();
         const updatedEvent = {
-          title: titleEl.textContent.trim(),
-          description: descEl.textContent.trim()
+          title: newTitle,
+          description: newDescription
         };
 
         firebase.database().ref("events/" + key).update(updatedEvent, (error) => {
@@ -223,12 +225,16 @@
           } else {
             alert("Event updated!");
             btn.textContent = "Edit";
-            spans.forEach(el => el.setAttribute("contenteditable", false));
+            titleElement.contentEditable = false;
+            descriptionElement.contentEditable = false;
+            loadEvents();
           }
         });
       } else {
         btn.textContent = "Save";
-        spans.forEach(el => el.setAttribute("contenteditable", true));
+        titleElement.contentEditable = true;
+        descriptionElement.contentEditable = true;
+        titleElement.focus();
       }
     }
 
