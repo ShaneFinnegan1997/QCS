@@ -59,19 +59,10 @@
             <div class="admin-container">
                 <h2>Admin Login</h2>
                 <div id="login-form">
-                    <input type="text" id="admin-username" placeholder="Username (Email)"><br><br>
+                    <input type="text" id="admin-username" placeholder="Username"><br><br>
                     <input type="password" id="admin-password" placeholder="Password"><br><br>
                     <button id="login-btn" onclick="loginWithEmailPassword()">Login</button>
                     <p id="login-status" style="color:red;"></p>
-                </div>
-            </div>
-
-            <!--  PASSCODE LOGIN FORM -->
-            <div class="admin-container hidden" id="passcode-form">
-                <h2>Enter Admin Passcode</h2>
-                <div id="passcode-form-inner">
-                    <input type="password" id="admin-pass" placeholder="Enter Admin Passcode">
-                    <button onclick="checkLogin()">Login</button>
                 </div>
             </div>
 
@@ -81,17 +72,14 @@
                 <label>Event Title:</label><br>
                 <input type="text" id="event-title" placeholder="Title"><br><br>
 
-
                 <label>Event Link (optional):</label><br>
                 <input type="text" id="event-link" placeholder="https://..."><br><br>
-
 
                 <label>Event Details:</label><br>
                 <textarea id="event-description" placeholder="Enter details here..." rows="5"
                     cols="30"></textarea><br><br>
 
                 <button id="log-event" onclick="createEvent()">Post Event</button>
-
 
                 <h2>Update Countdown</h2>
                 <label>Countdown End Time:</label><br>
@@ -106,16 +94,6 @@
 
 
         </center>
-        <section class="event-admin-section hidden" id="manage-events">
-                    <strong>Title:</strong> <span contenteditable="true">\${event.title}</span><br>
-              <strong>Description:</strong> <span contenteditable="true">\${event.description || ""}</span><br>
-              ${event.link ? `<strong>Link:</strong> <a href="${event.link}" target="_blank">${event.link}</a><br>` : ""}
-              <div class="event-actions">
-                <button onclick="enableEdit('\${key}', this)">Edit</button>
-                <button onclick="deleteEvent('\${key}')">Delete</button>
-              </div>
-        </section>
-
     </main>
 
     <div id="footer-container"></div>
@@ -140,8 +118,7 @@
         const loginForm = document.getElementById("login-form");
         const adminPanel = document.getElementById("admin-panel");
         const eventsList = document.getElementById("events-list");
-        const usernamePasswordForm = document.getElementById("username-password-form");
-        const passcodeForm = document.getElementById("passcode-form");
+
 
         function loginWithEmailPassword() {
             const email = document.getElementById("admin-username").value;
@@ -156,9 +133,9 @@
                     loginStatus.textContent = "Login Successful!";
                     loginStatus.style.color = "green";
                     // Hide the username/password form
-                    usernamePasswordForm.classList.add("hidden");
-                    //Show the admin passcode form
-                    passcodeForm.classList.remove("hidden");
+                    loginForm.classList.add("hidden");
+                    adminPanel.classList.remove("hidden");
+                    loadEvents();
                     // You might want to store the user's information or redirect to a different page
                 })
                 .catch((error) => {
@@ -168,21 +145,6 @@
                     loginStatus.textContent = "Login Failed: " + errorMessage;
                     loginStatus.style.color = "red";
                 });
-        }
-
-
-        function checkLogin() {
-            const entered = document.getElementById("admin-pass").value;
-            const passRef = db.ref("adminPasscode");
-            passRef.once("value", snapshot => {
-                if (snapshot.val() === entered) {
-                    passcodeForm.classList.add("hidden");
-                    adminPanel.classList.remove("hidden");
-                    loadEvents();
-                } else {
-                    alert("Incorrect passcode");
-                }
-            });
         }
 
 
@@ -210,58 +172,6 @@
                         const div = document.createElement("div");
                         div.className = "event-card";
                         div.innerHTML = `
-      
-            `;
-                        eventsList.appendChild(div);
-                    });
-                } else {
-                    eventsList.innerHTML = "<p>No events found.</p>";
-                }
-            });
-        }
-
-        function enableEdit(key, btn) {
-            const card = btn.closest(".event-card");
-            const spans = card.querySelectorAll("span[contenteditable]");
-            const editing = btn.textContent === "Save";
-
-            if (editing) {
-                const [titleEl, descEl] = spans;
-                const updatedEvent = {
-                    title: titleEl.textContent.trim(),
-                    description: descEl.textContent.trim()
-                };
-                db.ref("events/" + key).update(updatedEvent);
-                btn.textContent = "Edit";
-                spans.forEach(el => el.setAttribute("contenteditable", false));
-            } else {
-                console.error("Failed to load", url);
-                btn.textContent = "Save";
-                spans.forEach(el => el.setAttribute("contenteditable", true));
-            }
-        }
-
-        function deleteEvent(key) {
-            if (confirm("Are you sure you want to delete this event?")) {
-                db.ref("events/" + key).remove();
-            }
-        }
-
-        async function loadHTML(selector, url) {
-            const response = await fetch(url);
-            if (response.ok) {
-                const html = await response.text();
-                document.querySelector(selector).innerHTML = html;
-            } else {
-                console.error("Failed to load", url);
-            }
-        }
-
-
-        loadHTML("#header-container", "header-admin.html");
-        loadHTML("#footer-container", "footer.html");
-    </script>
-    <script type="module" src="script.js"></script>
-</body>
-
-</html>
+              <strong>Title:</strong> <span contenteditable="true">\${event.title}</span><br>
+              <strong>Description:</strong> <span contenteditable="true">\${event.description || ""}</span><br>
+              ${event.link ? `<strong>Link:</strong> <a href="${event.
