@@ -124,10 +124,7 @@
             const loginStatus = document.getElementById("login-status");
 
             // Attempt to "fake" an email address
-            const fakeEmail = username + "@example.com";
-
-            auth.signInWithEmailAndPassword(fakeEmail, password)
-                .then((userCredential) => {
+      => {
                     // Signed in
                     const user = userCredential.user;
                     console.log("Logged in:", user);
