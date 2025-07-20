@@ -28,53 +28,53 @@
   <main>
     <center>
       <h1>Admin Login</h1>
-  <div class="admin-container">
-    <h2>Admin Login</h2>
-<div id="login-form">
+      <div id="login-form">
         <input type="text" id="admin-username" placeholder="Username" /><br><br>
         <input type="password" id="admin-password" placeholder="Password" /><br><br>
         <button id="login-btn">Login</button>
         <p id="login-status" style="color:red;"></p>
+  <div class="admin-container">
+    <h2>Admin Login</h2>
+    <div id="login-form">
       <input type="password" id="admin-pass" placeholder="Enter Admin Passcode" />
       <button onclick="checkLogin()">Login</button>
-</div>
+    </div>
 
-<div id="admin-panel" class="hidden">
-        <h2>Update Countdown</h2>
-        <label>Countdown End Time:</label><br>
-        <input type="datetime-local" id="target-time" /><br><br>
-        <label>Entry Link:</label><br>
-        <input type="text" id="entry-link" placeholder="https://..." /><br><br>
-        <button id="update-countdown">Update Countdown</button><br><br>
+    <div id="admin-panel" class="hidden">
       <h3>Create Event</h3>
       <div class="form-group">
         <input type="text" id="event-title" placeholder="Event Title" />
       </div>
       <div class="form-group">
         <textarea id="event-description" placeholder="Event Description"></textarea>
-      </div>
+</div>
       <div class="form-group">
         <input type="url" id="event-link" placeholder="Optional Link (e.g., https://...)" />
       </div>
       <button onclick="createEvent()">Add Event</button>
 
-<h2>Post Event</h2>
-<label>Event Title:</label><br>
-<input type="text" id="event-title" placeholder="Title" /><br><br>
+      <div id="admin-panel" class="hidden">
+        <h2>Update Countdown</h2>
+        <label>Countdown End Time:</label><br>
+        <input type="datetime-local" id="target-time" /><br><br>
+        <label>Entry Link:</label><br>
+        <input type="text" id="entry-link" placeholder="https://..." /><br><br>
+        <button id="update-countdown">Update Countdown</button><br><br>
       <hr>
       <h3>Manage Events</h3>
       <div id="events-list">Loading...</div>
     </div>
   </div>
 
-<label>Event Link (optional):</label><br>
-<input type="text" id="event-link" placeholder="https://..." /><br><br>
+<h2>Post Event</h2>
+<label>Event Title:</label><br>
+<input type="text" id="event-title" placeholder="Title" /><br><br>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<label>Event Details:</label><br>
-<textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
+<label>Event Link (optional):</label><br>
+<input type="text" id="event-link" placeholder="https://..." /><br><br>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
@@ -88,13 +88,15 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-<button id="log-event">Post Event</button>
-      </div>
-    </center>
+<label>Event Details:</label><br>
+<textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
     const loginForm = document.getElementById("login-form");
     const adminPanel = document.getElementById("admin-panel");
     const eventsList = document.getElementById("events-list");
 
+<button id="log-event">Post Event</button>
+      </div>
+    </center>
     function checkLogin() {
       const entered = document.getElementById("admin-pass").value;
       const passRef = db.ref("adminPasscode");
@@ -154,15 +156,11 @@
             `;
             eventsList.appendChild(div);
           });
-} else {
-        console.error("Failed to load", url);
+        } else {
           eventsList.innerHTML = "<p>No events found.</p>";
-}
+        }
       });
-}
-    loadHTML("#header-container", "header-admin.html");
-    loadHTML("#footer-container", "footer.html");
-  </script>
+    }
 
     function enableEdit(key, btn) {
       const card = btn.closest(".event-card");
@@ -178,11 +176,15 @@
         db.ref("events/" + key).update(updatedEvent);
         btn.textContent = "Edit";
         spans.forEach(el => el.setAttribute("contenteditable", false));
-      } else {
+} else {
+        console.error("Failed to load", url);
         btn.textContent = "Save";
         spans.forEach(el => el.setAttribute("contenteditable", true));
-      }
-    }
+}
+}
+    loadHTML("#header-container", "header-admin.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
 
     function deleteEvent(key) {
       if (confirm("Are you sure you want to delete this event?")) {
@@ -191,4 +193,5 @@
     }
   </script>
 </body>
+</html>
 </html>
