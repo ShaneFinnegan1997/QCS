@@ -1,35 +1,62 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QCS Admin Panel</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QCS Admin</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+    .admin-container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .hidden { display: none; }
+    input, button, textarea { width: 100%; padding: 10px; margin-top: 10px; }
+    img.banner { max-width: 100%; border-radius: 10px; margin-bottom: 20px; }
+    .logout-btn { margin-top: 20px; }
+  </style>
 </head>
 <body>
-  <div id="header-container"></div>  <main>
-    <section class="admin-login" id="login-section">
-      <img src="admin-logo.png" alt="Admin Logo" style="max-width: 200px; display: block; margin: 0 auto;">
+
+  <div id="header-container"></div>
+
+  <div class="admin-container">
+    <img class="banner" src="https://i.imgur.com/yP7hK0j.png" alt="Admin Panel Banner" />
+
+    <div id="login-section">
       <h2>Admin Login</h2>
       <input type="text" id="username" placeholder="Username">
       <input type="password" id="password" placeholder="Password">
       <button onclick="login()">Login</button>
-      <p id="login-error" style="color: red;"></p>
-    </section><section id="admin-panel" style="display: none;">
-  <div style="text-align: right; padding: 10px;">
-    <button onclick="logout()">Logout</button>
-  </div>
-  <h2>Welcome, Admin</h2>
-  <div>
-    <button onclick="showEventManager()">Manage Events</button>
-  </div>
-  <div id="event-manager" style="margin-top: 20px; display: none;">
-    <h3>Event Manager</h3>
-    <!-- Event management UI goes here -->
-    <p>Feature under construction</p>
-  </div>
-</section>
+    </div>
 
-  </main>  <div id="footer-container"></div>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>  <script>
+    <div id="admin-panel" class="hidden">
+      <h2>Welcome, Admin</h2>
+
+      <section>
+        <h3>Update Countdown Timer</h3>
+        <input type="datetime-local" id="target-time" />
+        <input type="text" id="entry-link" placeholder="Entry link (optional)" />
+        <button onclick="updateCountdown()">Update Countdown</button>
+      </section>
+
+      <section>
+        <h3>Manage Events</h3>
+        <input type="text" id="event-title" placeholder="Event Title" />
+        <input type="text" id="event-link" placeholder="Event Link" />
+        <button onclick="addEvent()">Add Event</button>
+        <ul id="event-list"></ul>
+      </section>
+
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div id="footer-container"></div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
       authDomain: "qcsweeps-4b994.firebaseapp.com",
@@ -40,58 +67,98 @@
       appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
       measurementId: "G-XL9VQ985S9"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     function login() {
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
-      const errorElem = document.getElementById("login-error");
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      db.ref("admins/" + user).once("value").then(snapshot => {
+      db.ref("admins/" + username).once("value").then(snapshot => {
         const data = snapshot.val();
-        if (data && data.password === pass) {
-          localStorage.setItem("admin", user);
-          showPanel();
+        if (data && data.password === password) {
+          localStorage.setItem("adminUser", username);
+          showAdminPanel();
         } else {
-          errorElem.textContent = "Incorrect username or password.";
+          alert("Invalid username or password");
         }
-      }).catch(() => {
-        errorElem.textContent = "Error accessing admin data.";
       });
     }
 
-    function showPanel() {
-      document.getElementById("login-section").style.display = "none";
-      document.getElementById("admin-panel").style.display = "block";
+    function showAdminPanel() {
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("admin-panel").classList.remove("hidden");
+      loadEvents();
     }
 
     function logout() {
-      localStorage.removeItem("admin");
+      localStorage.removeItem("adminUser");
       location.reload();
     }
 
-    function showEventManager() {
-      document.getElementById("event-manager").style.display = "block";
+    function updateCountdown() {
+      const targetTime = document.getElementById("target-time").value;
+      const entryLink = document.getElementById("entry-link").value;
+
+      db.ref("countdown").set({
+        targetTime,
+        entryLink
+      });
+      alert("Countdown updated!");
     }
 
-    window.onload = () => {
-      const savedAdmin = localStorage.getItem("admin");
-      if (savedAdmin) {
-        db.ref("admins/" + savedAdmin).once("value").then(snapshot => {
-          if (snapshot.exists()) {
-            showPanel();
-          }
+    function addEvent() {
+      const title = document.getElementById("event-title").value;
+      const link = document.getElementById("event-link").value;
+      const eventRef = db.ref("events").push();
+      eventRef.set({ title, link });
+      document.getElementById("event-title").value = "";
+      document.getElementById("event-link").value = "";
+      loadEvents();
+    }
+
+    function deleteEvent(key) {
+      db.ref("events/" + key).remove();
+      loadEvents();
+    }
+
+    function loadEvents() {
+      const list = document.getElementById("event-list");
+      list.innerHTML = "";
+      db.ref("events").once("value").then(snapshot => {
+        snapshot.forEach(child => {
+          const li = document.createElement("li");
+          li.textContent = child.val().title + " ";
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "Delete";
+          delBtn.onclick = () => deleteEvent(child.key);
+          li.appendChild(delBtn);
+          list.appendChild(li);
         });
-      }
-
-      // Load header and footer
-      fetch("header-admin.html").then(r => r.text()).then(data => {
-        document.getElementById("header-container").innerHTML = data;
-      });
-      fetch("footer.html").then(r => r.text()).then(data => {
-        document.getElementById("footer-container").innerHTML = data;
       });
     }
-  </script></body>
+
+    // Check login on page load
+    window.onload = () => {
+      const user = localStorage.getItem("adminUser");
+      if (user) showAdminPanel();
+    };
+
+    // Load header/footer
+    async function loadHTML(selector, url) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const html = await res.text();
+          document.querySelector(selector).innerHTML = html;
+        }
+      } catch (e) {
+        console.error("Failed to load:", url);
+      }
+    }
+    loadHTML("#header-container", "header-admin.html");
+    loadHTML("#footer-container", "footer.html");
+  </script>
+</body>
 </html>
