@@ -125,3 +125,50 @@ window.deleteEvent = async function (eventId) {
     }
   }
 };
+
+// Function to display the announcement
+function displayAnnouncement(title, message) {
+    const announcementArea = document.getElementById("announcement-area");
+    const announcementTitleDisplay = document.getElementById("announcement-title-display");
+    const announcementMessageDisplay = document.getElementById("announcement-message-display");
+
+    if (announcementTitleDisplay && announcementMessageDisplay && announcementArea) {
+        announcementTitleDisplay.textContent = title;
+        announcementMessageDisplay.textContent = message;
+        announcementArea.style.display = "block"; // Make the announcement area visible
+    } else {
+        console.warn("Announcement elements not found in header. Check your header.html.");
+    }
+}
+
+// Function to clear the announcement
+function clearAnnouncement() {
+    const announcementArea = document.getElementById("announcement-area");
+
+    if(announcementArea){
+        announcementArea.style.display = "none"; // Hide the announcement area
+    }
+
+    const announcementTitleDisplay = document.getElementById("announcement-title-display");
+    const announcementMessageDisplay = document.getElementById("announcement-message-display");
+
+    if(announcementTitleDisplay && announcementMessageDisplay) {
+        announcementTitleDisplay.textContent = "";
+        announcementMessageDisplay.textContent = "";
+    }
+}
+
+// Load existing announcement on page load and listen for updates
+const announcementRef = ref(db, "announcement");
+if(announcementRef) {
+    onValue(announcementRef, (snapshot) => {
+        const announcement = snapshot.val();
+
+        if (announcement) {
+            displayAnnouncement(announcement.title, announcement.message);
+        } else {
+            //No announcement so clear it from view
+            clearAnnouncement();
+        }
+    });
+}
