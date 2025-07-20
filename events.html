@@ -7,29 +7,9 @@
   <title>Upcoming Events - QC Sweepstakes</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-    }
+    /* Existing styles from style.css (to avoid redundancy) */
 
-    main {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 30px 20px;
-    }
-
-    .event-section {
-      text-align: center;
-    }
-
-    .event-section h1 {
-      margin-bottom: 30px;
-      font-size: 2em;
-      color: #333;
-    }
-
+    /* Additional styles for event cards */
     .event-card {
       background: #ffffff;
       border: 5px solid #4CAF50;
@@ -38,8 +18,10 @@
       margin: 20px 0;
       box-shadow: 50 4px 10px rgba(0, 0, 0, 0.1);
       transition: transform 0.2s ease;
-      display: flex; /* Enable flexbox */
-      align-items: flex-start; /* Align items to the top */
+      display: flex;
+      /* Enable flexbox */
+      align-items: flex-start;
+      /* Align items to the top */
     }
 
     .event-card:hover {
@@ -48,7 +30,8 @@
     }
 
     .event-details {
-      flex: 1; /* Allow event details to take up remaining space */
+      flex: 1;
+      /* Allow event details to take up remaining space */
     }
 
     .event-card h2 {
@@ -67,14 +50,18 @@
     }
 
     .event-info {
-      width: 200px; /* Adjust as needed */
-      margin-left: 20px; /* Add some spacing */
+      width: 200px;
+      /* Adjust as needed */
+      margin-left: 20px;
+      /* Add some spacing */
       text-align: left;
+      flex-shrink: 0; /* Prevent event info from shrinking */
     }
 
     .event-info p {
       font-size: 0.9em;
       color: #555;
+      margin-bottom: 5px; /* Add some spacing between info items */
     }
   </style>
 </head>
