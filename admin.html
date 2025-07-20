@@ -59,9 +59,9 @@
             <div class="admin-container">
                 <h2>Admin Login</h2>
                 <div id="login-form">
-                    <input type="text" id="admin-username" placeholder="Email Address"><br><br>
+                    <input type="text" id="admin-username" placeholder="Username"><br><br>
                     <input type="password" id="admin-password" placeholder="Password"><br><br>
-                    <button id="login-btn" onclick="loginWithEmailPassword()">Login</button>
+                    <button id="login-btn" onclick="loginWithUsernamePassword()">Login</button>
                     <p id="login-status" style="color:red;"></p>
                 </div>
             </div>
@@ -120,12 +120,13 @@
         const eventsList = document.getElementById("events-list");
 
 
-        function loginWithEmailPassword() {
-            const email = document.getElementById("admin-username").value;
+        function loginWithUsernamePassword() {
+            const username = document.getElementById("admin-username").value;
             const password = document.getElementById("admin-password").value;
             const loginStatus = document.getElementById("login-status");
 
-            auth.signInWithEmailAndPassword(email, password)
+            //We are sending the username into the email field for signin, but displaying "username" to the user
+            auth.signInWithEmailAndPassword(username, password)
                 .then((userCredential) => {
                     // Signed in
                     const user = userCredential.user;
