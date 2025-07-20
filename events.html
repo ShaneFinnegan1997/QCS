@@ -38,11 +38,17 @@
       margin: 20px 0;
       box-shadow: 50 4px 10px rgba(0, 0, 0, 0.1);
       transition: transform 0.2s ease;
+      display: flex; /* Enable flexbox */
+      align-items: flex-start; /* Align items to the top */
     }
 
     .event-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .event-details {
+      flex: 1; /* Allow event details to take up remaining space */
     }
 
     .event-card h2 {
@@ -58,6 +64,17 @@
       font-size: 1em;
       color: #444;
       line-height: 1.5em;
+    }
+
+    .event-info {
+      width: 200px; /* Adjust as needed */
+      margin-left: 20px; /* Add some spacing */
+      text-align: left;
+    }
+
+    .event-info p {
+      font-size: 0.9em;
+      color: #555;
     }
   </style>
 </head>
@@ -137,42 +154,47 @@
             const div = document.createElement("div");
             div.className = "event-card";
 
-            // Use template literals with proper syntax for variables
-            let eventContent = `
-              <h2>
-                \${event.link
-                  ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title ? event.title : "No Title"}</a>`
-                  : (event.title ? event.title : "No Title")}
-              </h2>
-              <p>\${event.description ? event.description : "No description available."}</p>
+            let eventDetails = `
+              <div class="event-details">
+                <h2>
+                  \${event.link
+                    ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title ? event.title : "No Title"}</a>`
+                    : (event.title ? event.title : "No Title")}
+                </h2>
+                <p>\${event.description ? event.description : "No description available."}</p>
+              </div>
             `;
+
+            let eventInfo = `<div class="event-info">`;
 
             try {
               if (event.winnerPayoutAmount) {
-                eventContent += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
+                eventInfo += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
               }
             } catch (error) {
               console.error("Error displaying winnerPayoutAmount:", error);
-              eventContent += `<p style="color: red;">Error displaying Winner Payout</p>`;
+              eventInfo += `<p style="color: red;">Error displaying Winner Payout</p>`;
             }
 
             try {
               if (event.nonProfitName) {
                 const nonProfitLink = event.nonProfitWebsiteLink ? `<a href="${event.nonProfitWebsiteLink}" target="_blank">${event.nonProfitName}</a>` : event.nonProfitName;
-                eventContent += `<p><strong>Supporting:</strong> \${nonProfitLink}`;
+                eventInfo += `<p><strong>Supporting:</strong> \${nonProfitLink}`;
 
                 if (event.nonProfitDonationAmount) {
-                  eventContent += ` - Raised: $${event.nonProfitDonationAmount}`;
+                  eventInfo += ` - Raised: $${event.nonProfitDonationAmount}`;
                 }
 
-                eventContent += `</p>`;
+                eventInfo += `</p>`;
               }
             } catch (error) {
               console.error("Error displaying nonProfit information:", error);
-              eventContent += `<p style="color: red;">Error displaying Non-Profit Information</p>`;
+              eventInfo += `<p style="color: red;">Error displaying Non-Profit Information</p>`;
             }
 
-            div.innerHTML = eventContent;
+            eventInfo += `</div>`; // Close event-info div
+
+            div.innerHTML = eventDetails + eventInfo;
             eventsList.appendChild(div);
           });
         } else {
