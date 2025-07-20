@@ -56,7 +56,7 @@
         <center>
             <h1>Admin Login</h1>
 
-            <div class="admin-container" id = "username-password-form">
+            <div class="admin-container">
                 <h2>Admin Login</h2>
                 <div id="login-form">
                     <input type="text" id="admin-username" placeholder="Username (Email)"><br><br>
@@ -67,7 +67,7 @@
             </div>
 
             <!--  PASSCODE LOGIN FORM -->
-            <div class="admin-container hidden" id = "passcode-form">
+            <div class="admin-container hidden" id="passcode-form">
                 <h2>Enter Admin Passcode</h2>
                 <div id="passcode-form-inner">
                     <input type="password" id="admin-pass" placeholder="Enter Admin Passcode">
@@ -77,17 +77,21 @@
 
             <!-- CREATE EVENT AND MANAGE EVENTS SECTION (HIDDEN INITIALLY) -->
             <div id="admin-panel" class="admin-container hidden">
-                <h3>Create Event</h3>
-                <div class="form-group">
-                    <input type="text" id="event-title" placeholder="Event Title">
-                </div>
-                <div class="form-group">
-                    <textarea id="event-description" placeholder="Event Description"></textarea>
-                </div>
-                <div class="form-group">
-                    <input type="url" id="event-link" placeholder="Optional Link (e.g., https://...)">
-                </div>
-                <button onclick="createEvent()">Add Event</button>
+                <h2>Post Event</h2>
+                <label>Event Title:</label><br>
+                <input type="text" id="event-title" placeholder="Title"><br><br>
+
+
+                <label>Event Link (optional):</label><br>
+                <input type="text" id="event-link" placeholder="https://..."><br><br>
+
+
+                <label>Event Details:</label><br>
+                <textarea id="event-description" placeholder="Enter details here..." rows="5"
+                    cols="30"></textarea><br><br>
+
+                <button id="log-event" onclick="createEvent()">Post Event</button>
+
 
                 <h2>Update Countdown</h2>
                 <label>Countdown End Time:</label><br>
@@ -103,10 +107,7 @@
 
         </center>
 
-        <section class="event-admin-section hidden" id="manage-events">
-            <h2>Manage Events</h2>
-            <div id="admin-events-list">Loading...</div>
-        </section>
+
     </main>
 
     <div id="footer-container"></div>
