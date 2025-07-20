@@ -227,18 +227,18 @@
             const div = document.createElement("div");
             div.className = "event-card";
             div.innerHTML =
-              "<strong>Title:</strong> " + event.title + "<br>" +
-              "<strong>Description:</strong> " + event.description + "<br>" +
+              "<strong>Title:</strong> <span id='title-" + key + "' contenteditable='false'>" + event.title + "</span><br>" +
+              "<strong>Description:</strong> <span id='description-" + key + "' contenteditable='false'>" + event.description + "</span><br>" +
               (event.link ? "<strong>Link:</strong> <a href='" + event.link + "' target='_blank'>" + event.link + "</a><br>" : "") +
-              "<strong>Total Winnings:</strong> \$" + (event.totalWinnings || 0) + "<br>" +
-              "<strong>Winner Payout:</strong> \$" + (event.winnerPayoutAmount || 0) + "<br>" +
-              "<strong>Non-Profit:</strong> " + (event.nonProfitName || "N/A") + " - \$" + (event.nonProfitDonationAmount || 0) +
-              (event.nonProfitWebsiteLink ? " (<a href='" + event.nonProfitWebsiteLink + "' target='_blank'>Website</a>)" : "") +
+              "<strong>Total Winnings:</strong> <span id='total-winnings-" + key + "' contenteditable='false'>\$" + (event.totalWinnings || 0) + "</span><br>" +
+              "<strong>Winner Payout:</strong> <span id='winner-payout-amount-" + key + "' contenteditable='false'>\$" + (event.winnerPayoutAmount || 0) + "</span><br>" +
+              "<strong>Non-Profit:</strong> <span id='non-profit-name-" + key + "' contenteditable='false'>" + (event.nonProfitName || "N/A") + "</span> - <span id='non-profit-donation-amount-" + key + "' contenteditable='false'>\$" + (event.nonProfitDonationAmount || 0) + "</span>" +
+              (event.nonProfitWebsiteLink ? " (<a id='non-profit-website-link-" + key + "' href='" + event.nonProfitWebsiteLink + "' target='_blank'>Website</a>)" : "") +
               "<br>" +
-              "<strong>Website Funds:</strong> \$" + (event.websiteFundsAmount || 0) + "<br>" +
+              "<strong>Website Funds:</strong> <span id='website-funds-amount-" + key + "' contenteditable='false'>\$" + (event.websiteFundsAmount || 0) + "</span><br>" +
               "<div class='event-actions'>" +
               "<button onclick=\"enableEdit('" + key + "', this)\">Edit</button>" +
-              "<button onclick=\"deleteEvent('" + key + "')\">Delete</button>" +
+              "<button onclick=\"deleteEvent('" + key + "', this)\">Delete</button>" +
               "</div>";
             eventsList.appendChild(div);
           });
@@ -250,32 +250,28 @@
 
     function enableEdit(key, btn) {
       const card = btn.closest(".event-card");
-      // Get references to all the data elements you want to make editable
+      const editing = btn.innerText === "Save";
 
-      // Extract event data from the card
-      const eventTitle = card.querySelector("#title-" + key);
-      const eventDescription = card.querySelector("#description-" + key);
-
-      const eventTotalWinnings = card.querySelector("#total-winnings-" + key);
-      const eventWinnerPayoutAmount = card.querySelector("#winner-payout-amount-" + key);
-      const eventNonProfitName = card.querySelector("#non-profit-name-" + key);
-      const eventNonProfitDonationAmount = card.querySelector("#non-profit-donation-amount-" + key);
-      const eventNonProfitWebsiteLink = card.querySelector("#non-profit-website-link-" + key); //NEW
-      const eventWebsiteFundsAmount = card.querySelector("#website-funds-amount-" + key);
-
-      const editing = btn.textContent === "Save";
+      const titleElement = card.querySelector("#title-" + key);
+      const descriptionElement = card.querySelector("#description-" + key);
+      const totalWinningsElement = card.querySelector("#total-winnings-" + key);
+      const winnerPayoutAmountElement = card.querySelector("#winner-payout-amount-" + key);
+      const nonProfitNameElement = card.querySelector("#non-profit-name-" + key);
+      const nonProfitDonationAmountElement = card.querySelector("#non-profit-donation-amount-" + key);
+      const nonProfitWebsiteLinkElement = card.querySelector("#non-profit-website-link-" + key);
+      const websiteFundsAmountElement = card.querySelector("#website-funds-amount-" + key);
 
       if (editing) {
-        // Update Firebase with the new values
+        // Save logic
         const updatedEvent = {
-          title: eventTitle.textContent,
-          description: eventDescription.textContent,
-          totalWinnings: eventTotalWinnings.textContent,
-          winnerPayoutAmount: eventWinnerPayoutAmount.textContent,
-          nonProfitName: eventNonProfitName.textContent,
-          nonProfitDonationAmount: eventNonProfitDonationAmount.textContent,
-          nonProfitWebsiteLink: eventNonProfitWebsiteLink.textContent, //NEW
-          websiteFundsAmount: eventWebsiteFundsAmount.textContent
+          title: titleElement.innerText,
+          description: descriptionElement.innerText,
+          totalWinnings: totalWinningsElement.innerText,
+          winnerPayoutAmount: winnerPayoutAmountElement.innerText,
+          nonProfitName: nonProfitNameElement.innerText,
+          nonProfitDonationAmount: nonProfitDonationAmountElement.innerText,
+          nonProfitWebsiteLink: nonProfitWebsiteLinkElement.href,
+          websiteFundsAmount: websiteFundsAmountElement.innerText
         };
 
         firebase.database().ref("events/" + key).update(updatedEvent, (error) => {
@@ -283,13 +279,30 @@
             alert("Error updating event: " + error);
           } else {
             alert("Event updated!");
-            btn.textContent = "Edit";
-            loadEvents(); // Refresh events list
+            btn.innerText = "Edit";
+            titleElement.contentEditable = false;
+            descriptionElement.contentEditable = false;
+            totalWinningsElement.contentEditable = false;
+            winnerPayoutAmountElement.contentEditable = false;
+            nonProfitNameElement.contentEditable = false;
+            nonProfitDonationAmountElement.contentEditable = false;
+             nonProfitWebsiteLinkElement.contentEditable = false;
+            websiteFundsAmountElement.contentEditable = false;
           }
         });
       } else {
-        btn.textContent = "Save";
-        //Make the text editable
+        // Edit Logic
+        btn.innerText = "Save";
+        titleElement.contentEditable = true;
+        descriptionElement.contentEditable = true;
+        totalWinningsElement.contentEditable = true;
+        winnerPayoutAmountElement.contentEditable = true;
+        nonProfitNameElement.contentEditable = true;
+        nonProfitDonationAmountElement.contentEditable = true;
+         nonProfitWebsiteLinkElement.contentEditable = true;
+        websiteFundsAmountElement.contentEditable = true;
+
+        titleElement.focus(); // Focus on the title for immediate editing
       }
     }
 
