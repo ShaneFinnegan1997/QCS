@@ -90,9 +90,11 @@
           document.querySelector(selector).innerHTML = html;
         } else {
           console.error("Failed to load", url);
+          document.querySelector(selector).innerHTML = "<p>Failed to load header/footer.</p>";
         }
       } catch (e) {
-        console.error(e);
+        console.error("Error loading HTML:", e);
+        document.querySelector(selector).innerHTML = "<p>Error loading header/footer.</p>";
       }
     }
 
@@ -110,53 +112,87 @@
       appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
     };
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    let app; // Declare app outside the try block
 
+    try {
+      app = firebase.initializeApp(firebaseConfig);
+      console.log("Firebase initialized successfully.");
+    } catch (error) {
+      console.error("Firebase initialization error:", error);
+      document.getElementById("events-list").innerHTML =
+        "<p style='color: red;'>Firebase initialization failed. Check your config.</p>";
+      throw error; // Re-throw to prevent further execution
+    }
+
+    const db = firebase.database();
     const eventsList = document.getElementById("events-list");
 
-    db.ref("events").on("value", (snapshot) => {
-      const data = snapshot.val();
-      eventsList.innerHTML = ""; // clear existing
+    function displayEvents(data) {
+      eventsList.innerHTML = ""; // Clear "Loading events..." or previous content
 
-      if (data) {
-        const keys = Object.keys(data).reverse(); // latest first
-        keys.forEach(key => {
-          const event = data[key];
-          const div = document.createElement("div");
-          div.className = "event-card";
-
-          let eventContent = `
-            <h2>
-              \${event.link
-                ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title}</a>`
-                : event.title}
-            </h2>
-            <p>\${event.description || ""}</p>
-          `;
-
-          if (event.winnerPayoutAmount) {
-            eventContent += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
-          }
-
-          if (event.nonProfitName) {
-            eventContent += `<p><strong>Supporting:</strong> \${event.nonProfitName}`;
-            if (event.nonProfitDonationAmount) {
-              eventContent += ` - Raised: $${event.nonProfitDonationAmount}`;
-            }
-            if (event.nonProfitWebsiteLink) {
-              eventContent += ` (<a href="\${event.nonProfitWebsiteLink}" target="_blank">Website</a>)`;
-            }
-            eventContent += `</p>`;
-          }
-
-          div.innerHTML = eventContent;
-          eventsList.appendChild(div);
-        });
-      } else {
+      if (!data) {
         eventsList.innerHTML = "<p>No events yet.</p>";
+        return;
       }
-    });
+
+      const keys = Object.keys(data).reverse(); // latest first
+      if (keys.length === 0) {
+        eventsList.innerHTML = "<p>No events found.</p>";
+        return;
+      }
+
+      keys.forEach(key => {
+        const event = data[key];
+        if (!event) {
+          console.warn("Event data is null for key:", key);
+          return; // Skip to the next event
+        }
+
+        const div = document.createElement("div");
+        div.className = "event-card";
+
+        let eventContent = `
+          <h2>
+            \${event.link
+              ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title || 'No Title'}</a>`
+              : (event.title || 'No Title')}
+          </h2>
+          <p>\${event.description || "No description available."}</p>
+        `;
+
+        if (event.winnerPayoutAmount) {
+          eventContent += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
+        }
+
+        if (event.nonProfitName) {
+          eventContent += `<p><strong>Supporting:</strong> \${event.nonProfitName}`;
+          if (event.nonProfitDonationAmount) {
+            eventContent += ` - Raised: $${event.nonProfitDonationAmount}`;
+          }
+          if (event.nonProfitWebsiteLink) {
+            eventContent += ` (<a href="\${event.nonProfitWebsiteLink}" target="_blank">Website</a>)`;
+          }
+          eventContent += `</p>`;
+        }
+
+        div.innerHTML = eventContent;
+        eventsList.appendChild(div);
+      });
+    }
+
+    // Error handling for Firebase data retrieval
+    db.ref("events").on("value",
+      (snapshot) => {
+        const data = snapshot.val();
+        console.log("Firebase data retrieved:", data);
+        displayEvents(data);
+      },
+      (error) => {
+        console.error("Firebase data retrieval error:", error);
+        eventsList.innerHTML =
+          `<p style='color: red;'>Error retrieving events from Firebase: \${error.message}</p>`;
+      }
+    );
   </script>
 </body>
 
