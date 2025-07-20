@@ -1,147 +1,179 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel - QC Sweepstakes</title>
-<link rel="stylesheet" href="style.css" />
-  <style>
-    .admin-container { max-width: 600px; margin: 20px auto; padding: 20px; border-radius: 8px; background: #f9f9f9; }
-    .admin-container h2 { text-align: center; }
-    .form-group { margin-bottom: 15px; }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;
+<link rel="stylesheet" href="style.css">
+<style>
+    .admin-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 8px;
+        background: #f9f9f9;
     }
+
+    .admin-container h2 {
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
     .event-card {
-      background: #ffffff;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      margin: 10px 0;
-      padding: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        background: #ffffff;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        margin: 10px 0;
+        padding: 15px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
+
     .event-actions button {
-      margin-right: 10px;
-      padding: 6px 10px;
+        margin-right: 10px;
+        padding: 6px 10px;
     }
-    .hidden { display: none; }
-  </style>
+
+    .hidden {
+        display: none;
+    }
+</style>
 </head>
+
 <body>
-  <div id="header-container"></div>
-  <main>
-    <center>
-      <h1>Admin Login</h1>
-      <div id="login-form">
-        <input type="text" id="admin-username" placeholder="Username" /><br><br>
-        <input type="password" id="admin-password" placeholder="Password" /><br><br>
-        <button id="login-btn">Login</button>
-        <p id="login-status" style="color:red;"></p>
-  <div class="admin-container">
-    <h2>Admin Login</h2>
-    <div id="login-form">
-      <input type="password" id="admin-pass" placeholder="Enter Admin Passcode" />
-      <button onclick="checkLogin()">Login</button>
-    </div>
+    <div id="header-container"></div>
+    <main>
+        <center>
+            <h1>Admin Login</h1>
+            <div id="login-form">
+                <input type="text" id="admin-username" placeholder="Username"><br><br>
+                <input type="password" id="admin-password" placeholder="Password"><br><br>
+                <button id="login-btn">Login</button>
+                <p id="login-status" style="color:red;"></p>
+                <div class="admin-container">
+                    <h2>Admin Login</h2>
+                    <div id="login-form">
+                        <input type="password" id="admin-pass" placeholder="Enter Admin Passcode">
+                        <button onclick="checkLogin()">Login</button>
+                    </div>
 
-    <div id="admin-panel" class="hidden">
-      <h3>Create Event</h3>
-      <div class="form-group">
-        <input type="text" id="event-title" placeholder="Event Title" />
-      </div>
-      <div class="form-group">
-        <textarea id="event-description" placeholder="Event Description"></textarea>
-</div>
-      <div class="form-group">
-        <input type="url" id="event-link" placeholder="Optional Link (e.g., https://...)" />
-      </div>
-      <button onclick="createEvent()">Add Event</button>
+                    <div id="admin-panel" class="hidden">
+                        <h3>Create Event</h3>
+                        <div class="form-group">
+                            <input type="text" id="event-title" placeholder="Event Title">
+                        </div>
+                        <div class="form-group">
+                            <textarea id="event-description" placeholder="Event Description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="url" id="event-link" placeholder="Optional Link (e.g., https://...)">
+                        </div>
+                        <button onclick="createEvent()">Add Event</button>
 
-      <div id="admin-panel" class="hidden">
-        <h2>Update Countdown</h2>
-        <label>Countdown End Time:</label><br>
-        <input type="datetime-local" id="target-time" /><br><br>
-        <label>Entry Link:</label><br>
-        <input type="text" id="entry-link" placeholder="https://..." /><br><br>
-        <button id="update-countdown">Update Countdown</button><br><br>
-      <hr>
-      <h3>Manage Events</h3>
-      <div id="events-list">Loading...</div>
-    </div>
-  </div>
+                        <div id="admin-panel" class="hidden">
+                            <h2>Update Countdown</h2>
+                            <label>Countdown End Time:</label><br>
+                            <input type="datetime-local" id="target-time"><br><br>
+                            <label>Entry Link:</label><br>
+                            <input type="text" id="entry-link" placeholder="https://..."><br><br>
+                            <button id="update-countdown">Update Countdown</button><br><br>
+                            <hr>
+                            <h3>Manage Events</h3>
+                            <div id="events-list">Loading...</div>
+                        </div>
+                    </div>
 
-<h2>Post Event</h2>
-<label>Event Title:</label><br>
-<input type="text" id="event-title" placeholder="Title" /><br><br>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+                    <h2>Post Event</h2>
+                    <label>Event Title:</label><br>
+                    <input type="text" id="event-title" placeholder="Title"><br><br>
+                    <!-- Firebase SDK -->
+                    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+                    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<label>Event Link (optional):</label><br>
-<input type="text" id="event-link" placeholder="https://..." /><br><br>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-      authDomain: "qcsweeps-4b994.firebaseapp.com",
-      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-      projectId: "qcsweeps-4b994",
-      storageBucket: "qcsweeps-4b994.appspot.com",
-      messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+                    <label>Event Link (optional):</label><br>
+                    <input type="text" id="event-link" placeholder="https://..."><br><br>
 
-<label>Event Details:</label><br>
-<textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
-    const loginForm = document.getElementById("login-form");
-    const adminPanel = document.getElementById("admin-panel");
-    const eventsList = document.getElementById("events-list");
+                    <label>Event Details:</label><br>
+                    <textarea id="event-description" placeholder="Enter details here..." rows="5"
+                        cols="30"></textarea><br><br>
 
-<button id="log-event">Post Event</button>
-      </div>
-    </center>
-    function checkLogin() {
-      const entered = document.getElementById("admin-pass").value;
-      const passRef = db.ref("adminPasscode");
-      passRef.once("value", snapshot => {
-        if (snapshot.val() === entered) {
-          loginForm.classList.add("hidden");
-          adminPanel.classList.remove("hidden");
-          loadEvents();
-        } else {
-          alert("Incorrect passcode");
+                    <button id="log-event">Post Event</button>
+                </div>
+        </center>
+
+        <section class="event-admin-section hidden" id="manage-events">
+            <h2>Manage Events</h2>
+            <div id="admin-events-list">Loading...</div>
+        </section>
+    </main>
+
+    <div id="footer-container"></div>
+    <script type="module" src="script.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+            authDomain: "qcsweeps-4b994.firebaseapp.com",
+            databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+            projectId: "qcsweeps-4b994",
+            storageBucket: "qcsweeps-4b994.appspot.com",
+            messagingSenderId: "810241609281",
+            appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const loginForm = document.getElementById("login-form");
+        const adminPanel = document.getElementById("admin-panel");
+        const eventsList = document.getElementById("events-list");
+
+
+
+        function checkLogin() {
+            const entered = document.getElementById("admin-pass").value;
+            const passRef = db.ref("adminPasscode");
+            passRef.once("value", snapshot => {
+                if (snapshot.val() === entered) {
+                    loginForm.classList.add("hidden");
+                    adminPanel.classList.remove("hidden");
+                    loadEvents();
+                } else {
+                    alert("Incorrect passcode");
+                }
+            });
         }
-      });
-    }
 
-    <section class="event-admin-section hidden" id="manage-events">
-      <h2>Manage Events</h2>
-      <div id="admin-events-list">Loading...</div>
-    </section>
-  </main>
-    function createEvent() {
-      const title = document.getElementById("event-title").value;
-      const description = document.getElementById("event-description").value;
-      const link = document.getElementById("event-link").value;
-      const newEvent = { title, description, link };
-      db.ref("events").push(newEvent);
 
-      if (!title || !description) return alert("Title and description required.");
+        function createEvent() {
+            const title = document.getElementById("event-title").value;
+            const description = document.getElementById("event-description").value;
+            const link = document.getElementById("event-link").value;
+            const newEvent = { title, description, link };
+            db.ref("events").push(newEvent);
 
-      document.getElementById("event-title").value = "";
-      document.getElementById("event-description").value = "";
-      document.getElementById("event-link").value = "";
-    }
+            if (!title || !description) return alert("Title and description required.");
 
-  <div id="footer-container"></div>
-  <script type="module" src="script.js"></script>
-      
-    function loadEvents() {
-      db.ref("events").on("value", snapshot => {
-        const data = snapshot.val();
-        eventsList.innerHTML = "";
-        if (data) {
-          Object.entries(data).reverse().forEach(([key, event]) => {
-            const div = document.createElement("div");
-            div.className = "event-card";
-            div.innerHTML = `
+            document.getElementById("event-title").value = "";
+            document.getElementById("event-description").value = "";
+            document.getElementById("event-link").value = "";
+        }
+
+
+        function loadEvents() {
+            db.ref("events").on("value", snapshot => {
+                const data = snapshot.val();
+                eventsList.innerHTML = "";
+                if (data) {
+                    Object.entries(data).reverse().forEach(([key, event]) => {
+                        const div = document.createElement("div");
+                        div.className = "event-card";
+                        div.innerHTML = `
               <strong>Title:</strong> <span contenteditable="false">\${event.title}</span><br>
               <strong>Description:</strong> <span contenteditable="false">\${event.description || ""}</span><br>
               ${event.link ? `<strong>Link:</strong> <a href="${event.link}" target="_blank">${event.link}</a><br>` : ""}
@@ -150,54 +182,55 @@
                 <button onclick="deleteEvent('\${key}')">Delete</button>
               </div>
             `;
-            eventsList.appendChild(div);
-          });
-        } else {
-          eventsList.innerHTML = "<p>No events found.</p>";
+                        eventsList.appendChild(div);
+                    });
+                } else {
+                    eventsList.innerHTML = "<p>No events found.</p>";
+                }
+            });
         }
-      });
-    }
 
-    function enableEdit(key, btn) {
-      const card = btn.closest(".event-card");
-      const spans = card.querySelectorAll("span[contenteditable]");
-      const editing = btn.textContent === "Save";
+        function enableEdit(key, btn) {
+            const card = btn.closest(".event-card");
+            const spans = card.querySelectorAll("span[contenteditable]");
+            const editing = btn.textContent === "Save";
 
-      if (editing) {
-        const [titleEl, descEl] = spans;
-        const updatedEvent = {
-          title: titleEl.textContent.trim(),
-          description: descEl.textContent.trim()
-        };
-        db.ref("events/" + key).update(updatedEvent);
-        btn.textContent = "Edit";
-        spans.forEach(el => el.setAttribute("contenteditable", false));
-} else {
-        console.error("Failed to load", url);
-        btn.textContent = "Save";
-        spans.forEach(el => el.setAttribute("contenteditable", true));
-}
-}
+            if (editing) {
+                const [titleEl, descEl] = spans;
+                const updatedEvent = {
+                    title: titleEl.textContent.trim(),
+                    description: descEl.textContent.trim()
+                };
+                db.ref("events/" + key).update(updatedEvent);
+                btn.textContent = "Edit";
+                spans.forEach(el => el.setAttribute("contenteditable", false));
+            } else {
+                console.error("Failed to load", url);
+                btn.textContent = "Save";
+                spans.forEach(el => el.setAttribute("contenteditable", true));
+            }
+        }
 
-    function deleteEvent(key) {
-      if (confirm("Are you sure you want to delete this event?")) {
-        db.ref("events/" + key).remove();
-      }
-    }
+        function deleteEvent(key) {
+            if (confirm("Are you sure you want to delete this event?")) {
+                db.ref("events/" + key).remove();
+            }
+        }
 
-    async function loadHTML(selector, url) {
-      const response = await fetch(url);
-      if (response.ok) {
-        const html = await response.text();
-        document.querySelector(selector).innerHTML = html;
-      } else {
-        console.error("Failed to load", url);
-      }
-    }
+        async function loadHTML(selector, url) {
+            const response = await fetch(url);
+            if (response.ok) {
+                const html = await response.text();
+                document.querySelector(selector).innerHTML = html;
+            } else {
+                console.error("Failed to load", url);
+            }
+        }
 
 
-    loadHTML("#header-container", "header-admin.html");
-    loadHTML("#footer-container", "footer.html");
-  </script>
+        loadHTML("#header-container", "header-admin.html");
+        loadHTML("#footer-container", "footer.html");
+    </script>
 </body>
+
 </html>
