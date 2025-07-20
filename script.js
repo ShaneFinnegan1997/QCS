@@ -23,21 +23,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Load header/footer
-(async () => {
-  const loadHTML = async (selector, url) => {
-    try {
-      const res = await fetch(url);
-      if (res.ok) {
-        document.querySelector(selector).innerHTML = await res.text();
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-  if (document.querySelector("#header-container")) loadHTML("#header-container", "header.html");
-  if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
-})();
+
 
 // Admin login
 const loginBtn = document.getElementById("login-btn");
