@@ -123,15 +123,28 @@
           const event = data[key];
           const div = document.createElement("div");
           div.className = "event-card";
-          div.innerHTML = `
-  <h2>
-    ${event.link 
-      ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title}</a>` 
-      : event.title}
-  </h2>
-  <p>${event.description || ""}</p>
-`;
+          let eventContent = `
+            <h2>
+              \${event.link
+                ? `<a href="${event.link}" target="_blank" style="color: #2e7d32; text-decoration: none;">${event.title}</a>`
+                : event.title}
+            </h2>
+            <p>\${event.description || ""}</p>
+          `;
 
+          if (event.winnerPayoutAmount) {
+            eventContent += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
+          }
+
+          if (event.nonProfitName) {
+            eventContent += `<p><strong>Supporting:</strong> \${event.nonProfitName}`;
+            if (event.nonProfitDonationAmount) {
+              eventContent += ` - Raised: $${event.nonProfitDonationAmount}`;
+            }
+            eventContent += `</p>`;
+          }
+
+          div.innerHTML = eventContent;
           eventsList.appendChild(div);
         });
       } else {
