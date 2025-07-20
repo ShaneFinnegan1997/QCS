@@ -132,6 +132,8 @@
               return; // Skip to the next event
             }
 
+            console.log("Event data:", event); // Log the event data
+
             const div = document.createElement("div");
             div.className = "event-card";
 
@@ -145,19 +147,29 @@
               <p>\${event.description ? event.description : "No description available."}</p>
             `;
 
-            if (event.winnerPayoutAmount) {
-              eventContent += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
+            try {
+              if (event.winnerPayoutAmount) {
+                eventContent += `<p><strong>Winner Payout:</strong> $${event.winnerPayoutAmount}</p>`;
+              }
+            } catch (error) {
+              console.error("Error displaying winnerPayoutAmount:", error);
+              eventContent += `<p style="color: red;">Error displaying Winner Payout</p>`;
             }
 
-            if (event.nonProfitName) {
-              const nonProfitLink = event.nonProfitWebsiteLink ? `<a href="${event.nonProfitWebsiteLink}" target="_blank">${event.nonProfitName}</a>` : event.nonProfitName;
-              eventContent += `<p><strong>Supporting:</strong> \${nonProfitLink}`;
+            try {
+              if (event.nonProfitName) {
+                const nonProfitLink = event.nonProfitWebsiteLink ? `<a href="${event.nonProfitWebsiteLink}" target="_blank">${event.nonProfitName}</a>` : event.nonProfitName;
+                eventContent += `<p><strong>Supporting:</strong> \${nonProfitLink}`;
 
-              if (event.nonProfitDonationAmount) {
-                eventContent += ` - Raised: $${event.nonProfitDonationAmount}`;
+                if (event.nonProfitDonationAmount) {
+                  eventContent += ` - Raised: $${event.nonProfitDonationAmount}`;
+                }
+
+                eventContent += `</p>`;
               }
-
-              eventContent += `</p>`;
+            } catch (error) {
+              console.error("Error displaying nonProfit information:", error);
+              eventContent += `<p style="color: red;">Error displaying Non-Profit Information</p>`;
             }
 
             div.innerHTML = eventContent;
