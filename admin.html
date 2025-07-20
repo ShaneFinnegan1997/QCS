@@ -10,6 +10,7 @@
   <div id="header-container"></div>
   <main>
     <center>
+      <h1>Admin Login</h1>
       <div id="login-form">
         <input type="text" id="admin-username" placeholder="Username" /><br><br>
         <input type="password" id="admin-password" placeholder="Password" /><br><br>
@@ -42,43 +43,6 @@
 
   <div id="footer-container"></div>
   <script type="module" src="script.js"></script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - QC Sweepstakes</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-
-      <div id="admin-panel" class="hidden">
-        <h2>Update Countdown</h2>
-        <label>Countdown End Time:</label><br>
-        <input type="datetime-local" id="target-time" /><br><br>
-        <label>Entry Link:</label><br>
-        <input type="text" id="entry-link" placeholder="https://..." /><br><br>
-        <button id="update-countdown">Update Countdown</button><br><br>
-
-        <h2>Post Event</h2>
-        <label>Event Title:</label><br>
-        <input type="text" id="event-title" placeholder="Title" /><br><br>
-        <label>Event Details:</label><br>
-        <textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
-        <button id="log-event">Post Event</button>
-      </div>
-    </center>
-
-    <section class="event-admin-section hidden" id="manage-events">
-      <h2>Manage Events</h2>
-      <div id="admin-events-list">Loading...</div>
-    </section>
-  </main>
-
-
-  <script type="module" src="script.js"></script>
-<div id="footer-container"></div>
 
   <script>
     async function loadHTML(selector, url) {
@@ -93,5 +57,6 @@
     loadHTML("#header-container", "header-admin.html");
     loadHTML("#footer-container", "footer.html");
   </script>
+
 </body>
 </html>
