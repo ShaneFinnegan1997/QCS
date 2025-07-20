@@ -51,60 +51,42 @@
     <main>
         <center>
             <h1>Admin Login</h1>
-            <div id="login-form">
-                <input type="text" id="admin-username" placeholder="Username"><br><br>
-                <input type="password" id="admin-password" placeholder="Password"><br><br>
-                <button id="login-btn">Login</button>
-                <p id="login-status" style="color:red;"></p>
-                <div class="admin-container">
-                    <h2>Admin Login</h2>
-                    <div id="login-form">
-                        <input type="password" id="admin-pass" placeholder="Enter Admin Passcode">
-                        <button onclick="checkLogin()">Login</button>
-                    </div>
 
-                    <div id="admin-panel" class="hidden">
-                        <h3>Create Event</h3>
-                        <div class="form-group">
-                            <input type="text" id="event-title" placeholder="Event Title">
-                        </div>
-                        <div class="form-group">
-                            <textarea id="event-description" placeholder="Event Description"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <input type="url" id="event-link" placeholder="Optional Link (e.g., https://...)">
-                        </div>
-                        <button onclick="createEvent()">Add Event</button>
-
-                        <div id="admin-panel" class="hidden">
-                            <h2>Update Countdown</h2>
-                            <label>Countdown End Time:</label><br>
-                            <input type="datetime-local" id="target-time"><br><br>
-                            <label>Entry Link:</label><br>
-                            <input type="text" id="entry-link" placeholder="https://..."><br><br>
-                            <button id="update-countdown">Update Countdown</button><br><br>
-                            <hr>
-                            <h3>Manage Events</h3>
-                            <div id="events-list">Loading...</div>
-                        </div>
-                    </div>
-
-                    <h2>Post Event</h2>
-                    <label>Event Title:</label><br>
-                    <input type="text" id="event-title" placeholder="Title"><br><br>
-                    <!-- Firebase SDK -->
-                    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-                    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
-                    <label>Event Link (optional):</label><br>
-                    <input type="text" id="event-link" placeholder="https://..."><br><br>
-
-                    <label>Event Details:</label><br>
-                    <textarea id="event-description" placeholder="Enter details here..." rows="5"
-                        cols="30"></textarea><br><br>
-
-                    <button id="log-event">Post Event</button>
+            <!--  PASSCODE LOGIN FORM -->
+            <div class="admin-container">
+                <h2>Admin Login</h2>
+                <div id="login-form">
+                    <input type="password" id="admin-pass" placeholder="Enter Admin Passcode">
+                    <button onclick="checkLogin()">Login</button>
                 </div>
+
+                <!-- CREATE EVENT AND MANAGE EVENTS SECTION (HIDDEN INITIALLY) -->
+                <div id="admin-panel" class="hidden">
+                    <h3>Create Event</h3>
+                    <div class="form-group">
+                        <input type="text" id="event-title" placeholder="Event Title">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="event-description" placeholder="Event Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="url" id="event-link" placeholder="Optional Link (e.g., https://...)">
+                    </div>
+                    <button onclick="createEvent()">Add Event</button>
+
+                    <h2>Update Countdown</h2>
+                    <label>Countdown End Time:</label><br>
+                    <input type="datetime-local" id="target-time"><br><br>
+                    <label>Entry Link:</label><br>
+                    <input type="text" id="entry-link" placeholder="https://..."><br><br>
+                    <button id="update-countdown">Update Countdown</button><br><br>
+                    <hr>
+                    <h3>Manage Events</h3>
+                    <div id="events-list">Loading...</div>
+                </div>
+            </div>
+
+
         </center>
 
         <section class="event-admin-section hidden" id="manage-events">
