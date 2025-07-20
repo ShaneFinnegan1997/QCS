@@ -119,14 +119,15 @@
         const adminPanel = document.getElementById("admin-panel");
         const eventsList = document.getElementById("events-list");
 
-
         function loginWithUsernamePassword() {
             const username = document.getElementById("admin-username").value;
             const password = document.getElementById("admin-password").value;
             const loginStatus = document.getElementById("login-status");
 
-            //We are sending the username into the email field for signin, but displaying "username" to the user
-            auth.signInWithEmailAndPassword(username, password)
+            // Attempt to "fake" an email address
+            const fakeEmail = username + "@example.com";
+
+            auth.signInWithEmailAndPassword(fakeEmail, password)
                 .then((userCredential) => {
                     // Signed in
                     const user = userCredential.user;
@@ -148,7 +149,6 @@
                 });
         }
 
-
         function createEvent() {
             const title = document.getElementById("event-title").value;
             const description = document.getElementById("event-description").value;
@@ -162,7 +162,6 @@
             document.getElementById("event-description").value = "";
             document.getElementById("event-link").value = "";
         }
-
 
         function loadEvents() {
             db.ref("events").on("value", snapshot => {
