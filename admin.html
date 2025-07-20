@@ -1,116 +1,83 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel</title>
-  <link rel="stylesheet" href="styles/admin.css">
+  <link rel="stylesheet" href="styles/admin.css" />
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
     }
-    #admin-panel {
-      padding: 20px;
-    }
     .logout-btn {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 10px;
+      right: 10px;
       background-color: #f44336;
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #login-section {
-      padding: 40px;
-      max-width: 400px;
-      margin: 100px auto;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      border: none;
+      padding: 8px 12px;
       border-radius: 4px;
       cursor: pointer;
+      z-index: 999;
     }
   </style>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-  <!-- Header -->
-  <div id="header-container"></div>  <!-- Login Section -->  <section id="login-section">
+  <div id="header-container"></div>  <section id="login-section">
     <h2>Admin Login</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
     <button onclick="login()">Login</button>
-  </section>  <!-- Admin Panel -->  <section id="admin-panel" style="display:none; position: relative;">
+  </section>  <section id="admin-panel" style="display:none;">
     <button class="logout-btn" onclick="logout()">Logout</button>
     <h2>Welcome to the Admin Panel</h2>
-    <div id="eventsList"></div>
-  </section>  <!-- Footer -->  <div id="footer-container"></div>  <script>
-    // Load Header and Footer HTML
+    <div id="eventsList">Your events will appear here.</div>
+  </section>  <div id="footer-container"></div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnKRk14VR80Umjk7x8W_x3zWIfVZNB0lI",
+      authDomain: "qc-sweepstakes.firebaseapp.com",
+      projectId: "qc-sweepstakes",
+      storageBucket: "qc-sweepstakes.appspot.com",
+      messagingSenderId: "183299112676",
+      appId: "1:183299112676:web:e15cd13f0f0cb9a7f849d7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
     function loadHTML(id, file) {
       fetch(file)
-        .then(response => {
-          if (!response.ok) throw new Error('File not found');
-          return response.text();
-        })
-        .then(data => {
-          document.getElementById(id).innerHTML = data;
-        })
-        .catch(err => console.error(`Error loading ${file}:`, err));
+        .then(res => res.text())
+        .then(data => document.getElementById(id).innerHTML = data)
+        .catch(err => console.error(err));
     }
 
     loadHTML("header-container", "components/header-admin.html");
     loadHTML("footer-container", "components/footer.html");
 
-    const loginSection = document.getElementById("login-section");
-    const adminPanel = document.getElementById("admin-panel");
-
-    function login() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      if (username === "admin" && password === "1234") {
-        localStorage.setItem("isAdmin", "true");
-        showAdminPanel();
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("admin-panel").style.display = "block";
       } else {
-        alert("Invalid credentials");
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem("isAdmin");
-      window.location.reload();
-    }
-
-    function showAdminPanel() {
-      loginSection.style.display = "none";
-      adminPanel.style.display = "block";
-      loadEvents();
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      if (localStorage.getItem("isAdmin") === "true") {
-        showAdminPanel();
+        document.getElementById("login-section").style.display = "block";
+        document.getElementById("admin-panel").style.display = "none";
       }
     });
 
-    function loadEvents() {
-      document.getElementById("eventsList").innerHTML = "<p>Events will load here.</p>";
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .catch(error => alert(error.message));
+    }
+
+    function logout() {
+      firebase.auth().signOut();
     }
   </script></body>
 </html>
