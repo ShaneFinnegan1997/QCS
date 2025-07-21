@@ -8,6 +8,12 @@ import {
   onValue,
   remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // Firebase Config
 const firebaseConfig = {
@@ -23,8 +29,29 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Function to check if user is logged in and redirect if not
+  function checkAdminStatus() {
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to the login page if not logged in
+        window.location.href = 'admin.html'; // Or your login page URL
+      } else {
+        // User is logged in, show admin panel
+        document.getElementById("login-form").style.display = "none";
+        document.getElementById("admin-panel").classList.remove("hidden");
+        loadAdminEvents();
+      }
+    });
+  }
+
+  // Check admin status on page load *only* if the user is on the admin page.
+  if(window.location.pathname.includes("admin")){
+    checkAdminStatus();
+  }
+
 
   // Load header/footer
   (async () => {
@@ -50,43 +77,38 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
   })();
 
-  // Load events
-  const eventsList = document.getElementById("events-list");
-  if (eventsList) {
-    const eventsRef = ref(db, "events");
+  // Call loadEventsData function to load events immediately
+  loadEventsData();
 
-    onValue(eventsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        eventsList.innerHTML = ''; // Clear loading
-        Object.keys(data).forEach(key => {
-          const event = data[key];
-          const eventDiv = document.createElement('div');
-          eventDiv.className = "event";
-          eventDiv.innerHTML = `
-            <h2>\${event.title}</h2>
-            <p>\${event.description}</p>
-            <p><strong>Total Winnings:</strong> \${event.totalWinnings || 'N/A'}</p>
-            <p><strong>Winner Payout Amount:</strong> \${event.winnerPayoutAmount || 'N/A'}</p>
-            <p><strong>Non-Profit Name:</strong> \${event.nonProfitName || 'N/A'}</p>
-            <p><strong>Non-Profit Donation Amount:</strong> \${event.nonProfitDonationAmount || 'N/A'}</p>
-            <p><strong>Non-Profit Website Link:</strong> <a href="${event.nonProfitWebsiteLink || '#'}" target="_blank">${event.nonProfitName || 'Visit Website'}</a></p>
-            <p><strong>Website Funds Amount:</strong> \${event.websiteFundsAmount || 'N/A'}</p>
-          `;
-          eventsList.appendChild(eventDiv);
-        });
+  // Admin login
+  const loginBtn = document.getElementById("login-btn");
+  if (loginBtn) {
+    loginBtn.addEventListener("click", async () => {
+      const inputUsername = document.getElementById("admin-username").value.trim();
+      const inputPassword = document.getElementById("admin-password").value.trim();
+      const status = document.getElementById("login-status");
+
+      const snapshot = await get(ref(db, "admin"));
+      const adminData = snapshot.val();
+      if (!adminData) return (status.innerText = "Admin credentials not set.");
+
+      if (inputUsername === adminData.username && inputPassword === adminData.password) {
+          signInWithEmailAndPassword(auth, inputUsername + "@example.com", inputPassword)
+          .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            // No longer needed. `checkAdminStatus` gets called when the DOM loads.
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            status.innerText = "Login error: " + errorMessage;
+          });
       } else {
-        eventsList.innerHTML = '<p>No events found.</p>';
+        status.innerText = "Invalid username or password.";
       }
     });
   }
-
-    // Always show the admin panel on the admin page
-    if (window.location.pathname.includes("admin")){
-      document.getElementById("login-form").style.display = "none";
-      document.getElementById("admin-panel").classList.remove("hidden");
-      loadAdminEvents();
-    }
 
   // Update countdown
   const updateBtn = document.getElementById("update-countdown");
@@ -179,3 +201,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 });
+
+// Function to load events data and update the events list
+function loadEventsData() {
+  const eventsList = document.getElementById("events-list");
+  if (eventsList) {
+    // Display loading message or default content while data is loading
+    eventsList.innerHTML = '<p>Loading events...</p>'; // Or any default content
+
+    const eventsRef = ref(db, "events");
+
+    onValue(eventsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        eventsList.innerHTML = ''; // Clear loading message
+
+        Object.keys(data).forEach(key => {
+          const event = data[key];
+          const eventDiv = document.createElement('div');
+          eventDiv.className = "event";
+          eventDiv.innerHTML = `
+            <h2>\${event.title}</h2>
+            <p>\${event.description}</p>
+            <p><strong>Total Winnings:</strong> \${event.totalWinnings || 'N/A'}</p>
+            <p><strong>Winner Payout Amount:</strong> \${event.winnerPayoutAmount || 'N/A'}</p>
+            <p><strong>Non-Profit Name:</strong> \${event.nonProfitName || 'N/A'}</p>
+            <p><strong>Non-Profit Donation Amount:</strong> \${event.nonProfitDonationAmount || 'N/A'}</p>
+            <p><strong>Non-Profit Website Link:</strong> <a href="${event.nonProfitWebsiteLink || '#'}" target="_blank">${event.nonProfitName || 'Visit Website'}</a></p>
+            <p><strong>Website Funds Amount:</strong> \${event.websiteFundsAmount || 'N/A'}</p>
+          `;
+          eventsList.appendChild(eventDiv);
+        });
+      } else {
+        eventsList.innerHTML = '<p>No events found.</p>';
+      }
+    });
+  }
+}
