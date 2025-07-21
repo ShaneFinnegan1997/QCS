@@ -35,13 +35,16 @@ const auth = getAuth(app); // Initialize Firebase Auth
 // Announcement Code
 const announcementRef = ref(db, 'announcement');
 const announcementTextElement = document.getElementById('announcement-text');
+const announcementTimestampElement = document.getElementById('announcement-timestamp');  // Get the timestamp element
 
 onValue(announcementRef, (snapshot) => {
     const announcement = snapshot.val();
-    if (announcement) {
-        announcementTextElement.textContent = announcement;
+    if (announcement && announcement.message) {
+        announcementTextElement.textContent = announcement.message;
+        announcementTimestampElement.textContent = "Last Updated: " + (new Date(announcement.timestamp)).toLocaleString();  // Display the timestamp
     } else {
         announcementTextElement.textContent = 'No announcement currently.';
+        announcementTimestampElement.textContent = ""; // Clear the timestamp if no announcement
     }
 });
 
