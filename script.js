@@ -15,45 +15,38 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+  authDomain: "qcsweeps-4b994.firebaseapp.com",
+  databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+  projectId: "qcsweeps-4b994",
+  storageBucket: "qcsweeps-4b994.appspot.com",
+  messagingSenderId: "810241609281",
+  appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
 document.addEventListener('DOMContentLoaded', function() {
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-    authDomain: "qcsweeps-4b994.firebaseapp.com",
-    databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-    projectId: "qcsweeps-4b994",
-    storageBucket: "qcsweeps-4b994.appspot.com",
-    messagingSenderId: "810241609281",
-    appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-  };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const auth = getAuth(app);
-
-  // Load header/footer
-  (async () => {
-    const loadHTML = async (selector, url) => {
-      try {
-        const res = await fetch(url);
-        if (res.ok) {
-          document.querySelector(selector).innerHTML = await res.text();
-
-          // Manually trigger the announcement script after loading header.html
-          if (selector === "#header-container") {
-            
-
-// announcement info was here
-
-    // Load Events
+  // Function to load events data and update the events list
+  function loadEventsData() {
     const eventsList = document.getElementById("events-list");
     if (eventsList) {
+      // Display loading message or default content while data is loading
+      eventsList.innerHTML = '<p>Loading events...</p>'; // Or any default content
+
       const eventsRef = ref(db, "events");
 
       onValue(eventsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          eventsList.innerHTML = ''; // Clear loading
+          eventsList.innerHTML = ''; // Clear loading message
+
           Object.keys(data).forEach(key => {
             const event = data[key];
             const eventDiv = document.createElement('div');
@@ -75,7 +68,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     }
+  }
+
+  // Load header/footer
+  (async () => {
+    const loadHTML = async (selector, url) => {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          document.querySelector(selector).innerHTML = await res.text();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    if (document.querySelector("#header-container")) loadHTML("#header-container", "header-admin.html");
+    if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
   })();
+
+  // Call loadEventsData function to load events immediately
+  loadEventsData();
 
   // Admin login
   const loginBtn = document.getElementById("login-btn");
