@@ -48,6 +48,7 @@ onValue(announcementRef, (snapshot) => {
     }
 });
 
+
 // Load header/footer
 (async () => {
   const loadHTML = async (selector, url) => {
