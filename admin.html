@@ -61,7 +61,7 @@
         <h2>Admin Login</h2>
         <input type="text" id="admin-username" placeholder="Username"><br><br>
         <input type="password" id="admin-password" placeholder="Password"><br><br>
-        <button onclick="login()">Login</button>
+        <button id="login-btn">Login</button>
         <p id="login-status" style="color:red;"></p>
       </section>
 
@@ -71,7 +71,7 @@
         <input type="datetime-local" id="target-time"><br><br>
         <label>Entry Link:</label><br>
         <input type="text" id="entry-link" placeholder="https://..."><br><br>
-        <button onclick="updateCountdown()">Update Countdown</button><br><br>
+        <button id="update-countdown">Update Countdown</button><br><br>
 
         <h2>Post Event</h2>
         <label>Event Title:</label><br>
@@ -84,251 +84,35 @@
         <textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
 
         <label>Total Winnings:</label><br>
-        <input type="number" id="total-winnings" placeholder="e.g., 1000"><br><br>
+        <input type="number" id="event-total-winnings" placeholder="e.g., 1000"><br><br>
 
         <label>Winner Payout Amount:</label><br>
-        <input type="number" id="winner-payout-amount" placeholder="e.g., 700"><br><br>
+        <input type="number" id="event-winner-payout" placeholder="e.g., 700"><br><br>
 
         <label>Non-Profit Name:</label><br>
-        <input type="text" id="non-profit-name" placeholder="e.g., Red Cross"><br><br>
+        <input type="text" id="event-nonprofit-name" placeholder="e.g., Red Cross"><br><br>
 
         <label>Non-Profit Donation Amount:</label><br>
-        <input type="number" id="non-profit-donation-amount" placeholder="e.g., 100"><br><br>
+        <input type="number" id="event-nonprofit-donation" placeholder="e.g., 100"><br><br>
 
         <label>Non-Profit Website Link:</label><br>
-        <input type="text" id="non-profit-website-link" placeholder="https://..."><br><br>
+        <input type="text" id="event-nonprofit-website" placeholder="https://..."><br><br>
 
         <label>Website Funds Amount:</label><br>
-        <input type="number" id="website-funds-amount" placeholder="e.g., 50"><br><br>
+        <input type="number" id="event-website-funds" placeholder="e.g., 50"><br><br>
 
-        <button onclick="postEvent()">Post Event</button><br><br>
+        <button id="log-event">Post Event</button><br><br>
 
         <hr>
         <h3>Manage Events</h3>
-        <div id="events-list">Loading...</div>
+        <div id="admin-events-list">Loading...</div>
       </section>
     </center>
   </main>
 
   <div id="footer-container"></div>
 
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-      authDomain: "qcsweeps-4b994.firebaseapp.com",
-      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-      projectId: "qcsweeps-4b994",
-      storageBucket: "qcsweeps-4b994.appspot.com",
-      messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const loginForm = document.getElementById("login-form");
-    const adminPanel = document.getElementById("admin-panel");
-    const eventsList = document.getElementById("events-list");
-
-    function login() {
-      const inputUsername = document.getElementById("admin-username").value;
-      const inputPassword = document.getElementById("admin-password").value;
-      const status = document.getElementById("login-status");
-
-      firebase.database().ref("admin").once("value", (snapshot) => {
-        const admin = snapshot.val();
-        if (!admin) {
-          status.innerText = "Admin data not found.";
-          return;
-        }
-
-        if (inputUsername === admin.username && inputPassword === admin.password) {
-          loginForm.classList.add("hidden");
-          adminPanel.classList.remove("hidden");
-          loadEvents();
-        } else {
-          status.innerText = "Invalid username or password.";
-        }
-      });
-    }
-
-    function updateCountdown() {
-      const targetTime = document.getElementById("target-time").value;
-      const entryLink = document.getElementById("entry-link").value;
-
-      firebase.database().ref("countdown").set({
-        targetTime,
-        entryLink
-      });
-
-      alert("Countdown updated!");
-    }
-
-    function postEvent() {
-      const title = document.getElementById("event-title").value;
-      const description = document.getElementById("event-description").value;
-      const link = document.getElementById("event-link").value;
-      const totalWinnings = document.getElementById("total-winnings").value;
-      const winnerPayoutAmount = document.getElementById("winner-payout-amount").value;
-      const nonProfitName = document.getElementById("non-profit-name").value;
-      const nonProfitDonationAmount = document.getElementById("non-profit-donation-amount").value;
-      const nonProfitWebsiteLink = document.getElementById("non-profit-website-link").value;
-      const websiteFundsAmount = document.getElementById("website-funds-amount").value;
-
-      if (!title || !description) {
-        alert("Title and description are required.");
-        return;
-      }
-
-      const newEvent = {
-        title,
-        description,
-        link: link || "",
-        totalWinnings: totalWinnings || 0,
-        winnerPayoutAmount: winnerPayoutAmount || 0,
-        nonProfitName: nonProfitName || "",
-        nonProfitDonationAmount: nonProfitDonationAmount || 0,
-        nonProfitWebsiteLink: nonProfitWebsiteLink || "",
-        websiteFundsAmount: websiteFundsAmount || 0
-      };
-
-      firebase.database().ref("events").push(newEvent, (error) => {
-        if (error) {
-          alert("Error posting event: " + error);
-        } else {
-          alert("Event posted!");
-          document.querySelectorAll("#admin-panel input, #admin-panel textarea").forEach(input => input.value = "");
-          loadEvents();
-        }
-      });
-    }
-
-    function loadEvents() {
-      eventsList.innerHTML = "Loading...";
-      firebase.database().ref("events").once("value", (snapshot) => {
-        const data = snapshot.val();
-        eventsList.innerHTML = "";
-
-        if (data) {
-          Object.entries(data).reverse().forEach(([key, event]) => {
-            const div = document.createElement("div");
-            div.className = "event-card";
-            div.innerHTML =
-              "<strong>Title:</strong> <span id='title-" + key + "' contenteditable='false'>" + event.title + "</span><br>" +
-              "<strong>Description:</strong> <span id='description-" + key + "' contenteditable='false'>" + event.description + "</span><br>" +
-              "<strong>Link:</strong> <span id='link-" + key + "' contenteditable='false'>" + (event.link || "") + "</span><br>" +
-              "<strong>Total Winnings:</strong> <span id='total-winnings-" + key + "' contenteditable='false'>\$" + (event.totalWinnings || 0) + "</span><br>" +
-              "<strong>Winner Payout:</strong> <span id='winner-payout-amount-" + key + "' contenteditable='false'>\$" + (event.winnerPayoutAmount || 0) + "</span><br>" +
-              "<strong>Non-Profit:</strong> <span id='non-profit-name-" + key + "' contenteditable='false'>" + (event.nonProfitName || "N/A") + "</span> - " +
-              "<span id='non-profit-donation-amount-" + key + "' contenteditable='false'>\$" + (event.nonProfitDonationAmount || 0) + "</span><br>" +
-              "<strong>Non-Profit Website:</strong> <span id='non-profit-website-link-" + key + "' contenteditable='false'>" + (event.nonProfitWebsiteLink || "") + "</span><br>" +
-              "<strong>Website Funds:</strong> <span id='website-funds-amount-" + key + "' contenteditable='false'>\$" + (event.websiteFundsAmount || 0) + "</span><br>" +
-              "<div class='event-actions'>" +
-              "<button onclick=\"enableEdit('" + key + "', this)\">Edit</button>" +
-              "<button onclick=\"deleteEvent('" + key + "', this)\">Delete</button>" +
-              "</div>";
-            eventsList.appendChild(div);
-          });
-        } else {
-          eventsList.innerHTML = "<p>No events found.</p>";
-        }
-      });
-    }
-
-    function enableEdit(key, btn) {
-      const card = btn.closest(".event-card");
-      const editing = btn.innerText === "Save";
-
-      const titleElement = card.querySelector("#title-" + key);
-      const descriptionElement = card.querySelector("#description-" + key);
-      const linkElement = card.querySelector("#link-" + key);
-      const totalWinningsElement = card.querySelector("#total-winnings-" + key);
-      const winnerPayoutAmountElement = card.querySelector("#winner-payout-amount-" + key);
-      const nonProfitNameElement = card.querySelector("#non-profit-name-" + key);
-      const nonProfitDonationAmountElement = card.querySelector("#non-profit-donation-amount-" + key);
-      const nonProfitWebsiteLinkElement = card.querySelector("#non-profit-website-link-" + key);
-      const websiteFundsAmountElement = card.querySelector("#website-funds-amount-" + key);
-
-      if (editing) {
-        const updatedEvent = {
-          title: titleElement.innerText.trim(),
-          description: descriptionElement.innerText.trim(),
-          link: linkElement.innerText.trim(),
-          totalWinnings: totalWinningsElement.innerText.replace(/[^0-9.]/g, "").trim(),
-          winnerPayoutAmount: winnerPayoutAmountElement.innerText.replace(/[^0-9.]/g, "").trim(),
-          nonProfitName: nonProfitNameElement.innerText.trim(),
-          nonProfitDonationAmount: nonProfitDonationAmountElement.innerText.replace(/[^0-9.]/g, "").trim(),
-          nonProfitWebsiteLink: nonProfitWebsiteLinkElement.innerText.trim(),
-          websiteFundsAmount: websiteFundsAmountElement.innerText.replace(/[^0-9.]/g, "").trim()
-        };
-
-        firebase.database().ref("events/" + key).update(updatedEvent, (error) => {
-          if (error) {
-            alert("Error updating event: " + error);
-          } else {
-            alert("Event updated!");
-            btn.innerText = "Edit";
-            [
-              titleElement,
-              descriptionElement,
-              linkElement,
-              totalWinningsElement,
-              winnerPayoutAmountElement,
-              nonProfitNameElement,
-              nonProfitDonationAmountElement,
-              nonProfitWebsiteLinkElement,
-              websiteFundsAmountElement
-            ].forEach(el => el.contentEditable = false);
-          }
-        });
-      } else {
-        btn.innerText = "Save";
-        [
-          titleElement,
-          descriptionElement,
-          linkElement,
-          totalWinningsElement,
-          winnerPayoutAmountElement,
-          nonProfitNameElement,
-          nonProfitDonationAmountElement,
-          nonProfitWebsiteLinkElement,
-          websiteFundsAmountElement
-        ].forEach(el => el.contentEditable = true);
-        titleElement.focus();
-      }
-    }
-
-    function deleteEvent(key) {
-      if (confirm("Are you sure you want to delete this event?")) {
-        firebase.database().ref("events/" + key).remove((error) => {
-          if (error) {
-            alert("Error deleting event: " + error);
-          } else {
-            alert("Event deleted!");
-            loadEvents();
-          }
-        });
-      }
-    }
-  </script>
-
-  <script>
-    async function loadHTML(selector, url) {
-      const response = await fetch(url);
-      if (response.ok) {
-        const html = await response.text();
-        document.querySelector(selector).innerHTML = html;
-      } else {
-        console.error("Failed to load", url);
-      }
-    }
-    loadHTML("#header-container", "header-admin.html");
-    loadHTML("#footer-container", "footer.html");
-  </script>
+  <script type="module" src="script.js"></script>
 </body>
 
 </html>
