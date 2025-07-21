@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // NEW:  Load Events After Header/Footer Are Loaded  (Important!)
     // *********************************************************************************
     const eventsList = document.getElementById("events-list");
-    if (eventsList) {
+    if (eventsList) { //Check if #events-list exists before trying to use it
         const eventsRef = ref(db, "events");
 
         onValue(eventsRef, (snapshot) => {
