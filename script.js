@@ -39,12 +39,12 @@ const announcementTimestampElement = document.getElementById('announcement-times
 
 onValue(announcementRef, (snapshot) => {
     const announcement = snapshot.val();
-    if (announcement && announcement.message) {
-        announcementTextElement.textContent = announcement.message;
-        announcementTimestampElement.textContent = "Last Updated: " + (new Date(announcement.timestamp)).toLocaleString();  // Display the timestamp
+    if (announcement && announcement.text) { // Changed message to text
+        announcementTextElement.textContent = announcement.text; // Changed message to text
+        announcementTimestampElement.textContent = "Last Updated: " + (new Date(announcement.timestamp)).toLocaleString();
     } else {
         announcementTextElement.textContent = 'No announcement currently.';
-        announcementTimestampElement.textContent = ""; // Clear the timestamp if no announcement
+        announcementTimestampElement.textContent = "";
     }
 });
 
