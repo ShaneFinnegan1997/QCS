@@ -1,33 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<script type="module" src="script.js"></script>
-
-<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Upcoming Events</title>
-<link rel="stylesheet" href="style.css" />
-
-<style>  {  
-
-.event-section { text-align: center; } 
-
-.event-card { background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: left; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); } 
-
-.event-card h2 { margin-top: 0; } 
-
-.event-card p { white-space: pre-wrap; word-wrap: break-word; } </style> </head> 
-
-
-
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div id="header-container"></div>
+  <div id="header-container"></div>
 
-  <main> 
-<section class="event-section"> <h1>Upcoming Events</h1> <div id="events-list"> <p>Loading events...</p> </div> </section> </main>
+  <main>
+    <section class="event-section">
+      <h1>Upcoming Events</h1>
+      <div id="events-list">
+        <p>Loading events...</p>
+      </div>
+    </section>
+  </main>
+
   <div id="footer-container"></div>
 
   <script type="module">
@@ -73,10 +64,14 @@
             const eventDiv = document.createElement('div');
             eventDiv.className = "event";
             eventDiv.innerHTML = `
-              <h2>${event.title}</h2>
-              <p>${event.description}</p>
-              <p><strong>Payout:</strong> ${event.winnerPayoutAmount}</p>
-              <p><strong>Nonprofit:</strong> ${event.nonProfitName}</p>
+              <h2>\${event.title}</h2>
+              <p>\${event.description}</p>
+              <p><strong>Total Winnings:</strong> \${event.totalWinnings || 'N/A'}</p>
+              <p><strong>Winner Payout Amount:</strong> \${event.winnerPayoutAmount || 'N/A'}</p>
+              <p><strong>Non-Profit Name:</strong> \${event.nonProfitName || 'N/A'}</p>
+              <p><strong>Non-Profit Donation Amount:</strong> \${event.nonProfitDonationAmount || 'N/A'}</p>
+              <p><strong>Non-Profit Website Link:</strong> <a href="${event.nonProfitWebsiteLink || '#'}" target="_blank">${event.nonProfitName || 'Visit Website'}</a></p>
+              <p><strong>Website Funds Amount:</strong> \${event.websiteFundsAmount || 'N/A'}</p>
             `;
             eventsList.appendChild(eventDiv);
           });
