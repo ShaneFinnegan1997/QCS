@@ -3,19 +3,7 @@
  <script type="module" src="script.js"></script>
 <!-- Load header/footer -->
   <script>
-    async function loadHTML(selector, url) {
-      try {
-        const response = await fetch(url);
-        if (response.ok) {
-          const html = await response.text();
-          document.querySelector(selector).innerHTML = html;
-        }
-      } catch (e) {
-        console.error("Failed to load:", url);
-      }
-    }
-    loadHTML("#header-container", "header.html");
-    loadHTML("#footer-container", "footer.html");
+    
   </script>
 
 <head>
