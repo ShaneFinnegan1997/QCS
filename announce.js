@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   onValue(announcementRef, (snapshot) => {
     const announcement = snapshot.val();
-    if (announcement && announcement.text) {
-      announcementTextElement.textContent = announcement.text;
+    if (announcement && announcement.message) {
+      announcementTextElement.textContent = announcement.message;
       announcementTimestampElement.textContent = "Last Updated: " + (new Date(announcement.timestamp)).toLocaleString();
     } else {
       announcementTextElement.textContent = 'No announcement currently.';
