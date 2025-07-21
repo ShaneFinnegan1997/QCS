@@ -5,23 +5,29 @@ import {
   onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-    authDomain: "qcsweeps-4b994.firebaseapp.com",
-    databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-    projectId: "qcsweeps-4b994",
-    storageBucket: "qcsweeps-4b994.appspot.com",
-    messagingSenderId: "810241609281",
-    appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-  };
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+  authDomain: "qcsweeps-4b994.firebaseapp.com",
+  databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+  projectId: "qcsweeps-4b994",
+  storageBucket: "qcsweeps-4b994.appspot.com",
+  messagingSenderId: "810241609281",
+  appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
+function displayAnnouncement() {
   const announcementTextElement = document.getElementById('announcement-text');
   const announcementTimestampElement = document.getElementById('announcement-timestamp');
+
+  if (!announcementTextElement || !announcementTimestampElement) {
+    console.error("Announcement elements not found in the DOM.");
+    return;
+  }
 
   // Announcement code
   const announcementRef = ref(db, 'announcement');
@@ -36,4 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
       announcementTimestampElement.textContent = "";
     }
   });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  displayAnnouncement();
 });
