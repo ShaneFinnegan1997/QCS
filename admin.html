@@ -7,136 +7,41 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Admin Header -->
   <div id="header-container"></div>
-
   <main>
-    <section class="admin-login-section" id="login-section">
-      <h2>Admin Login</h2>
-      <input type="text" id="username" placeholder="Username" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <p id="login-error" style="color:red;"></p>
-    </section>
-
-    <section class="admin-panel-section" id="admin-panel" style="display:none;">
-      <h2>Manage Events</h2>
-
-      <div id="admin-events-list">
-        <p>Loading...</p>
+    <center>
+      <h1>Admin Login</h1>
+      <div id="login-form">
+        <input type="text" id="admin-username" placeholder="Username" /><br><br>
+        <input type="password" id="admin-password" placeholder="Password" /><br><br>
+        <button id="login-btn">Login</button>
+        <p id="login-status" style="color:red;"></p>
       </div>
+
+      <div id="admin-panel" class="hidden">
+        <h2>Update Countdown</h2>
+        <label>Countdown End Time:</label><br>
+        <input type="datetime-local" id="target-time" /><br><br>
+        <label>Entry Link:</label><br>
+        <input type="text" id="entry-link" placeholder="https://..." /><br><br>
+        <button id="update-countdown">Update Countdown</button><br><br>
+
+        <h2>Post Event</h2>
+        <label>Event Title:</label><br>
+        <input type="text" id="event-title" placeholder="Title" /><br><br>
+        <label>Event Details:</label><br>
+        <textarea id="event-description" placeholder="Enter details here..." rows="5" cols="30"></textarea><br><br>
+        <button id="log-event">Post Event</button>
+      </div>
+    </center>
+
+    <section class="event-admin-section hidden" id="manage-events">
+      <h2>Manage Events</h2>
+      <div id="admin-events-list">Loading...</div>
     </section>
   </main>
 
   <div id="footer-container"></div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
-  <script>
-    // Load header and footer
-    async function loadHTML(selector, url) {
-      try {
-        const res = await fetch(url);
-        if (res.ok) {
-          const html = await res.text();
-          document.querySelector(selector).innerHTML = html;
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    loadHTML("#header-container", "header-admin.html");
-    loadHTML("#footer-container", "footer.html");
-
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-      authDomain: "qcsweeps-4b994.firebaseapp.com",
-      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-      projectId: "qcsweeps-4b994",
-      storageBucket: "qcsweeps-4b994.appspot.com",
-      messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-    };
-
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const adminUsername = "admin";
-    const adminPassword = "qc2025";
-
-    function login() {
-      const u = document.getElementById("username").value.trim();
-      const p = document.getElementById("password").value.trim();
-      const error = document.getElementById("login-error");
-
-      if (u === adminUsername && p === adminPassword) {
-        document.getElementById("login-section").style.display = "none";
-        document.getElementById("admin-panel").style.display = "block";
-        loadAdminEvents();
-      } else {
-        error.textContent = "Incorrect login. Try again.";
-      }
-    }
-
-    function loadAdminEvents() {
-      const list = document.getElementById("admin-events-list");
-      list.innerHTML = "Loading...";
-
-      db.ref("events").once("value", (snapshot) => {
-        const data = snapshot.val();
-        list.innerHTML = "";
-
-        if (data) {
-          Object.entries(data).reverse().forEach(([key, event]) => {
-            const div = document.createElement("div");
-            div.className = "admin-event-item";
-            div.innerHTML = `
-              <strong>${event.title}</strong><br/>
-              ${event.description || ""}<br/>
-              ${event.link ? `<a href="${event.link}" target="_blank">${event.link}</a><br/>` : ""}
-              <button onclick="editEvent('${key}', \`${event.title}\`, \`${event.description || ""}\`, \`${event.link || ""}\`)">Edit</button>
-              <button onclick="deleteEvent('${key}')">Delete</button>
-              <hr/>
-            `;
-            list.appendChild(div);
-          });
-        } else {
-          list.innerHTML = "<p>No events found.</p>";
-        }
-      });
-    }
-
-    function deleteEvent(eventId) {
-      if (confirm("Delete this event?")) {
-        db.ref("events/" + eventId).remove()
-          .then(() => {
-            alert("Event deleted.");
-            loadAdminEvents();
-          })
-          .catch(err => alert("Error deleting event: " + err.message));
-      }
-    }
-
-    function editEvent(key, title, description, link) {
-      const newTitle = prompt("Edit Title:", title);
-      if (newTitle === null) return;
-      const newDesc = prompt("Edit Description:", description);
-      if (newDesc === null) return;
-      const newLink = prompt("Edit Link:", link);
-
-      db.ref("events/" + key).update({
-        title: newTitle,
-        description: newDesc,
-        link: newLink
-      }).then(() => {
-        alert("Event updated.");
-        loadAdminEvents();
-      });
-    }
-  </script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
