@@ -13,10 +13,9 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; // Import Firebase Auth
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 document.addEventListener('DOMContentLoaded', function() {
-
   // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const auth = getAuth(app); // Initialize Firebase Auth
+  const auth = getAuth(app);
 
   // Load header/footer
   (async () => {
@@ -42,66 +41,63 @@ document.addEventListener('DOMContentLoaded', function() {
 
           // Manually trigger the announcement script after loading header.html
           if (selector === "#header-container") {
-              const announcementTextElement = document.getElementById('announcement-text');
-              const announcementTimestampElement = document.getElementById('announcement-timestamp');
+            const announcementTextElement = document.getElementById('announcement-text');
+            const announcementTimestampElement = document.getElementById('announcement-timestamp');
 
-              // Announcement code
-              const announcementRef = ref(db, 'announcement');
+            // Announcement code
+            const announcementRef = ref(db, 'announcement');
 
-              onValue(announcementRef, (snapshot) => {
-                  const announcement = snapshot.val();
-                  if (announcement && announcement.text) {
-                      announcementTextElement.textContent = announcement.text;
-                      announcementTimestampElement.textContent = "Last Updated: " + (new Date(announcement.timestamp)).toLocaleString();
-                  } else {
-                      announcementTextElement.textContent = 'No announcement currently.';
-                      announcementTimestampElement.textContent = "";
-                  }
-              });
+            onValue(announcementRef, (snapshot) => {
+              const announcement = snapshot.val();
+              if (announcement && announcement.text) {
+                announcementTextElement.textContent = announcement.text;
+                announcementTimestampElement.textContent = "Last Updated: " + (new Date(announcement.timestamp)).toLocaleString();
+              } else {
+                announcementTextElement.textContent = 'No announcement currently.';
+                announcementTimestampElement.textContent = "";
+              }
+            });
           }
         }
       } catch (e) {
         console.error(e);
       }
     };
-    if (document.querySelector("#header-container")) loadHTML("#header-container", "header.html");
+
+    if (document.querySelector("#header-container")) loadHTML("#header-container", "header-admin.html");
     if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
 
-    // *********************************************************************************
-    // NEW:  Load Events After Header/Footer Are Loaded  (Important!)
-    // *********************************************************************************
+    // Load Events
     const eventsList = document.getElementById("events-list");
-    if (eventsList) { //Check if #events-list exists before trying to use it
-        const eventsRef = ref(db, "events");
+    if (eventsList) {
+      const eventsRef = ref(db, "events");
 
-        onValue(eventsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-              eventsList.innerHTML = ''; // Clear loading
-              Object.keys(data).forEach(key => {
-                const event = data[key];
-                const eventDiv = document.createElement('div');
-                eventDiv.className = "event";
-                eventDiv.innerHTML = `
-                  <h2>\${event.title}</h2>
-                  <p>\${event.description}</p>
-                  <p><strong>Total Winnings:</strong> \${event.totalWinnings || 'N/A'}</p>
-                  <p><strong>Winner Payout Amount:</strong> \${event.winnerPayoutAmount || 'N/A'}</p>
-                  <p><strong>Non-Profit Name:</strong> \${event.nonProfitName || 'N/A'}</p>
-                  <p><strong>Non-Profit Donation Amount:</strong> \${event.nonProfitDonationAmount || 'N/A'}</p>
-                  <p><strong>Non-Profit Website Link:</strong> <a href="${event.nonProfitWebsiteLink || '#'}" target="_blank">${event.nonProfitName || 'Visit Website'}</a></p>
-                  <p><strong>Website Funds Amount:</strong> \${event.websiteFundsAmount || 'N/A'}</p>
-                `;
-                eventsList.appendChild(eventDiv);
-              });
-            } else {
-              eventsList.innerHTML = '<p>No events found.</p>';
-            }
-        });
+      onValue(eventsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          eventsList.innerHTML = ''; // Clear loading
+          Object.keys(data).forEach(key => {
+            const event = data[key];
+            const eventDiv = document.createElement('div');
+            eventDiv.className = "event";
+            eventDiv.innerHTML = `
+              <h2>\${event.title}</h2>
+              <p>\${event.description}</p>
+              <p><strong>Total Winnings:</strong> \${event.totalWinnings || 'N/A'}</p>
+              <p><strong>Winner Payout Amount:</strong> \${event.winnerPayoutAmount || 'N/A'}</p>
+              <p><strong>Non-Profit Name:</strong> \${event.nonProfitName || 'N/A'}</p>
+              <p><strong>Non-Profit Donation Amount:</strong> \${event.nonProfitDonationAmount || 'N/A'}</p>
+              <p><strong>Non-Profit Website Link:</strong> <a href="${event.nonProfitWebsiteLink || '#'}" target="_blank">${event.nonProfitName || 'Visit Website'}</a></p>
+              <p><strong>Website Funds Amount:</strong> \${event.websiteFundsAmount || 'N/A'}</p>
+            `;
+            eventsList.appendChild(eventDiv);
+          });
+        } else {
+          eventsList.innerHTML = '<p>No events found.</p>';
+        }
+      });
     }
-
-
-  })();  // End of async IIFE
+  })();
 
   // Admin login
   const loginBtn = document.getElementById("login-btn");
@@ -118,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (inputUsername === adminData.username && inputPassword === adminData.password) {
         document.getElementById("login-form").style.display = "none";
         document.getElementById("admin-panel").classList.remove("hidden");
-        document.getElementById("manage-events").classList.remove("hidden");
         loadAdminEvents();
       } else {
         status.innerText = "Invalid username or password.";
@@ -175,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Load events
+  // Load events for Admin Panel
   function loadAdminEvents() {
     const list = document.getElementById("admin-events-list");
     if (!list) return;
@@ -194,8 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
           div.innerHTML = `
             <strong>\${event.title}</strong><br/>
             <p>\${event.description || ""}</p>
-            <button onclick="deleteEvent('\${key}')">Delete</button>
-            <hr/>
+            <button onclick="window.deleteEvent('\${key}')">Delete</button>
           `;
           list.appendChild(div);
         }
@@ -211,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         await remove(ref(db, "events/" + eventId));
         alert("Event deleted.");
+        loadAdminEvents(); // Reload events after deletion
       } catch (error) {
         alert("Error deleting event: " + error.message);
       }
