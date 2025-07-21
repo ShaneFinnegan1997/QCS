@@ -37,12 +37,12 @@ const announcementRef = ref(db, 'announcement');
 const announcementTextElement = document.getElementById('announcement-text');
 
 onValue(announcementRef, (snapshot) => {
-  const announcement = snapshot.val();
-  if (announcement) {
-    announcementTextElement.textContent = announcement;
-  } else {
-    announcementTextElement.textContent = 'No announcement currently.';
-  }
+    const announcement = snapshot.val();
+    if (announcement) {
+        announcementTextElement.textContent = announcement;
+    } else {
+        announcementTextElement.textContent = 'No announcement currently.';
+    }
 });
 
 // Load header/footer
