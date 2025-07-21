@@ -9,7 +9,15 @@
   <title>Upcoming Events</title>
 
 
-<link rel="stylesheet" href="style.css">
+<style> main { max-width: 800px; margin: 0 auto; padding: 20px; } 
+
+.event-section { text-align: center; } 
+
+.event-card { background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: left; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); } 
+
+.event-card h2 { margin-top: 0; } 
+
+.event-card p { white-space: pre-wrap; word-wrap: break-word; } </style> </head> 
 
 
 
@@ -18,11 +26,8 @@
 
 <div id="header-container"></div>
 
-  <main>
-    <h1>Upcoming Events</h1>
-    <div id="events-list">Loading events...</div>
-
-  </main>
+  <main> 
+<section class="event-section"> <h1>Upcoming Events</h1> <div id="events-list"> <p>Loading events...</p> </div> </section> </main>
   <div id="footer-container"></div>
 
   <script type="module">
