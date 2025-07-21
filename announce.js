@@ -8,7 +8,7 @@ import {
 // Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-  authDomain: "qcsweeps-4b994.firebaseapp.com",
+  
   databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
   projectId: "qcsweeps-4b994",
   storageBucket: "qcsweeps-4b994.appspot.com",
