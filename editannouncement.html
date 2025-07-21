@@ -61,6 +61,11 @@
             margin-top: 10px;
             text-align: center;
         }
+
+        /* Style for the hidden announcement edit section */
+        #announcement-edit-section {
+            display: none; /* Initially hidden */
+        }
     </style>
 </head>
 <body>
@@ -77,9 +82,11 @@
 
         <p id="admin-login-error"></p>
 
-        <h2>Edit Announcement</h2>
-        <textarea id="admin-announcement-text" rows="4" cols="50"></textarea><br><br>
-        <button id="admin-announcement-save">Save Announcement</button>
+        <div id="announcement-edit-section">
+            <h2>Edit Announcement</h2>
+            <textarea id="admin-announcement-text" rows="4" cols="50"></textarea><br><br>
+            <button id="admin-announcement-save">Save Announcement</button>
+        </div>
     </div>
 
     <script type="module">
@@ -110,6 +117,7 @@
         const adminLoginError = document.getElementById('admin-login-error');
         const adminAnnouncementTextarea = document.getElementById('admin-announcement-text');
         const adminAnnouncementSaveButton = document.getElementById('admin-announcement-save');
+        const announcementEditSection = document.getElementById('announcement-edit-section');
 
         // Function to save the announcement data with message and timestamp
         function saveAnnouncement(announcementText) {
@@ -139,6 +147,11 @@
             saveAnnouncement(announcementText);
         });
 
+        // Function to show the announcement edit section
+        function showAnnouncementEditSection() {
+            announcementEditSection.style.display = 'block';
+        }
+
         // Event listener for the login button
         adminLoginSubmitButton.addEventListener('click', async () => {
             const username = adminUsernameInput.value;
@@ -149,12 +162,13 @@
             const adminData = snapshot.val();
 
             if (adminData && adminData.username === username && adminData.password === password) {
-                loadAnnouncement();
+                showAnnouncementEditSection();  // Show the edit section
+                loadAnnouncement(); // load announcement after login
             } else {
                 adminLoginError.textContent = 'Invalid username or password.';
+                announcementEditSection.style.display = 'none';
             }
         });
-
         // Load the current announcement from Firebase
         function loadAnnouncement() {
             const announcementRef = ref(db, 'announcement');
