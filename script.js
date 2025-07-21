@@ -8,28 +8,23 @@ import {
   onValue,
   remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+  authDomain: "qcsweeps-4b994.firebaseapp.com",
+  databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+  projectId: "qcsweeps-4b994",
+  storageBucket: "qcsweeps-4b994.appspot.com",
+  messagingSenderId: "810241609281",
+  appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-    authDomain: "qcsweeps-4b994.firebaseapp.com",
-    databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-    projectId: "qcsweeps-4b994",
-    storageBucket: "qcsweeps-4b994.appspot.com",
-    messagingSenderId: "810241609281",
-    appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const auth = getAuth(app);
 
   // Load header/footer
   (async () => {
@@ -38,89 +33,60 @@ document.addEventListener('DOMContentLoaded', function() {
         const res = await fetch(url);
         if (res.ok) {
           document.querySelector(selector).innerHTML = await res.text();
-
-          // Manually trigger the announcement script after loading header.html
-          if (selector === "#header-container") {
-            
-const announcementTextElement = document.getElementById('announcement-text');
-            const announcementTimestampElement = document.getElementById('announcement-timestamp');
-
-            // Announcement code
-            const announcementRef = ref(db, 'announcement');
-
-            onValue(announcementRef, (snapshot) => {
-              const announcement = snapshot.val();
-              if (announcement && announcement.text) {
-                announcementTextElement.textContent = announcement.text;
-                announcementTimestampElement.textContent = "Last Updated: " + (new Date(announcement.timestamp)).toLocaleString();
-              } else {
-                announcementTextElement.textContent = 'No announcement currently.';
-                announcementTimestampElement.textContent = "";
-              }
-            });
-          }
         }
       } catch (e) {
         console.error(e);
       }
     };
 
-    if (document.querySelector("#header-container")) loadHTML("#header-container", "header-admin.html");
-    if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
-
-    // Load Events
-    const eventsList = document.getElementById("events-list");
-    if (eventsList) {
-      const eventsRef = ref(db, "events");
-
-      onValue(eventsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          eventsList.innerHTML = ''; // Clear loading
-          Object.keys(data).forEach(key => {
-            const event = data[key];
-            const eventDiv = document.createElement('div');
-            eventDiv.className = "event";
-            eventDiv.innerHTML = `
-              <h2>\${event.title}</h2>
-              <p>\${event.description}</p>
-              <p><strong>Total Winnings:</strong> \${event.totalWinnings || 'N/A'}</p>
-              <p><strong>Winner Payout Amount:</strong> \${event.winnerPayoutAmount || 'N/A'}</p>
-              <p><strong>Non-Profit Name:</strong> \${event.nonProfitName || 'N/A'}</p>
-              <p><strong>Non-Profit Donation Amount:</strong> \${event.nonProfitDonationAmount || 'N/A'}</p>
-              <p><strong>Non-Profit Website Link:</strong> <a href="${event.nonProfitWebsiteLink || '#'}" target="_blank">${event.nonProfitName || 'Visit Website'}</a></p>
-              <p><strong>Website Funds Amount:</strong> \${event.websiteFundsAmount || 'N/A'}</p>
-            `;
-            eventsList.appendChild(eventDiv);
-          });
-        } else {
-          eventsList.innerHTML = '<p>No events found.</p>';
-        }
-      });
+    // Check if the current page is the admin page
+    if (window.location.pathname.includes("admin")) {
+      if (document.querySelector("#header-container")) loadHTML("#header-container", "header-admin.html");
+    } else {
+      // Load the default header for all other pages
+      if (document.querySelector("#header-container")) loadHTML("#header-container", "header.html");
     }
+
+    if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
   })();
 
-  // Admin login
-  const loginBtn = document.getElementById("login-btn");
-  if (loginBtn) {
-    loginBtn.addEventListener("click", async () => {
-      const inputUsername = document.getElementById("admin-username").value.trim();
-      const inputPassword = document.getElementById("admin-password").value.trim();
-      const status = document.getElementById("login-status");
+  // Load events
+  const eventsList = document.getElementById("events-list");
+  if (eventsList) {
+    const eventsRef = ref(db, "events");
 
-      const snapshot = await get(ref(db, "admin"));
-      const adminData = snapshot.val();
-      if (!adminData) return (status.innerText = "Admin credentials not set.");
-
-      if (inputUsername === adminData.username && inputPassword === adminData.password) {
-        document.getElementById("login-form").style.display = "none";
-        document.getElementById("admin-panel").classList.remove("hidden");
-        loadAdminEvents();
+    onValue(eventsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        eventsList.innerHTML = ''; // Clear loading
+        Object.keys(data).forEach(key => {
+          const event = data[key];
+          const eventDiv = document.createElement('div');
+          eventDiv.className = "event";
+          eventDiv.innerHTML = `
+            <h2>\${event.title}</h2>
+            <p>\${event.description}</p>
+            <p><strong>Total Winnings:</strong> \${event.totalWinnings || 'N/A'}</p>
+            <p><strong>Winner Payout Amount:</strong> \${event.winnerPayoutAmount || 'N/A'}</p>
+            <p><strong>Non-Profit Name:</strong> \${event.nonProfitName || 'N/A'}</p>
+            <p><strong>Non-Profit Donation Amount:</strong> \${event.nonProfitDonationAmount || 'N/A'}</p>
+            <p><strong>Non-Profit Website Link:</strong> <a href="${event.nonProfitWebsiteLink || '#'}" target="_blank">${event.nonProfitName || 'Visit Website'}</a></p>
+            <p><strong>Website Funds Amount:</strong> \${event.websiteFundsAmount || 'N/A'}</p>
+          `;
+          eventsList.appendChild(eventDiv);
+        });
       } else {
-        status.innerText = "Invalid username or password.";
+        eventsList.innerHTML = '<p>No events found.</p>';
       }
     });
   }
+
+    // Always show the admin panel on the admin page
+    if (window.location.pathname.includes("admin")){
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("admin-panel").classList.remove("hidden");
+      loadAdminEvents();
+    }
 
   // Update countdown
   const updateBtn = document.getElementById("update-countdown");
