@@ -132,7 +132,6 @@ footer {
     font-size: 0.9em;
   }
 
-  
 /* ==========================================================================
    Event Page Styles
    ========================================================================== */
@@ -168,4 +167,67 @@ footer {
 
 .event strong {
   font-weight: bold;
+}
+
+/* Header styles */
+header {
+    background-color: #008080; /* Teal */
+    color: white;
+    padding: 10px;
+    position: relative;
+}
+
+header h1 {
+    margin: 0; /* Remove default heading margin */
+}
+
+header nav {
+    margin-bottom: 10px;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+#announcement-container {
+    margin-top: 10px;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    position: relative;
+    text-align: center;
+}
+
+#announcement-timestamp {
+    font-size: 0.7em;
+    color: #ddd;
+}
+
+/* Footer styles */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed; /* or absolute - see notes below */
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+footer a {
+    color: white; /* Ensure links in the footer are also white */
+}
+
+body {
+  min-height: 100vh; /* Ensures the body is at least the height of the viewport */
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1; /* Allows the main content to take up the remaining space */
 }
