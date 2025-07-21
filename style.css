@@ -133,3 +133,39 @@ footer {
   }
 
   
+/* ==========================================================================
+   Event Page Styles
+   ========================================================================== */
+
+/* Overall section containing events */
+.event-section {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Individual event container */
+.event {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 15px;
+  margin: 15px 0;
+  text-align: left;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.event h2 {
+  margin-top: 0;
+  font-size: 1.5em;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.event p {
+  margin-bottom: 10px;
+}
+
+.event strong {
+  font-weight: bold;
+}
