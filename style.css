@@ -85,9 +85,17 @@ footer {
 }
 
 @keyframes pulse {
-  0% { box-shadow: 0 0 10px rgba(0, 128, 100, 0.1); }
-  50% { box-shadow: 0 0 20px rgba(0, 128, 100, 0.2); }
-  100% { box-shadow: 0 0 10px rgba(0, 128, 100, 0.1); }
+  0% {
+    box-shadow: 0 0 10px rgba(0, 128, 100, 0.1);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(0, 128, 100, 0.2);
+  }
+
+  100% {
+    box-shadow: 0 0 10px rgba(0, 128, 100, 0.1);
+  }
 }
 
 .countdown-section h1 {
@@ -131,6 +139,7 @@ footer {
     gap: 10px;
     font-size: 0.9em;
   }
+}
 
 /* ==========================================================================
    Event Page Styles
@@ -169,45 +178,58 @@ footer {
   font-weight: bold;
 }
 
+/* Style the non-profit website link */
+.event a {
+    color: #007bff; /* Bootstrap's primary color - a nice blue */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease; /* Smooth transition for hover effect */
+}
 
+.event a:hover {
+    color: #0056b3; /* Darker shade of blue for hover */
+    text-decoration: underline; /* Add underline on hover for clarity */
+}
 
 #announcement-container {
-    margin-top: 10px;
-    padding: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    position: relative;
-    text-align: center;
+  margin-top: 10px;
+  padding: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  position: relative;
+  text-align: center;
 }
 
 #announcement-timestamp {
-    font-size: 0.7em;
-    color: #ddd;
+  font-size: 0.7em;
+  color: #ddd;
 }
 
 /* Footer styles */
 footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px;
-    position: fixed; /* or absolute - see notes below */
-    left: 0;
-    bottom: 0;
-    width: 100%;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
 }
 
 footer a {
-    color: white; /* Ensure links in the footer are also white */
+  color: white;
+  /* Ensure links in the footer are also white */
 }
 
 body {
-  min-height: 100vh; /* Ensures the body is at least the height of the viewport */
+  min-height: 100vh;
+  /* Ensures the body is at least the height of the viewport */
   margin: 0;
   display: flex;
   flex-direction: column;
 }
 
 main {
-  flex: 1; /* Allows the main content to take up the remaining space */
+  flex: 1;
+  /* Allows the main content to take up the remaining space */
 }
