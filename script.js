@@ -53,16 +53,23 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
 
+
+
+
   // Load header/footer
-  (async () => {
-    const loadHTML = async (selector, url) => {
+  async function loadHTML(selector, url) {
       try {
-        const res = await fetch(url);
-        if (res.ok) {
-          document.querySelector(selector).innerHTML = await res.text();
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          document.querySelector(selector).innerHTML = html;
         }
       } catch (e) {
-        console.error(e);
+        console.error("Failed to load:", url);
+      }
+    }
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
       }
     };
 
