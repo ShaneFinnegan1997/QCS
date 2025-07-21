@@ -169,27 +169,7 @@ footer {
   font-weight: bold;
 }
 
-/* Header styles */
-header {
-    background-color: #008080; /* Teal */
-    color: white;
-    padding: 10px;
-    position: relative;
-}
 
-header h1 {
-    margin: 0; /* Remove default heading margin */
-}
-
-header nav {
-    margin-bottom: 10px;
-}
-
-header nav a {
-    color: white;
-    text-decoration: none;
-    margin-right: 10px;
-}
 
 #announcement-container {
     margin-top: 10px;
