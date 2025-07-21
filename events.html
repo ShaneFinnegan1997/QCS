@@ -1,32 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<script type="module" src="script.js"></script>
- 
-<!-- Load header/footer -->
-  <script>
-    async function loadHTML(selector, url) {
-      try {
-        const response = await fetch(url);
-        if (response.ok) {
-          const html = await response.text();
-          document.querySelector(selector).innerHTML = html;
-        }
-      } catch (e) {
-        console.error("Failed to load:", url);
-      }
-    }
-    loadHTML("#header-container", "header.html");
-    loadHTML("#footer-container", "footer.html");
-  </script>
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Upcoming Events</title>
+  <title>Upcoming Events - QC Sweepstakes</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .event-section {
+      text-align: center;
+    }
+
+    .event-card {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: left;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .event-card h2 {
+      margin-top: 0;
+    }
+
+    .event-card p {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
-
   <div id="header-container"></div>
 
   <main>
@@ -40,6 +50,65 @@
 
   <div id="footer-container"></div>
 
- 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    // Load header and footer
+    async function loadHTML(selector, url) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const html = await response.text();
+          document.querySelector(selector).innerHTML = html;
+        } else {
+          console.error("Failed to load", url);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    loadHTML("#header-container", "header.html");
+    loadHTML("#footer-container", "footer.html");
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+      authDomain: "qcsweeps-4b994.firebaseapp.com",
+      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+      projectId: "qcsweeps-4b994",
+      storageBucket: "qcsweeps-4b994.appspot.com",
+      messagingSenderId: "810241609281",
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const eventsList = document.getElementById("events-list");
+
+    db.ref("events").on("value", (snapshot) => {
+      const data = snapshot.val();
+      eventsList.innerHTML = ""; // clear existing
+
+      if (data) {
+        const keys = Object.keys(data).reverse(); // latest first
+        keys.forEach(key => {
+          const event = data[key];
+          const div = document.createElement("div");
+          div.className = "event-card";
+          div.innerHTML = `
+            <h2>${event.title}</h2>
+            <p>${event.description || ""}</p>
+          `;
+          eventsList.appendChild(div);
+        });
+      } else {
+        eventsList.innerHTML = "<p>No events yet.</p>";
+      }
+    });
+  </script>
 </body>
 </html>
