@@ -27,33 +27,11 @@
     Loading events...
   </div>
 
-  <div id="footer-container"></div>
-
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
   <script>
-    // Load header and footer
-    async function loadHTML(selector, url) {
-      try {
-        const response = await fetch(url);
-        if (response.ok) {
-          const html = await response.text();
-          document.querySelector(selector).innerHTML = html;
-        } else {
-          console.error("Failed to load", url);
-          document.querySelector(selector).innerHTML = `<p style="color:red;">Failed to load \${url}</p>`; // Display error
-        }
-      } catch (e) {
-        console.error(e);
-        document.querySelector(selector).innerHTML = `<p style="color:red;">Error loading ${url}: ${e.message}</p>`; // Display error
-      }
-    }
 
-    Promise.all([
-      loadHTML("#header-container", "header.html"),
-      loadHTML("#footer-container", "footer.html")
-    ]).then(() => {
       // Firebase config (moved inside .then() to ensure header/footer are loaded first)
       const firebaseConfig = {
         apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
@@ -106,6 +84,9 @@
       document.getElementById("events-list").innerHTML = `<p style="color:red;">Error loading header/footer: \${error.message}</p>`;
     });
   </script>
+
+<div id="footer-container"></div>
+  
 </body>
 
 </html>
