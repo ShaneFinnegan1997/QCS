@@ -42,8 +42,31 @@ document.addEventListener('DOMContentLoaded', function() {
           // Manually trigger the announcement script after loading header.html
           if (selector === "#header-container") {
             
+const announcementTextElement = document.getElementById('announcement-text');
+            const announcementTimestampElement = document.getElementById('announcement-timestamp');
 
-// announcement info was here
+            // Announcement code
+            const announcementRef = ref(db, 'announcement');
+
+            onValue(announcementRef, (snapshot) => {
+              const announcement = snapshot.val();
+              if (announcement && announcement.text) {
+                announcementTextElement.textContent = announcement.text;
+                announcementTimestampElement.textContent = "Last Updated: " + (new Date(announcement.timestamp)).toLocaleString();
+              } else {
+                announcementTextElement.textContent = 'No announcement currently.';
+                announcementTimestampElement.textContent = "";
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    if (document.querySelector("#header-container")) loadHTML("#header-container", "header-admin.html");
+    if (document.querySelector("#footer-container")) loadHTML("#footer-container", "footer.html");
 
     // Load Events
     const eventsList = document.getElementById("events-list");
