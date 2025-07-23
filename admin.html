@@ -107,7 +107,7 @@
           const data = snapshot.val();
           if (data.password === password) {
             sessionStorage.setItem("admin", username);
-            window.location.href = "Manage.html";
+            window.location.href = "/QCS/manage.html";
           } else {
             failedAttempts++;
             errorMessage.textContent = "Incorrect password.";
