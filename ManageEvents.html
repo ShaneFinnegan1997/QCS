@@ -91,69 +91,40 @@
   </form>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DB_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DB_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    const eventList = document.getElementById("eventList");
-    const eventForm = document.getElementById("eventForm");
+  document.getElementById("eventForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = document.getElementById("title").value;
+    const date = document.getElementById("date").value;
+    const description = document.getElementById("description").value;
 
-    // Ensure admin is logged in
-    if (!sessionStorage.getItem("admin")) {
-      window.location.href = "AdminLogin.html";
-    }
-
-    // Load events
-    const eventsRef = ref(db, "events");
-    onValue(eventsRef, (snapshot) => {
-      eventList.innerHTML = "";
-      snapshot.forEach((child) => {
-        const data = child.val();
-        const div = document.createElement("div");
-        div.className = "event-item";
-        div.innerHTML = `
-          <span><strong>${data.name}</strong> - ${new Date(data.date).toLocaleString()}</span>
-          <button onclick="deleteEvent('${child.key}')">Delete</button>
-        `;
-        eventList.appendChild(div);
-      });
+    const eventRef = ref(db, "events");
+    push(eventRef, {
+      title,
+      date,
+      description
+    }).then(() => {
+      alert("Event added successfully!");
+      document.getElementById("eventForm").reset();
+    }).catch((error) => {
+      alert("Error adding event: " + error);
     });
-
-    // Add new event
-    eventForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("eventName").value.trim();
-      const date = document.getElementById("eventDate").value;
-      if (!name || !date) return;
-
-      await push(eventsRef, { name, date });
-      eventForm.reset();
-    });
-
-    // Delete event
-    window.deleteEvent = async (key) => {
-      if (confirm("Delete this event?")) {
-        await remove(ref(db, `events/${key}`));
-      }
-    };
-
-    // Logout function
-    window.logout = () => {
-      sessionStorage.removeItem("admin");
-      window.location.href = "AdminLogin.html";
-    };
-  </script>
+  });
+</script>
 </body>
 </html>
