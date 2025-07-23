@@ -70,7 +70,7 @@
 <body>
   <div class="login-container">
     <h2>Admin Login</h2>
-    <input type="text" id="admin" placeholder="Username" />
+    <input type="text" id="username" placeholder="Username" />
     <input type="password" id="password" placeholder="Password" />
     <button onclick="login()">Login</button>
     <div class="error-message" id="error-message"></div>
@@ -95,7 +95,7 @@
     const database = getDatabase(app);
 
     window.login = async function () {
-      const username = document.getElementById("admin").value.trim();
+      const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
       const errorDiv = document.getElementById("error-message");
 
