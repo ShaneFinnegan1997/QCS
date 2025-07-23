@@ -70,7 +70,7 @@
 <body>
   <div class="login-container">
     <h2>Admin Login</h2>
-    <input type="email" id="email" placeholder="Email" />
+    <input type="text" id="username" placeholder="Username" />
     <input type="password" id="password" placeholder="Password" />
     <button onclick="login()">Login</button>
     <div class="error-message" id="error-message"></div>
@@ -79,11 +79,7 @@
   <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
@@ -96,28 +92,42 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // Auto-redirect if already logged in
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.location.href = "Manage.html";
-      }
-    });
+    const database = getDatabase(app);
 
     // Login function
-    window.login = function () {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+    window.login = async function () {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
       const errorDiv = document.getElementById("error-message");
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
+      errorDiv.textContent = "";
+
+      if (!username || !password) {
+        errorDiv.textContent = "Please enter username and password.";
+        return;
+      }
+
+      try {
+        // Path to password in DB
+        const passwordRef = ref(database, `admins/${username}/admin/Password`);
+        const snapshot = await get(passwordRef);
+
+        if (!snapshot.exists()) {
+          errorDiv.textContent = "Username not found.";
+          return;
+        }
+
+        const storedPassword = snapshot.val();
+
+        if (password === storedPassword) {
+          // Successful login
           window.location.href = "Manage.html";
-        })
-        .catch((error) => {
-          errorDiv.textContent = "Login failed: " + error.message;
-        });
+        } else {
+          errorDiv.textContent = "Incorrect password.";
+        }
+      } catch (error) {
+        errorDiv.textContent = "Error: " + error.message;
+      }
     };
   </script>
 </body>
