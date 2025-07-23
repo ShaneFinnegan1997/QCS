@@ -101,13 +101,13 @@
 
       errorDiv.textContent = "";
 
-      if (!admin || !password) {
+      if (!username || !password) {
         errorDiv.textContent = "Please enter username and password.";
         return;
       }
 
       try {
-        const passwordRef = ref(database, `admins/${admin}/admin/Password`);
+        const passwordRef = ref(database, `admins/${username}/password`);
         const snapshot = await get(passwordRef);
 
         if (!snapshot.exists()) {
