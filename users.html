@@ -89,19 +89,19 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const adminList = document.getElementById("adminList");
+    const adminList = document.getElementById("usernameList");
 
     // Auth check
     const username = sessionStorage.getItem("admin");
     if (!username) {
       alert("Unauthorized access. Redirecting to login.");
-      window.location.href = "login.html";
+      window.location.href = "admin.html";
     }
 
     function loadAdmins() {
-      const adminsRef = ref(db, "admins/admin1/");
+      const adminsRef = ref(db, "admins");
       onValue(adminsRef, (snapshot) => {
-        adminList.innerHTML = "";
+        usernameList.innerHTML = "";
         const admins = snapshot.val();
         if (admins) {
           Object.keys(admins).forEach((key) => {
@@ -118,21 +118,21 @@
       });
     }
 
-    window.deleteAdmin = function (adminName) {
+    window.deleteUsername = function (usernameName) {
       if (confirm(`Are you sure you want to delete admin "${adminName}"?`)) {
-        remove(ref(db, `admins/admin1/${adminName}`));
+        remove(ref(db, `admins/${usernameName}`));
       }
     };
 
-    document.getElementById("addAdminForm").addEventListener("submit", (e) => {
+    document.getElementById("addUsernameForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      const name = document.getElementById("newAdmin").value.trim();
+      const name = document.getElementById("newUsername").value.trim();
       const password = document.getElementById("newPassword").value.trim();
       if (!name || !password) return alert("All fields are required");
       set(ref(db, `admins/admin1/${name}`), {
         Password: password
       }).then(() => {
-        document.getElementById("newAdmin").value = "";
+        document.getElementById("newUsername").value = "";
         document.getElementById("newPassword").value = "";
       });
     });
