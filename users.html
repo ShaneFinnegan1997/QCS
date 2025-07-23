@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Admin Users - QC Sweepstakes</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #101020;
+      color: white;
+      padding: 2rem;
+    }
+    h1 {
+      color: #00ffc3;
+      text-shadow: 0 0 8px #00ffc3;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #1e1e2e;
+      margin: 0.5rem 0;
+      padding: 1rem;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    button {
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    form {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    input {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #2a2a3d;
+      color: white;
+    }
+    .add-btn {
+      background: #00ffc3;
+      color: #000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Manage Admin Users</h1>
+  <ul id="adminList">Loading admins...</ul>
+
+  <form id="addAdminForm">
+    <input type="text" id="newAdmin" placeholder="New Admin Username" required />
+    <input type="password" id="newPassword" placeholder="Password" required />
+    <button type="submit" class="add-btn">Add Admin</button>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      set,
+      remove
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+      authDomain: "qcsweeps-4b994.firebaseapp.com",
+      projectId: "qcsweeps-4b994",
+      storageBucket: "qcsweeps-4b994.appspot.com",
+      messagingSenderId: "810241609281",
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
+      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const adminList = document.getElementById("adminList");
+
+    // Auth check
+    const username = sessionStorage.getItem("admin");
+    if (!username) {
+      alert("Unauthorized access. Redirecting to login.");
+      window.location.href = "login.html";
+    }
+
+    function loadAdmins() {
+      const adminsRef = ref(db, "admins/admin1/");
+      onValue(adminsRef, (snapshot) => {
+        adminList.innerHTML = "";
+        const admins = snapshot.val();
+        if (admins) {
+          Object.keys(admins).forEach((key) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <span>${key}</span>
+              <button onclick="deleteAdmin('${key}')">Delete</button>
+            `;
+            adminList.appendChild(li);
+          });
+        } else {
+          adminList.innerHTML = "<li>No admins found.</li>";
+        }
+      });
+    }
+
+    window.deleteAdmin = function (adminName) {
+      if (confirm(`Are you sure you want to delete admin "${adminName}"?`)) {
+        remove(ref(db, `admins/admin1/${adminName}`));
+      }
+    };
+
+    document.getElementById("addAdminForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("newAdmin").value.trim();
+      const password = document.getElementById("newPassword").value.trim();
+      if (!name || !password) return alert("All fields are required");
+      set(ref(db, `admins/admin1/${name}`), {
+        Password: password
+      }).then(() => {
+        document.getElementById("newAdmin").value = "";
+        document.getElementById("newPassword").value = "";
+      });
+    });
+
+    loadAdmins();
+  </script>
+</body>
+</html>
