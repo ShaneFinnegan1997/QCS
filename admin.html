@@ -118,7 +118,7 @@
         const storedPassword = snapshot.val();
 
         if (password === storedPassword) {
-          sessionStorage.setItem("username", username);
+          sessionStorage.setItem("admin", username);
           window.location.href = "/QCS/manage.html";
         } else {
           errorDiv.textContent = "Incorrect password.";
