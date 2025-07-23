@@ -2,84 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Login - QC Sweepstakes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Admin Users - QC Sweepstakes</title>
   <style>
     body {
-      margin: 0;
       font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(to bottom right, #0f0f23, #1a1a2e);
+      background-color: #101020;
       color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .login-container {
-      background-color: #1e1e30;
       padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-      width: 90%;
-      max-width: 400px;
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      font-size: 1.8rem;
+    h1 {
       color: #00ffc3;
-      text-shadow: 0 0 10px #00ffc3;
+      text-shadow: 0 0 8px #00ffc3;
     }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border: none;
-      background: #2b2b40;
-      color: white;
-      font-size: 1rem;
+    ul {
+      list-style: none;
+      padding: 0;
     }
-    input::placeholder {
-      color: #aaa;
+    li {
+      background: #1e1e2e;
+      margin: 0.5rem 0;
+      padding: 1rem;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     button {
-      width: 100%;
-      padding: 12px;
-      background-color: #00ffc3;
+      background: #ff4d4d;
+      color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: bold;
-      color: #000;
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: 0.3s ease;
-      margin-top: 10px;
     }
-    button:hover {
-      background-color: #00dab0;
+    form {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 320px;
     }
-    .error-message {
-      color: #ff5c5c;
-      font-size: 0.9rem;
-      margin-top: 10px;
-      text-align: center;
+    input {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #2a2a3d;
+      color: white;
+    }
+    .add-btn {
+      background: #00ffc3;
+      color: #000;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h2>Admin Login</h2>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
-    <div class="error-message" id="error-message"></div>
-  </div>
+  <h1>Manage Admin Users</h1>
+  <ul id="adminList">Loading admins...</ul>
 
-  <!-- Firebase SDKs -->
+  <form id="addAdminForm">
+    <input type="text" id="username" placeholder="New Admin Username" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button type="submit" class="add-btn">Add Admin</button>
+  </form>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      set,
+      remove
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
@@ -92,41 +88,59 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
+    const db = getDatabase(app);
 
-    window.login = async function () {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value;
-      const errorDiv = document.getElementById("error-message");
+    const adminList = document.getElementById("adminList");
 
-      errorDiv.textContent = "";
+    const currentAdmin = sessionStorage.getItem("admin");
+    if (!currentAdmin) {
+      alert("Unauthorized access. Redirecting to login.");
+      window.location.href = "admin.html";
+    }
 
-      if (!username || !password) {
-        errorDiv.textContent = "Please enter username and password.";
-        return;
-      }
-
-      try {
-        const passwordRef = ref(database, `admins/${username}/password`);
-        const snapshot = await get(passwordRef);
-
-        if (!snapshot.exists()) {
-          errorDiv.textContent = "Username not found.";
-          return;
-        }
-
-        const storedPassword = snapshot.val();
-
-        if (password === storedPassword) {
-          sessionStorage.setItem("username", username);
-          window.location.href = "/QCS/manage.html";
+    function loadAdmins() {
+      const adminsRef = ref(db, "admins");
+      onValue(adminsRef, (snapshot) => {
+        adminList.innerHTML = "";
+        const admins = snapshot.val();
+        if (admins) {
+          Object.entries(admins).forEach(([key, data]) => {
+            const username = data.username || key;
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <span>${username}</span>
+              <button onclick="deleteAdmin('${key}')">Delete</button>
+            `;
+            adminList.appendChild(li);
+          });
         } else {
-          errorDiv.textContent = "Incorrect password.";
+          adminList.innerHTML = "<li>No admins found.</li>";
         }
-      } catch (error) {
-        errorDiv.textContent = "Error: " + error.message;
+      });
+    }
+
+    window.deleteAdmin = function (adminKey) {
+      if (confirm(`Are you sure you want to delete admin "${adminKey}"?`)) {
+        remove(ref(db, `admins/${adminKey}`));
       }
     };
+
+    document.getElementById("addAdminForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      if (!name || !password) return alert("All fields are required");
+
+      set(ref(db, `admins/${name}`), {
+        username: name,
+        password: password
+      }).then(() => {
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+      });
+    });
+
+    loadAdmins();
   </script>
 </body>
 </html>
