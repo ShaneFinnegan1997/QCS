@@ -1,54 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<script type="module" src="script.js"></script>
- 
-<!-- Load header/footer -->
-  <script>
-    async function loadHTML(selector, url) {
-      try {
-        const response = await fetch(url);
-        if (response.ok) {
-          const html = await response.text();
-          document.querySelector(selector).innerHTML = html;
-        }
-      } catch (e) {
-        console.error("Failed to load:", url);
-      }
-    }
-    loadHTML("#header-container", "header.html");
-    loadHTML("#footer-container", "footer.html");
-  </script>
-
- 
-  <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quad Cities Sweepstakes</title>
-  <link rel="stylesheet" href="style.css" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QC Sweepstakes</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-  
 <body>
-  <div id="header-container"></div>
-  
-  <main>
-    <center>
-      
-      <section class="countdown-section">
-        <h1>Next Drawing In:</h1>
-        <h2 id="countdown">Loading...</h2>
-        <a id="entry-btn" class="hidden" href="#" target="_blank">Enter Drawing</a>
-      </section>
-    </center>
-  </main>
+  <div class="header">
+    <h1>QC Sweepstakes</h1>
+    <p>Helping people through giveaways</p>
+  </div>
 
-  <div id="footer-container"></div>
+  <div class="countdown">
+    <h2>Next Sweepstakes Starts In:</h2>
+    <div id="timer">Loading...</div>
+  </div>
 
-  <!-- Firebase Libraries -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <div class="announcement" id="announcement-box">
+    <h3>Announcements</h3>
+    <div id="announcement-content">Loading...</div>
+  </div>
 
-  <!-- Firebase Setup + Countdown Logic -->
-  <script>
+  <footer>
+    <p>&copy; 2025 QCS. All rights reserved. | <a href="login.html">Admin</a></p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
       authDomain: "qcsweeps-4b994.firebaseapp.com",
@@ -56,51 +37,36 @@
       projectId: "qcsweeps-4b994",
       storageBucket: "qcsweeps-4b994.appspot.com",
       messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
-      measurementId: "G-XL9VQ985S9"
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-    const timerDisplay = document.getElementById("countdown");
-    const entryBtn = document.getElementById("entry-btn");
+    // Countdown
+    const timerRef = ref(db, "countdown/startTime");
+    onValue(timerRef, (snapshot) => {
+      const startTime = snapshot.val();
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const distance = startTime - now;
+        if (distance <= 0) {
+          clearInterval(interval);
+          document.getElementById("timer").innerText = "Sweepstakes Started!";
+          return;
+        }
+        const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((distance / (1000 * 60)) % 60);
+        const seconds = Math.floor((distance / 1000) % 60);
+        document.getElementById("timer").innerText = `${hours}h ${minutes}m ${seconds}s`;
+      }, 1000);
+    });
 
-    let countdownInterval = null;
-
-    firebase.database().ref("countdown").on("value", (snapshot) => {
-      const data = snapshot.val();
-      clearInterval(countdownInterval);
-
-      if (data && data.targetTime) {
-        const endTime = new Date(data.targetTime).getTime();
-
-        entryBtn.href = data.entryLink || "#";
-        entryBtn.classList.remove("hidden");
-
-        countdownInterval = setInterval(() => {
-          const now = Date.now();
-          const remaining = endTime - now;
-
-          if (remaining <= 0) {
-            timerDisplay.innerText = "Drawing has started!";
-            clearInterval(countdownInterval);
-            return;
-          }
-
-          const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
-          const mins = Math.floor((remaining / (1000 * 60)) % 60);
-          const secs = Math.floor((remaining / 1000) % 60);
-
-          timerDisplay.innerText = `${days}d ${hours}h ${mins}m ${secs}s`;
-        }, 1000);
-      } else {
-        timerDisplay.innerText = "No drawing currently.";
-        entryBtn.classList.add("hidden");
-      }
+    // Announcements
+    const annRef = ref(db, "announcement/text");
+    onValue(annRef, (snapshot) => {
+      document.getElementById("announcement-content").innerText = snapshot.val() || "No announcements.";
     });
   </script>
-
 </body>
 </html>
