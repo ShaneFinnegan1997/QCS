@@ -128,6 +128,10 @@
       } catch (error) {
         errorDiv.textContent = "Error: " + error.message;
       }
+
+sessionStorage.setItem("adminUsername", username);
+window.location.href = "Manage.html";
+}
     };
   </script>
 </body>
