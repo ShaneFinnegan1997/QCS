@@ -1,128 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manage Events - QC Sweepstakes</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="/firebase-config.js"></script>
   <style>
     body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
-      color: white;
+      font-family: 'Segoe UI', sans-serif;
       padding: 20px;
+      background-color: #f9fafb;
     }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px cyan;
+    h2 {
+      color: #1f2937;
     }
-
-    .event-list {
-      margin-bottom: 40px;
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: auto;
     }
-
-    .event-item {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 10px 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .event-item button {
-      background: red;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .event-form {
-      max-width: 400px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .event-form input, .event-form button {
+    input, textarea {
+      width: 100%;
       padding: 10px;
-      border-radius: 8px;
-      border: none;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
     }
-
-    .event-form button {
-      background: #00c6ff;
+    button {
+      background-color: #3b82f6;
       color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .logout-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: darkred;
-      color: white;
-      padding: 8px 14px;
+      padding: 10px 20px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background-color: #2563eb;
     }
   </style>
 </head>
 <body>
+  <h2>Manage Events</h2>
+  <form id="eventForm">
+    <label>Title</label>
+    <input type="text" id="title" required /><label>Description Link</label>
+<input type="text" id="descriptionLink" />
 
-  <button class="logout-btn" onclick="logout()">Logout</button>
+<label>Total Winnings</label>
+<input type="text" id="totalWinnings" />
 
-  <h1>Manage Events</h1>
+<label>Winner Payout</label>
+<input type="text" id="winnerPayout" />
 
-  <div class="event-list" id="eventList"></div>
+<label>Non-Profit Name</label>
+<input type="text" id="nonProfitName" />
 
-  <form class="event-form" id="eventForm">
-    <input type="text" id="eventName" placeholder="Event Name" required />
-    <input type="datetime-local" id="eventDate" required />
-    <button type="submit">Add Event</button>
-  </form>
+<label>Non-Profit Donation Amount</label>
+<input type="text" id="nonProfitDonation" />
 
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+<label>Non-Profit Website Link</label>
+<input type="text" id="nonProfitWebsiteLink" />
 
-  authDomain: "qcsweeps-4b994.firebaseapp.com",
-      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-      projectId: "qcsweeps-4b994",
-      storageBucket: "qcsweeps-4b994.appspot.com",
-      messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-  };
+<button type="submit">Add Event</button>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  </form>  <script type="module">
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { app } from "./firebase-config.js";
 
-  document.getElementById("eventForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const title = document.getElementById("title").value;
-    const date = document.getElementById("date").value;
-    const description = document.getElementById("description").value;
+    const db = getDatabase(app);
+    const form = document.getElementById("eventForm");
 
-    const eventRef = ref(db, "events");
-    push(eventRef, {
-      title,
-      date,
-      description
-    }).then(() => {
-      alert("Event added successfully!");
-      document.getElementById("eventForm").reset();
-    }).catch((error) => {
-      alert("Error adding event: " + error);
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const eventData = {
+        title: document.getElementById("title").value,
+        descriptionLink: document.getElementById("descriptionLink").value,
+        totalWinnings: document.getElementById("totalWinnings").value,
+        winnerPayout: document.getElementById("winnerPayout").value,
+        nonProfitName: document.getElementById("nonProfitName").value,
+        nonProfitDonation: document.getElementById("nonProfitDonation").value,
+        nonProfitWebsiteLink: document.getElementById("nonProfitWebsiteLink").value,
+        timestamp: Date.now()
+      };
+
+      push(ref(db, "events"), eventData)
+        .then(() => {
+          alert("Event added successfully!");
+          form.reset();
+        })
+        .catch((error) => {
+          console.error("Error adding event:", error);
+          alert("Error adding event. Check console.");
+        });
     });
-  });
-</script>
-</body>
+  </script></body>
 </html>
