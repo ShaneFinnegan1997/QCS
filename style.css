@@ -141,3 +141,58 @@ body {
 .admin-link:hover {
   background-color: #3f3f5c;
 }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #1c1c2b;
+  color: white;
+  text-align: center;
+}
+
+.header {
+  background: linear-gradient(to right, #00ffc3, #007bff);
+  color: black;
+  padding: 20px;
+  text-shadow: 1px 1px 3px #fff;
+  border-bottom: 5px solid #00ffc3;
+}
+
+.countdown {
+  margin: 40px auto;
+  font-size: 1.5rem;
+  background: #2a2a40;
+  padding: 20px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+}
+
+#timer {
+  font-size: 2rem;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #00ffc3;
+}
+
+.announcement {
+  margin: 40px auto;
+  background: #292946;
+  padding: 20px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+}
+
+footer {
+  margin-top: 60px;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: #aaa;
+  background: #12121f;
+}
+
+a {
+  color: #00ffc3;
+  text-decoration: none;
+}
