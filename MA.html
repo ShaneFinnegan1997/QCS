@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Announcements - QC Sweepstakes</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #121212;
+      color: #00ffc3;
+      padding: 2rem;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      background: #222;
+      border: none;
+      border-radius: 8px;
+      color: #00ffc3;
+      font-size: 1rem;
+      padding: 10px;
+      resize: vertical;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 10px 20px;
+      background: #00ffc3;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #00dab0;
+    }
+    #statusMsg {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Manage Announcements</h1>
+
+  <label for="announcementText">Announcement Text:</label>
+  <textarea id="announcementText" placeholder="Enter announcement here..."></textarea>
+  <button id="saveAnnouncementBtn">Save Announcement</button>
+
+  <div id="statusMsg"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+      authDomain: "qcsweeps-4b994.firebaseapp.com",
+      projectId: "qcsweeps-4b994",
+      storageBucket: "qcsweeps-4b994.appspot.com",
+      messagingSenderId: "810241609281",
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
+      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const announcementText = document.getElementById("announcementText");
+    const saveBtn = document.getElementById("saveAnnouncementBtn");
+    const statusMsg = document.getElementById("statusMsg");
+
+    async function loadAnnouncement() {
+      const announcementRef = ref(db, "announcement/current");
+      try {
+        const snapshot = await get(announcementRef);
+        if (snapshot.exists()) {
+          announcementText.value = snapshot.val();
+        } else {
+          announcementText.value = "";
+        }
+      } catch (error) {
+        statusMsg.textContent = "Error loading announcement: " + error.message;
+      }
+    }
+
+    saveBtn.addEventListener("click", async () => {
+      const text = announcementText.value.trim();
+      try {
+        await set(ref(db, "announcement/current"), text);
+        statusMsg.textContent = "Announcement saved successfully!";
+      } catch (error) {
+        statusMsg.textContent = "Failed to save announcement: " + error.message;
+      }
+    });
+
+    loadAnnouncement();
+  </script>
+</body>
+</html>
