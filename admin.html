@@ -118,7 +118,7 @@
         const storedPassword = snapshot.val();
 
         if (password === storedPassword) {
-          sessionStorage.setItem("adminUsername", username);
+          sessionStorage.setItem("username", username);
           window.location.href = "Manage.html";
         } else {
           errorDiv.textContent = "Incorrect password.";
