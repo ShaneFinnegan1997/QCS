@@ -1,96 +1,61 @@
-<!DOCTYPE html><html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>QC Sweepstakes</title>
-  <style>
-    body {
-      background-color: #111;
-      color: #fff;
-      font-family: Verdana, sans-serif;
-      padding: 20px;
-    }
-    h1 {
-      font-size: 2em;
-      color: #00ffcc;
-    }
-    .section {
-      margin-top: 30px;
-    }
-    #announcement, #timer {
-      font-size: 1.2em;
-      margin-top: 10px;
-      color: #00ffaa;
-    }
-    a {
-      color: #00ffff;
-    }
-    footer {
-      margin-top: 40px;
-      font-size: 0.9em;
-      color: #ccc;
-    }
-  </style>
-</head>
-<body><div id="login-box" style="display: none; background: #222; padding: 20px; max-width: 400px; margin: 2rem auto; border-radius: 15px; color: white; box-shadow: 0 0 15px rgba(0,255,200,0.2);">
+<div id="login-box" style="display: none; background: #222; padding: 20px; max-width: 400px; margin: 2rem auto; border-radius: 15px; color: white; box-shadow: 0 0 15px rgba(0,255,200,0.2);">
   <h2 style="color: #00ffc3; text-align: center;">User Login</h2>
-  <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; background: #333; color: white; border: none;" />
+  <input type="text" id="loginUsername" placeholder="First Name" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; background: #333; color: white; border: none;" />
   <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; background: #333; color: white; border: none;" />
   <button onclick="loginUser()" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; background-color: #00ffc3; border: none; font-weight: bold;">Login</button>
   <div id="login-message" style="text-align: center; margin-top: 10px; color: #ff5c5c;"></div>
 </div>
 
 <div id="welcome-user" style="display: none; text-align: center; color: #00ff88; margin-top: 2rem;">
-  <h2>Welcome back, <span id="userEmail"></span>!</h2>
+  <h2>Welcome back, <span id="userName"></span>!</h2>
 </div>
 
-  <h1>QC Sweepstakes</h1>  <div class="section">
-    <strong>Countdown to next sweepstakes:</strong>
-    <div id="timer">Loading...</div>
-  </div>  <div class="section">
-    <strong>Announcement:</strong>
-    <div id="announcement">Loading...</div>
-  </div>  <div class="section">
-    <a href="login.html">Admin Login</a>
-  </div>  <footer>
-    &copy; 2025 QC Sweepstakes
-  </footer>  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
-      authDomain: "qcsweeps-4b994.firebaseapp.com",
-      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
-      projectId: "qcsweeps-4b994",
-      storageBucket: "qcsweeps-4b994.appspot.com",
-      messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
-    };
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+    authDomain: "qcsweeps-4b994.firebaseapp.com",
+    databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+    projectId: "qcsweeps-4b994",
+    storageBucket: "qcsweeps-4b994.appspot.com",
+    messagingSenderId: "810241609281",
+    appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
+  };
 
-    const timerRef = ref(db, "countdown/startTime");
-    onValue(timerRef, (snapshot) => {
-      const startTime = snapshot.val();
-      const interval = setInterval(() => {
-        const now = Date.now();
-        const distance = startTime - now;
-        if (distance <= 0) {
-          clearInterval(interval);
-          document.getElementById("timer").innerText = "Sweepstakes Started!";
-          return;
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.loginUser = async function () {
+    const firstName = document.getElementById("loginUsername").value.trim();
+    const passwordInput = document.getElementById("loginPassword").value;
+    const message = document.getElementById("login-message");
+
+    try {
+      const snapshot = await get(ref(db, 'users'));
+      let found = false;
+
+      snapshot.forEach((userNode) => {
+        const info = userNode.val().info;
+        if (info && info.FirstName.toLowerCase() === firstName.toLowerCase() && info.Password === passwordInput) {
+          document.getElementById("userName").textContent = info.FirstName;
+          document.getElementById("login-box").style.display = "none";
+          document.getElementById("welcome-user").style.display = "block";
+          found = true;
         }
-        const h = Math.floor((distance / (1000 * 60 * 60)) % 24);
-        const m = Math.floor((distance / (1000 * 60)) % 60);
-        const s = Math.floor((distance / 1000) % 60);
-        document.getElementById("timer").innerText = `${h}h ${m}m ${s}s`;
-      }, 1000);
-    });
+      });
 
-    const annRef = ref(db, "announcement/text");
-    onValue(annRef, (snapshot) => {
-      document.getElementById("announcement").innerText = snapshot.val() || "No announcement.";
-    });
-  </script></body>
-</html>
+      if (!found) {
+        message.textContent = "Invalid name or password.";
+      }
+    } catch (error) {
+      message.textContent = "Error logging in.";
+      console.error(error);
+    }
+  };
+
+  // Show login by default
+  document.getElementById("login-box").style.display = "block";
+</script>
