@@ -2,180 +2,142 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Manage Events - QC Sweepstakes</title>
   <style>
     body {
+      margin: 0;
       font-family: "Segoe UI", sans-serif;
-      background: #121212;
+      background: #121220;
+      color: white;
+      padding-bottom: 4rem;
+    }
+    header {
+      background: #1f1f38;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
       color: #00ffc3;
+      text-shadow: 0 0 10px #00ffc3;
+    }
+    .container {
       padding: 2rem;
     }
-    h1 {
+    h2 {
+      color: #00ffc3;
+    }
+    .event {
+      background-color: #1e1e30;
+      padding: 1rem;
+      border-radius: 10px;
       margin-bottom: 1rem;
     }
-    label {
+    input, textarea, button {
       display: block;
-      margin-top: 1rem;
-    }
-    input, textarea {
       width: 100%;
-      padding: 8px;
-      margin-top: 0.25rem;
-      border-radius: 5px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
       border: none;
-      background: #222;
-      color: #00ffc3;
       font-size: 1rem;
     }
+    input, textarea {
+      background-color: #2a2a40;
+      color: white;
+    }
     button {
-      margin-top: 1rem;
-      padding: 10px 20px;
-      background: #00ffc3;
-      border: none;
-      border-radius: 8px;
-      color: #000;
+      background-color: #00ffc3;
+      color: black;
       font-weight: bold;
       cursor: pointer;
+      margin-top: 1rem;
     }
     button:hover {
-      background: #00dab0;
-    }
-    table {
-      width: 100%;
-      margin-top: 2rem;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #00ffc3;
-      padding: 10px;
-      text-align: left;
-    }
-    .btn-delete {
-      background: #ff5c5c;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .btn-delete:hover {
-      background: #ff1c1c;
+      background-color: #00dab0;
     }
   </style>
 </head>
 <body>
-  <h1>Manage Events</h1>
-  <form id="addEventForm">
-    <label for="title">Event Title</label>
-    <input type="text" id="title" required />
+  <header>Manage Events</header>
+  <div class="container">
+    <h2>Add New Event</h2>
+    <input type="text" id="event-title" placeholder="Event Title" />
+    <textarea id="event-description" placeholder="Event Description"></textarea>
+    <input type="datetime-local" id="event-time" />
+    <button onclick="addEvent()">Add Event</button>
 
-    <label for="date">Date (YYYY-MM-DD)</label>
-    <input type="date" id="date" required />
-
-    <label for="description">Description</label>
-    <textarea id="description" rows="4"></textarea>
-
-    <button type="submit">Add Event</button>
-  </form>
-
-  <table id="eventsTable">
-    <thead>
-      <tr><th>Title</th><th>Date</th><th>Description</th><th>Actions</th></tr>
-    </thead>
-    <tbody>
-      <tr><td colspan="4">Loading events...</td></tr>
-    </tbody>
-  </table>
+    <h2 style="margin-top: 2rem;">Existing Events</h2>
+    <div id="events-list">Loading events...</div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, get, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
       authDomain: "qcsweeps-4b994.firebaseapp.com",
+      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
       projectId: "qcsweeps-4b994",
       storageBucket: "qcsweeps-4b994.appspot.com",
       messagingSenderId: "810241609281",
-      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
-      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com"
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const addEventForm = document.getElementById("addEventForm");
-    const eventsTableBody = document.querySelector("#eventsTable tbody");
+    const eventsRef = ref(db, 'events');
 
-    // Load all events and display in table
-    async function loadEvents() {
-      eventsTableBody.innerHTML = '<tr><td colspan="4">Loading events...</td></tr>';
-      try {
-        const eventsRef = ref(db, "events");
-        const snapshot = await get(eventsRef);
-        if (!snapshot.exists()) {
-          eventsTableBody.innerHTML = '<tr><td colspan="4">No events found.</td></tr>';
-          return;
-        }
-        const events = snapshot.val();
-        eventsTableBody.innerHTML = "";
-        for (const id in events) {
-          const event = events[id];
-          const tr = document.createElement("tr");
-
-          tr.innerHTML = `
-            <td>${event.title || ""}</td>
-            <td>${event.date || ""}</td>
-            <td>${event.description || ""}</td>
-            <td><button class="btn-delete" data-id="${id}">Delete</button></td>
-          `;
-          eventsTableBody.appendChild(tr);
-        }
-
-        // Attach delete handlers
-        document.querySelectorAll(".btn-delete").forEach(btn => {
-          btn.addEventListener("click", async () => {
-            const eventId = btn.getAttribute("data-id");
-            if (confirm("Are you sure you want to delete this event?")) {
-              try {
-                await remove(ref(db, `events/${eventId}`));
-                loadEvents();
-              } catch (err) {
-                alert("Failed to delete event: " + err.message);
-              }
-            }
-          });
-        });
-
-      } catch (error) {
-        eventsTableBody.innerHTML = `<tr><td colspan="4">Error loading events: ${error.message}</td></tr>`;
-      }
+    function renderEvents(events) {
+      const container = document.getElementById("events-list");
+      container.innerHTML = "";
+      Object.entries(events || {}).forEach(([key, event]) => {
+        const div = document.createElement("div");
+        div.className = "event";
+        div.innerHTML = `
+          <strong>${event.title}</strong><br>
+          <small>${new Date(event.time).toLocaleString()}</small><br>
+          <p>${event.description}</p>
+          <button onclick="deleteEvent('${key}')">Delete</button>
+        `;
+        container.appendChild(div);
+      });
     }
 
-    addEventForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const title = document.getElementById("title").value.trim();
-      const date = document.getElementById("date").value;
-      const description = document.getElementById("description").value.trim();
+    function addEvent() {
+      const title = document.getElementById("event-title").value.trim();
+      const description = document.getElementById("event-description").value.trim();
+      const time = document.getElementById("event-time").value;
+      if (!title || !description || !time) return alert("Fill in all fields.");
+      const newRef = push(eventsRef);
+      set(newRef, {
+        title,
+        description,
+        time
+      });
+      document.getElementById("event-title").value = "";
+      document.getElementById("event-description").value = "";
+      document.getElementById("event-time").value = "";
+    }
 
-      if (!title || !date) {
-        alert("Please enter both title and date.");
-        return;
-      }
+    function deleteEvent(id) {
+      remove(ref(db, `events/${id}`));
+    }
 
-      try {
-        const newEventRef = push(ref(db, "events"));
-        await set(newEventRef, { title, date, description });
-        addEventForm.reset();
-        loadEvents();
-      } catch (error) {
-        alert("Failed to add event: " + error.message);
-      }
+    onValue(eventsRef, (snapshot) => {
+      renderEvents(snapshot.val());
     });
 
-    // Initial load
-    loadEvents();
+    window.addEventListener("DOMContentLoaded", () => {
+      renderEvents();
+    });
+
+    window.addEventListener("load", () => {
+      if (!sessionStorage.getItem("admin")) {
+        window.location.href = "login.html";
+      }
+    });
   </script>
 </body>
 </html>
