@@ -1,32 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QC Sweepstakes</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Verdana, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 2em;
+      color: #00ffcc;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    #announcement, #timer {
+      font-size: 1.2em;
+      margin-top: 10px;
+      color: #00ffaa;
+    }
+    a {
+      color: #00ffff;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+  </style>
 </head>
 <body>
-  <div class="header">
-    <h1>QC Sweepstakes</h1>
-    <p>Helping people through giveaways</p>
-  </div>
-
-  <div class="countdown">
-    <h2>Next Sweepstakes Starts In:</h2>
+  <h1>QC Sweepstakes</h1>  <div class="section">
+    <strong>Countdown to next sweepstakes:</strong>
     <div id="timer">Loading...</div>
-  </div>
-
-  <div class="announcement" id="announcement-box">
-    <h3>Announcements</h3>
-    <div id="announcement-content">Loading...</div>
-  </div>
-
-  <footer>
-    <p>&copy; 2025 QCS. All rights reserved. | <a href="login.html">Admin</a></p>
-  </footer>
-
-  <script type="module">
+  </div>  <div class="section">
+    <strong>Announcement:</strong>
+    <div id="announcement">Loading...</div>
+  </div>  <div class="section">
+    <a href="login.html">Admin Login</a>
+  </div>  <footer>
+    &copy; 2025 QC Sweepstakes
+  </footer>  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -43,7 +59,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Countdown
     const timerRef = ref(db, "countdown/startTime");
     onValue(timerRef, (snapshot) => {
       const startTime = snapshot.val();
@@ -55,18 +70,16 @@
           document.getElementById("timer").innerText = "Sweepstakes Started!";
           return;
         }
-        const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((distance / (1000 * 60)) % 60);
-        const seconds = Math.floor((distance / 1000) % 60);
-        document.getElementById("timer").innerText = `${hours}h ${minutes}m ${seconds}s`;
+        const h = Math.floor((distance / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((distance / (1000 * 60)) % 60);
+        const s = Math.floor((distance / 1000) % 60);
+        document.getElementById("timer").innerText = `${h}h ${m}m ${s}s`;
       }, 1000);
     });
 
-    // Announcements
     const annRef = ref(db, "announcement/text");
     onValue(annRef, (snapshot) => {
-      document.getElementById("announcement-content").innerText = snapshot.val() || "No announcements.";
+      document.getElementById("announcement").innerText = snapshot.val() || "No announcement.";
     });
-  </script>
-</body>
+  </script></body>
 </html>
