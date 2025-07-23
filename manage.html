@@ -2,60 +2,94 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin Dashboard - QC Sweepstakes</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #121212;
+      color: #00ffc3;
+      padding: 2rem;
+    }
+    #logoutBtn {
+      padding: 10px 20px;
+      background-color: #00ffc3;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
-  <header class="admin-header">
-    <h1>QC Sweepstakes Admin</h1>
-    <button id="logout-btn">Logout</button>
-  </header>
+  <h1>Welcome, <span id="adminName"></span></h1>
+  <button id="logoutBtn">Logout</button>
 
-  <main class="admin-dashboard">
-    <h2>Welcome, Admin</h2>
-    <div class="admin-links">
-      <a href="ManageEvents.html" class="admin-link">📅 Manage Events</a>
-      <a href="ManageTimer.html" class="admin-link">⏳ Manage Timer</a>
-      <a href="ManageAnnouncements.html" class="admin-link">📢 Announcements</a>
-    </div>
-  </main>
+  <div id="eventsSection">
+    <h2>Upcoming Events</h2>
+    <ul id="eventsList">Loading events...</ul>
+  </div>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID",
-      databaseURL: "YOUR_DATABASE_URL"
+      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+      authDomain: "qcsweeps-4b994.firebaseapp.com",
+      projectId: "qcsweeps-4b994",
+      storageBucket: "qcsweeps-4b994.appspot.com",
+      messagingSenderId: "810241609281",
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
+      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com"
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const database = getDatabase(app);
 
-    // Redirect to login if not logged in
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
+    const username = sessionStorage.getItem("adminUsername");
+    const adminNameElem = document.getElementById("adminName");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const eventsList = document.getElementById("eventsList");
+
+    if (!username) {
+      window.location.href = "login.html";
+    } else {
+      adminNameElem.textContent = username;
+    }
+
+    logoutBtn.addEventListener("click", () => {
+      sessionStorage.removeItem("adminUsername");
+      window.location.href = "login.html";
+    });
+
+    async function loadEvents() {
+      try {
+        const eventsRef = ref(database, "events");
+        const snapshot = await get(eventsRef);
+
+        if (!snapshot.exists()) {
+          eventsList.innerHTML = "<li>No events found.</li>";
+          return;
+        }
+
+        const events = snapshot.val();
+        eventsList.innerHTML = "";
+
+        for (const eventId in events) {
+          const event = events[eventId];
+          const li = document.createElement("li");
+          li.textContent = `${event.title || "Untitled Event"} - ${event.date || "No date"}`;
+          eventsList.appendChild(li);
+        }
+      } catch (err) {
+        eventsList.innerHTML = `<li>Error loading events: ${err.message}</li>`;
       }
-    });
+    }
 
-    // Logout button
-    document.getElementById("logout-btn").addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      });
-    });
+    loadEvents();
   </script>
 </body>
 </html>
