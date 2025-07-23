@@ -82,8 +82,7 @@
   import {
     getDatabase,
     ref,
-    get,
-    child
+    get
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
@@ -109,29 +108,32 @@
       return;
     }
 
-    const adminRef = ref(db, `admins/${username}`);
     try {
+      const adminRef = ref(db, `admins/${username}`);
       const snapshot = await get(adminRef);
+
       if (!snapshot.exists()) {
         alert("Admin not found.");
         return;
       }
 
-      const storedData = snapshot.val();
-      if (storedData.password !== password) {
+      const data = snapshot.val();
+
+      // Use correct case: data.Password, not data.password
+      if (data.Password !== password) {
         alert("Incorrect password.");
         return;
       }
 
-      // ✅ Set correct session key for all admin pages
+      // ✅ Set admin session key for access
       sessionStorage.setItem("admin", username);
 
-      // ✅ Redirect to admin dashboard or manage page
+      // ✅ Redirect to admin dashboard
       window.location.href = "Manage.html";
 
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Something went wrong. Please try again.");
+      console.error("Login failed:", error);
+      alert("Login failed. Please try again.");
     }
   });
 </script>
