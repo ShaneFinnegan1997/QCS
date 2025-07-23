@@ -86,17 +86,13 @@
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID",
-      databaseURL: "YOUR_DATABASE_URL"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+            authDomain: "qcsweeps-4b994.firebaseapp.com",
+            databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com",
+            projectId: "qcsweeps-4b994",
+            storageBucket: "qcsweeps-4b994.appspot.com",
+            messagingSenderId: "810241609281",
+            appId: "1:810241609281:web:63ecd22b6acbee2cf480c0"
 
     // Auto-redirect if already logged in
     onAuthStateChanged(auth, (user) => {
