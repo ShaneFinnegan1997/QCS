@@ -94,7 +94,6 @@
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    // Login function
     window.login = async function () {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
@@ -108,7 +107,6 @@
       }
 
       try {
-        // Path to password in DB
         const passwordRef = ref(database, `admins/${username}/admin/Password`);
         const snapshot = await get(passwordRef);
 
@@ -120,7 +118,7 @@
         const storedPassword = snapshot.val();
 
         if (password === storedPassword) {
-          // Successful login
+          sessionStorage.setItem("adminUsername", username);
           window.location.href = "Manage.html";
         } else {
           errorDiv.textContent = "Incorrect password.";
@@ -128,10 +126,6 @@
       } catch (error) {
         errorDiv.textContent = "Error: " + error.message;
       }
-
-sessionStorage.setItem("adminUsername", username);
-window.location.href = "Manage.html";
-}
     };
   </script>
 </body>
