@@ -31,7 +31,18 @@
     }
   </style>
 </head>
-<body>
+<body><div id="login-box" style="display: none; background: #222; padding: 20px; max-width: 400px; margin: 2rem auto; border-radius: 15px; color: white; box-shadow: 0 0 15px rgba(0,255,200,0.2);">
+  <h2 style="color: #00ffc3; text-align: center;">User Login</h2>
+  <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; background: #333; color: white; border: none;" />
+  <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; background: #333; color: white; border: none;" />
+  <button onclick="loginUser()" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; background-color: #00ffc3; border: none; font-weight: bold;">Login</button>
+  <div id="login-message" style="text-align: center; margin-top: 10px; color: #ff5c5c;"></div>
+</div>
+
+<div id="welcome-user" style="display: none; text-align: center; color: #00ff88; margin-top: 2rem;">
+  <h2>Welcome back, <span id="userEmail"></span>!</h2>
+</div>
+
   <h1>QC Sweepstakes</h1>  <div class="section">
     <strong>Countdown to next sweepstakes:</strong>
     <div id="timer">Loading...</div>
