@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>QC Sweepstakes</title>
@@ -6,15 +7,24 @@
     body {
       background-color: #111;
       color: #fff;
-      font-family: Verdana, sans-serif;
+      font-family: "Segoe UI", Verdana, sans-serif;
       padding: 20px;
+      margin: 0;
     }
     h1 {
-      font-size: 2em;
-      color: #00ffcc;
+      font-size: 2.5em;
+      color: #00ffc3;
+      text-align: center;
+      text-shadow: 0 0 10px #00ffc3;
+      margin-top: 1rem;
     }
     .section {
-      margin-top: 30px;
+      margin: 30px auto;
+      max-width: 600px;
+      background: #1c1c2b;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 255, 200, 0.1);
     }
     #announcement, #timer {
       font-size: 1.2em;
@@ -23,40 +33,97 @@
     }
     a {
       color: #00ffff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a:hover {
+      text-decoration: underline;
     }
     footer {
       margin-top: 40px;
       font-size: 0.9em;
       color: #ccc;
+      text-align: center;
+    }
+    #login-box {
+      display: none;
+      background: #222;
+      padding: 20px;
+      max-width: 400px;
+      margin: 2rem auto;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,255,200,0.2);
+    }
+    #login-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      background: #333;
+      color: white;
+      border: none;
+    }
+    #login-box button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 10px;
+      background-color: #00ffc3;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #login-box button:hover {
+      background-color: #00dab0;
+    }
+    #login-message {
+      text-align: center;
+      margin-top: 10px;
+      color: #ff5c5c;
+    }
+    #welcome-user {
+      display: none;
+      text-align: center;
+      color: #00ff88;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
-  <h1>QC Sweepstakes</h1>  <div class="section">
+  <h1>QC Sweepstakes</h1>
 
-<div id="login-box" style="display: none; background: #222; padding: 20px; max-width: 400px; margin: 2rem auto; border-radius: 15px; color: white; box-shadow: 0 0 15px rgba(0,255,200,0.2);">
-  <h2 style="color: #00ffc3; text-align: center;">User Login</h2>
-  <input type="text" id="loginUsername" placeholder="First Name" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; background: #333; color: white; border: none;" />
-  <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; background: #333; color: white; border: none;" />
-  <button onclick="loginUser()" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; background-color: #00ffc3; border: none; font-weight: bold;">Login</button>
-  <div id="login-message" style="text-align: center; margin-top: 10px; color: #ff5c5c;"></div>
-</div>
+  <div id="login-box">
+    <h2 style="color: #00ffc3; text-align: center;">User Login</h2>
+    <input type="text" id="loginUsername" placeholder="First Name" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button onclick="loginUser()">Login</button>
+    <div id="login-message"></div>
+  </div>
 
-<div id="welcome-user" style="display: none; text-align: center; color: #00ff88; margin-top: 2rem;">
-  <h2>Welcome back, <span id="userName"></span>!</h2>
-</div>
+  <div id="welcome-user">
+    <h2>Welcome back, <span id="userName"></span>!</h2>
+  </div>
 
-
+  <div class="section">
     <strong>Countdown to next sweepstakes:</strong>
     <div id="timer">Loading...</div>
-  </div>  <div class="section">
+  </div>
+
+  <div class="section">
     <strong>Announcement:</strong>
     <div id="announcement">Loading...</div>
-  </div>  <div class="section">
+  </div>
+
+  <div class="section" style="text-align: center;">
     <a href="login.html">Admin Login</a>
-  </div>  <footer>
+  </div>
+
+  <footer>
     &copy; 2025 QC Sweepstakes
-  </footer>  <script type="module">
+  </footer>
+
+  <!-- Firebase Script -->
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -73,6 +140,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // Countdown Timer
     const timerRef = ref(db, "countdown/startTime");
     onValue(timerRef, (snapshot) => {
       const startTime = snapshot.val();
@@ -91,9 +159,11 @@
       }, 1000);
     });
 
+    // Announcement
     const annRef = ref(db, "announcement/text");
     onValue(annRef, (snapshot) => {
       document.getElementById("announcement").innerText = snapshot.val() || "No announcement.";
     });
-  </script></body>
+  </script>
+</body>
 </html>
