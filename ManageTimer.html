@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Timer - QC Sweepstakes</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #121212;
+      color: #00ffc3;
+      padding: 2rem;
+    }
+    label, input, button {
+      display: block;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+    input[type="datetime-local"] {
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      background: #222;
+      color: #00ffc3;
+      width: 300px;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 10px 20px;
+      background: #00ffc3;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      width: 150px;
+    }
+    button:hover {
+      background: #00dab0;
+    }
+    #currentTimer {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Manage Countdown Timer</h1>
+
+  <label for="timerInput">Set Countdown Target Date & Time:</label>
+  <input type="datetime-local" id="timerInput" />
+
+  <button id="saveBtn">Save Timer</button>
+
+  <div id="currentTimer">Loading current timer...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-giQ4CGXX6F0RIXbAzbp_0vDDomoLo8g",
+      authDomain: "qcsweeps-4b994.firebaseapp.com",
+      projectId: "qcsweeps-4b994",
+      storageBucket: "qcsweeps-4b994.appspot.com",
+      messagingSenderId: "810241609281",
+      appId: "1:810241609281:web:63ecd22b6acbee2cf480c0",
+      databaseURL: "https://qcsweeps-4b994-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const timerInput = document.getElementById("timerInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const currentTimerDiv = document.getElementById("currentTimer");
+
+    // Load current timer from DB
+    async function loadTimer() {
+      const timerRef = ref(db, "timer/targetDate");
+      try {
+        const snapshot = await get(timerRef);
+        if (snapshot.exists()) {
+          const timerValue = snapshot.val();
+          currentTimerDiv.textContent = `Current countdown target: ${timerValue}`;
+          // Set input to existing value if possible
+          // Convert ISO string to datetime-local format yyyy-MM-ddTHH:mm
+          const dtLocal = new Date(timerValue).toISOString().slice(0,16);
+          timerInput.value = dtLocal;
+        } else {
+          currentTimerDiv.textContent = "No countdown timer set.";
+        }
+      } catch (error) {
+        currentTimerDiv.textContent = "Error loading timer: " + error.message;
+      }
+    }
+
+    // Save new timer
+    saveBtn.addEventListener("click", async () => {
+      const newDate = timerInput.value;
+      if (!newDate) {
+        alert("Please select a date and time.");
+        return;
+      }
+      try {
+        await set(ref(db, "timer/targetDate"), new Date(newDate).toISOString());
+        alert("Timer saved!");
+        loadTimer();
+      } catch (error) {
+        alert("Failed to save timer: " + error.message);
+      }
+    });
+
+    loadTimer();
+  </script>
+</body>
+</html>
