@@ -59,13 +59,22 @@
     }
   </style>
 </head>
+
+<!-- Place this where you want the header to show up -->
+<div id="header-placeholder"></div>
+
+<script>
+  fetch("header.html")
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("header-placeholder").innerHTML = data;
+    });
+</script>
+
 <body>
-  <header>QC Sweepstakes</header>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="events.html">Events</a>
-    <a href="admin-login.html">Admin Login</a>
-  </nav>
+  
+
+
   <div class="container">
     <h2>Next Sweepstakes Countdown</h2>
     <div class="countdown" id="countdown">Loading...</div>
