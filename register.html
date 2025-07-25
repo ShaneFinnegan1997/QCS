@@ -1,8 +1,8 @@
-<!-- Register Page (register.html) --><!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register - QC Sweepstakes</title>
+  <title>Admin Login - QC Sweepstakes</title>
   <style>
     body {
       margin: 0;
@@ -14,7 +14,7 @@
       align-items: center;
       height: 100vh;
     }
-    .register-container {
+    .login-container {
       background-color: #1e1e30;
       padding: 2rem;
       border-radius: 20px;
@@ -67,24 +67,24 @@
   </style>
 </head>
 <body>
-  <div class="register-container">
-    <h2>Register</h2>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="email" id="email" placeholder="Email" />
+  <div class="login-container">
+    <h2>Admin Login</h2>
+    <input type="text" id="identifier" placeholder="Email or Username" />
     <input type="password" id="password" placeholder="Password" />
-    <button onclick="register()">Create Account</button>
+    <button onclick="login()">Login</button>
     <div class="error-message" id="error-message"></div>
   </div>  <!-- Firebase SDKs -->  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getAuth,
-      createUserWithEmailAndPassword
+      signInWithEmailAndPassword,
+      onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getDatabase,
       ref,
-      set,
-      get
+      get,
+      child
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
@@ -101,38 +101,41 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    window.register = async function () {
-      const username = document.getElementById("username").value.trim().toLowerCase();
-      const email = document.getElementById("email").value.trim();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "Manage.html";
+      }
+    });
+
+    window.login = async function () {
+      const identifier = document.getElementById("identifier").value.trim();
       const password = document.getElementById("password").value.trim();
       const errorDiv = document.getElementById("error-message");
 
-      if (!username || !email || !password) {
-        errorDiv.textContent = "All fields are required.";
-        return;
-      }
+      let email = identifier;
 
-      try {
-        const usernameRef = ref(db, "usernames/" + username);
-        const snapshot = await get(usernameRef);
-        if (snapshot.exists()) {
-          errorDiv.textContent = "Username already taken.";
+      if (!identifier.includes("@")) {
+        try {
+          const snapshot = await get(child(ref(db), `usernames/${identifier}`));
+          if (snapshot.exists()) {
+            email = snapshot.val();
+          } else {
+            errorDiv.textContent = "Username not found.";
+            return;
+          }
+        } catch (err) {
+          errorDiv.textContent = "Error looking up username.";
           return;
         }
-
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-        await set(usernameRef, email);
-
-        await set(ref(db, "users/" + userCredential.user.uid), {
-          username: username,
-          email: email,
-          role: "admin",
-          createdAt: new Date().toISOString()
-        });
-
-        window.location.href = "Manage.html";
-      } catch (error) {
-        errorDiv.textContent = "Registration failed: " + error.message;
       }
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          window.location.href = "Manage.html";
+        })
+        .catch((error) => {
+          errorDiv.textContent = "Login failed: " + error.message;
+        });
     };
+  </script></body>
+</html>
